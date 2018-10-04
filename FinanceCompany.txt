@@ -1,0 +1,6 @@
+  @FinanceCompany NVarChar(10) ='',
+
+  if(@FinanceCompany<>'')
+	SET @LGSQL = @LGSQL + ' AND ISNULL([IDM_Projects].[FinanceCompany],''200'')) = ''' + @FinanceCompany + ''''
+
+   AND  [IDM_Projects].[FinanceCompany] = case when @FinanceCompany='' then [IDM_Projects].[FinanceCompany] else @FinanceCompany end
