@@ -1892,14 +1892,20 @@ Public Class RPT_spmtPaymentAdvice
 
     Print("<table width=""" & ReportWidth & "px"">")
     Print("<tr>")
+    Print("<td style=""font-size:12px;font-weight:bold;width:25%;text-align:left;vertical-align:top"">Prepared By</td>")
     Print("<td style=""font-size:12px;font-weight:bold;width:25%;text-align:left;vertical-align:top"">Claimant's Signature</td>")
     Print("<td style=""font-size:12px;font-weight:bold;width:25%;text-align:left;vertical-align:top"">Supervisor's Signature</td>")
-    'Print("<td style=""font-size:12px;font-weight:bold;width:25%;text-align:left;vertical-align:top"">" & oPA.aspnet_Users2_UserFullName & "</td>")
-    Print("<td style=""font-size:12px;font-weight:bold;width:25%;text-align:left;vertical-align:top"">&nbsp;</td>")
     Print("<td style=""font-size:12px;font-weight:bold;width:25%;text-align:right;vertical-align:top"">Sanctioning Authority</td>")
     Print("</tr>")
     Print("<tr>")
     Dim StrToPrint As String = ""
+    Try
+      StrToPrint = oPA.FK_SPMT_PaymentAdvice_AdviceStatusUser.UserFullName & " [" & oPA.AdviceStatusUser & "]"
+    Catch ex As Exception
+      StrToPrint = ""
+    End Try
+    Print("<td style=""font-size:12px;font-weight:bold;width:25%;text-align:left;vertical-align:top""><br/><br/>" & StrToPrint & "</td>")
+    StrToPrint = ""
     If Not oPA.EmployeeID = "" Then
       Try
         StrToPrint = oPA.FK_SPMT_PaymentAdvice_EmployeeID.UserFullName & " [" & oPA.EmployeeID & "]"
@@ -1909,14 +1915,12 @@ Public Class RPT_spmtPaymentAdvice
       Print("<td style=""font-size:12px;font-weight:bold;width:25%;text-align:left;vertical-align:top""><br/><br/>" & StrToPrint & "</td>")
     Else
       Try
-        StrToPrint = oPA.FK_SPMT_PaymentAdvice_AdviceStatusUser.UserFullName & " [" & oPA.AdviceStatusUser & "]"
+        'StrToPrint = oPA.FK_SPMT_PaymentAdvice_AdviceStatusUser.UserFullName & " [" & oPA.AdviceStatusUser & "]"
       Catch ex As Exception
         StrToPrint = ""
       End Try
       Print("<td style=""font-size:12px;font-weight:bold;width:25%;text-align:left;vertical-align:top""><br/><br/>" & StrToPrint & "</td>")
     End If
-    Print("<td style=""font-size:12px;font-weight:bold;width:25%;text-align:left;vertical-align:top""><br/>&nbsp;</td>")
-    'Print("<td style=""font-size:12px;font-weight:bold;width:25%;text-align:left;vertical-align:top""><br/>(HOD)</td>")
     Print("<td style=""font-size:12px;font-weight:bold;width:25%;text-align:left;vertical-align:top""><br/>&nbsp;</td>")
     Try
       StrToPrint = oPA.FK_SPMT_PaymentAdvice_ConcernedHOD.UserFullName & " [" & oPA.ConcernedHOD & "]"
