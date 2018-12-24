@@ -1674,6 +1674,8 @@ Public Class RPT_spmtPaymentAdvice
         End If
         If FCM Then
           Print("<td style=""font-size:12px;text-align:right"">" & det.BillAmount - det.TotalAmountINR & "</td>")
+        Else
+          Print("<td style=""font-size:12px;text-align:right"">" & det.Quantity & "</td>")
         End If
         Print("<td style=""font-size:12px;text-align:right"">" & (det.AssessableValue * det.ConversionFactorINR).ToString("n") & "</td>")
         Print("<td style=""font-size:12px;text-align:right"">" & (det.IGSTAmount * det.ConversionFactorINR).ToString("n") & "</td>")
@@ -1748,9 +1750,9 @@ Public Class RPT_spmtPaymentAdvice
         Print("<td style=""font-size:9px;text-align:right"">&nbsp;</td>")
         Print("<td style=""font-size:9px;text-align:right"">&nbsp;</td>")
         Print("<td style=""font-size:9px;text-align:right"">&nbsp;</td>")
-        If FCM Then
-          Print("<td style=""font-size:9px;text-align:right"">&nbsp;</td>")
-        End If
+        'If FCM Then
+        Print("<td style=""font-size:9px;text-align:right"">&nbsp;</td>")
+        'End If
         Print("</tr>")
       Next
     End If
@@ -1778,6 +1780,7 @@ Public Class RPT_spmtPaymentAdvice
         Print("<td style=""font-size:12px;text-align:right"">&nbsp;</td>")
         Print("<td style=""font-size:12px;text-align:left"">&nbsp;</td>")
         Print("<td style=""font-size:9px;text-align:right"">&nbsp;</td>")
+        Print("<td style=""font-size:9px;text-align:right"">&nbsp;</td>")
         Print("<td colspan=""3"" style=""font-size:12px;text-align:center;font-weight:bold"">AGENTs TOTAL AMOUNT [INR]</td>")
         Print("<td style=""font-size:12px;text-align:right;font-weight:bold"">" & TotalAssAmt.ToString("n") & "</td>")
         Print("<td style=""font-size:12px;text-align:right;font-weight:bold"">" & TotalIgstAmt.ToString("n") & "</td>")
@@ -1792,6 +1795,7 @@ Public Class RPT_spmtPaymentAdvice
         Print("<td style=""font-size:12px;text-align:right"">&nbsp;</td>")
         Print("<td style=""font-size:12px;text-align:right"">&nbsp;</td>")
         Print("<td style=""font-size:12px;text-align:left"">&nbsp;</td>")
+        Print("<td style=""font-size:9px;text-align:right"">&nbsp;</td>")
         Print("<td style=""font-size:9px;text-align:right"">&nbsp;</td>")
         Print("<td colspan=""3"" style=""font-size:12px;text-align:center;font-weight:bold"">AGENCY TOTAL AMOUNT [INR]</td>")
         Print("<td style=""font-size:12px;text-align:right;font-weight:bold"">" & YTotalAssAmt.ToString("n") & "</td>")
@@ -1808,6 +1812,7 @@ Public Class RPT_spmtPaymentAdvice
         Print("<td style=""font-size:12px;text-align:right"">&nbsp;</td>")
         Print("<td style=""font-size:12px;text-align:left"">&nbsp;</td>")
         Print("<td style=""font-size:9px;text-align:right"">&nbsp;</td>")
+        Print("<td style=""font-size:9px;text-align:right"">&nbsp;</td>")
         Print("<td colspan=""3"" style=""font-size:12px;text-align:center;font-weight:bold"">GRAND TOTAL AMOUNT [INR]</td>")
         Print("<td style=""font-size:12px;text-align:right;font-weight:bold"">" & (TotalAssAmt + YTotalAssAmt).ToString("n") & "</td>")
         Print("<td style=""font-size:12px;text-align:right;font-weight:bold"">" & (TotalIgstAmt + YTotalIgstAmt).ToString("n") & "</td>")
@@ -1822,6 +1827,7 @@ Public Class RPT_spmtPaymentAdvice
         Print("<td style=""font-size:12px;text-align:right"">&nbsp;</td>")
         Print("<td style=""font-size:12px;text-align:right"">&nbsp;</td>")
         Print("<td style=""font-size:12px;text-align:left"">&nbsp;</td>")
+        Print("<td style=""font-size:9px;text-align:right"">&nbsp;</td>")
         Print("<td style=""font-size:9px;text-align:right"">&nbsp;</td>")
         Print("<td colspan=""3"" style=""font-size:12px;text-align:center;font-weight:bold"">TOTAL AMOUNT [INR]</td>")
         Print("<td style=""font-size:12px;text-align:right;font-weight:bold"">" & TotalAssAmt.ToString("n") & "</td>")
@@ -1942,7 +1948,7 @@ Public Class RPT_spmtPaymentAdvice
     If FCM Then
       Print("<td colspan=""8"" style=""font-size:12px;font-weight:bold;width:60px;text-align:center;vertical-align:top"">AMOUNTS IN INR</td>")
     Else
-      Print("<td colspan=""7"" style=""font-size:12px;font-weight:bold;width:60px;text-align:center;vertical-align:top"">AMOUNTS IN INR</td>")
+      Print("<td colspan=""8"" style=""font-size:12px;font-weight:bold;width:60px;text-align:center;vertical-align:top"">AMOUNTS IN INR</td>")
     End If
     Print("</tr>")
 
@@ -1959,6 +1965,7 @@ Public Class RPT_spmtPaymentAdvice
       Print("<td style=""font-size:12px;font-weight:bold;width:60px;text-align:right;vertical-align:top"">SERVICE CHG.</td>")
     Else
       Print("<td style=""font-size:12px;font-weight:bold;width:260px;vertical-align:top"">ITEM DESCRIPTION</td>")
+      Print("<td style=""font-size:12px;font-weight:bold;width:70px;text-align:right;vertical-align:top"">QTY.</td>")
       Print("<td style=""font-size:12px;font-weight:bold;width:70px;text-align:right;vertical-align:top"">BILL AMT</td>")
     End If
     Print("<td style=""font-size:12px;font-weight:bold;width:70px;text-align:right;vertical-align:top"">IGST</td>")

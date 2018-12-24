@@ -184,11 +184,11 @@ Namespace SIS.SPMT
       Dim Sql As String = ""
       Sql &= " insert into ttcisg132200 (t_drid,t_dcid,t_hndl,t_indx,t_prcd,t_fnam,t_lbcd,t_atby,t_aton,t_Refcntd,t_Refcntu)"
       Sql &= " select 1000000 + (ABS(CHECKSUM(NEWID())) % 1000000)  as t_drid ,t_dcid, 'J_SPMTPAYMENTADVICE' AS t_hndl, "
-      Sql &= " " & AdviceNo & " as t_indx,"
+      Sql &= " '" & AdviceNo & "' as t_indx,"
       Sql &= " t_prcd,t_fnam,t_lbcd,t_atby,t_aton,t_Refcntd,t_Refcntu "
       Sql &= " from ttcisg132200"
       Sql &= " where t_hndl='J_SPMTSUPPLIERBILL' "
-      Sql &= " and t_indx=" & IRNo
+      Sql &= " and t_indx='" & IRNo & "'"
       Sql &= ""
       Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
