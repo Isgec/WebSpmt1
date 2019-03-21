@@ -23,6 +23,17 @@ Namespace SIS.SYS.Utilities
   End Class
   Public Class SessionManager
     Public Shared ci As System.Globalization.CultureInfo = New System.Globalization.CultureInfo("en-GB", True)
+    Public Shared Function GetObj(ByVal Source As Object, ByVal Target As Object) As Object
+      For Each pi As System.Reflection.PropertyInfo In Target.GetType.GetProperties
+        If pi.MemberType = Reflection.MemberTypes.Property Then
+          Try
+            CallByName(Target, pi.Name, CallType.Let, CallByName(Source, pi.Name, CallType.Get))
+          Catch ex As Exception
+          End Try
+        End If
+      Next
+      Return Target
+    End Function
     Public Shared Function GetComputerName(ByVal clientIP As String) As String
       Dim he As IPHostEntry = Nothing
       Try
@@ -62,6 +73,10 @@ Namespace SIS.SYS.Utilities
           .Session("PageSizeProvider") = Convert.ToBoolean(PageSizeProvider)
         Else
           .Session("PageSizeProvider") = True
+        End If
+        .Session("IsAdmin") = False
+        If ConfigurationManager.AppSettings("Admin").ToString.IndexOf(.Session("LoginID").ToString) >= 0 Then
+          .Session("IsAdmin") = True
         End If
       End With
       '===========

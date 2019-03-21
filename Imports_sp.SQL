@@ -2,150 +2,11 @@ SET QUOTED_IDENTIFIER ON
 GO
 SET ANSI_NULLS ON
 GO
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spspmtBTADetailsSelectList]') AND type in (N'P', N'PC'))
-DROP PROCEDURE [dbo].[spspmtBTADetailsSelectList]
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spSPMTerpDCIPendingSelectListSearch]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[spSPMTerpDCIPendingSelectListSearch]
 GO
  
-CREATE PROCEDURE [dbo].[spspmtBTADetailsSelectList]
-  @LoginID NVarChar(8),
-  @OrderBy NVarChar(50),
-  @RecordCount Int = 0 OUTPUT
-  AS
-  SELECT
-    [SPMT_BTADetails].* ,
-    [aspnet_Users1].[UserFullName] AS aspnet_Users1_UserFullName,
-    [SPMT_BTAStatus2].[Descriptions] AS SPMT_BTAStatus2_Descriptions 
-  FROM [SPMT_BTADetails] 
-  LEFT OUTER JOIN [aspnet_users] AS [aspnet_users1]
-    ON [SPMT_BTADetails].[CreatedBy] = [aspnet_users1].[LoginID]
-  LEFT OUTER JOIN [SPMT_BTAStatus] AS [SPMT_BTAStatus2]
-    ON [SPMT_BTADetails].[StatusID] = [SPMT_BTAStatus2].[StatusID]
-  WHERE 1 = 1  
-  ORDER BY
-     CASE @OrderBy WHEN 'SerialNo' THEN [SPMT_BTADetails].[SerialNo] END,
-     CASE @OrderBy WHEN 'SerialNo DESC' THEN [SPMT_BTADetails].[SerialNo] END DESC,
-     CASE @OrderBy WHEN 'CORP_2' THEN [SPMT_BTADetails].[CORP_2] END,
-     CASE @OrderBy WHEN 'CORP_2 DESC' THEN [SPMT_BTADetails].[CORP_2] END DESC,
-     CASE @OrderBy WHEN 'CORP_1' THEN [SPMT_BTADetails].[CORP_1] END,
-     CASE @OrderBy WHEN 'CORP_1 DESC' THEN [SPMT_BTADetails].[CORP_1] END DESC,
-     CASE @OrderBy WHEN 'BTA_ACCT' THEN [SPMT_BTADetails].[BTA_ACCT] END,
-     CASE @OrderBy WHEN 'BTA_ACCT DESC' THEN [SPMT_BTADetails].[BTA_ACCT] END DESC,
-     CASE @OrderBy WHEN 'STMT_DT' THEN [SPMT_BTADetails].[STMT_DT] END,
-     CASE @OrderBy WHEN 'STMT_DT DESC' THEN [SPMT_BTADetails].[STMT_DT] END DESC,
-     CASE @OrderBy WHEN 'STMT_REF_NO' THEN [SPMT_BTADetails].[STMT_REF_NO] END,
-     CASE @OrderBy WHEN 'STMT_REF_NO DESC' THEN [SPMT_BTADetails].[STMT_REF_NO] END DESC,
-     CASE @OrderBy WHEN 'CUST_REF' THEN [SPMT_BTADetails].[CUST_REF] END,
-     CASE @OrderBy WHEN 'CUST_REF DESC' THEN [SPMT_BTADetails].[CUST_REF] END DESC,
-     CASE @OrderBy WHEN 'TRIP_REQ' THEN [SPMT_BTADetails].[TRIP_REQ] END,
-     CASE @OrderBy WHEN 'TRIP_REQ DESC' THEN [SPMT_BTADetails].[TRIP_REQ] END DESC,
-     CASE @OrderBy WHEN 'JOB_NO' THEN [SPMT_BTADetails].[JOB_NO] END,
-     CASE @OrderBy WHEN 'JOB_NO DESC' THEN [SPMT_BTADetails].[JOB_NO] END DESC,
-     CASE @OrderBy WHEN 'PAX_NM' THEN [SPMT_BTADetails].[PAX_NM] END,
-     CASE @OrderBy WHEN 'PAX_NM DESC' THEN [SPMT_BTADetails].[PAX_NM] END DESC,
-     CASE @OrderBy WHEN 'AMOUNT_EX_GST' THEN [SPMT_BTADetails].[AMOUNT_EX_GST] END,
-     CASE @OrderBy WHEN 'AMOUNT_EX_GST DESC' THEN [SPMT_BTADetails].[AMOUNT_EX_GST] END DESC,
-     CASE @OrderBy WHEN 'GST' THEN [SPMT_BTADetails].[GST] END,
-     CASE @OrderBy WHEN 'GST DESC' THEN [SPMT_BTADetails].[GST] END DESC,
-     CASE @OrderBy WHEN 'UNPAID_AMT' THEN [SPMT_BTADetails].[UNPAID_AMT] END,
-     CASE @OrderBy WHEN 'UNPAID_AMT DESC' THEN [SPMT_BTADetails].[UNPAID_AMT] END DESC,
-     CASE @OrderBy WHEN 'CHARGE_DTE' THEN [SPMT_BTADetails].[CHARGE_DTE] END,
-     CASE @OrderBy WHEN 'CHARGE_DTE DESC' THEN [SPMT_BTADetails].[CHARGE_DTE] END DESC,
-     CASE @OrderBy WHEN 'BKNG_DATE' THEN [SPMT_BTADetails].[BKNG_DATE] END,
-     CASE @OrderBy WHEN 'BKNG_DATE DESC' THEN [SPMT_BTADetails].[BKNG_DATE] END DESC,
-     CASE @OrderBy WHEN 'DEPT_DATE' THEN [SPMT_BTADetails].[DEPT_DATE] END,
-     CASE @OrderBy WHEN 'DEPT_DATE DESC' THEN [SPMT_BTADetails].[DEPT_DATE] END DESC,
-     CASE @OrderBy WHEN 'TICKET_NO' THEN [SPMT_BTADetails].[TICKET_NO] END,
-     CASE @OrderBy WHEN 'TICKET_NO DESC' THEN [SPMT_BTADetails].[TICKET_NO] END DESC,
-     CASE @OrderBy WHEN 'CARRIER' THEN [SPMT_BTADetails].[CARRIER] END,
-     CASE @OrderBy WHEN 'CARRIER DESC' THEN [SPMT_BTADetails].[CARRIER] END DESC,
-     CASE @OrderBy WHEN 'CLASS' THEN [SPMT_BTADetails].[CLASS] END,
-     CASE @OrderBy WHEN 'CLASS DESC' THEN [SPMT_BTADetails].[CLASS] END DESC,
-     CASE @OrderBy WHEN 'DI' THEN [SPMT_BTADetails].[DI] END,
-     CASE @OrderBy WHEN 'DI DESC' THEN [SPMT_BTADetails].[DI] END DESC,
-     CASE @OrderBy WHEN 'ROUTING' THEN [SPMT_BTADetails].[ROUTING] END,
-     CASE @OrderBy WHEN 'ROUTING DESC' THEN [SPMT_BTADetails].[ROUTING] END DESC,
-     CASE @OrderBy WHEN 'TXN_DATE' THEN [SPMT_BTADetails].[TXN_DATE] END,
-     CASE @OrderBy WHEN 'TXN_DATE DESC' THEN [SPMT_BTADetails].[TXN_DATE] END DESC,
-     CASE @OrderBy WHEN 'Merchant_ABN' THEN [SPMT_BTADetails].[Merchant_ABN] END,
-     CASE @OrderBy WHEN 'Merchant_ABN DESC' THEN [SPMT_BTADetails].[Merchant_ABN] END DESC,
-     CASE @OrderBy WHEN 'Book_Ref' THEN [SPMT_BTADetails].[Book_Ref] END,
-     CASE @OrderBy WHEN 'Book_Ref DESC' THEN [SPMT_BTADetails].[Book_Ref] END DESC,
-     CASE @OrderBy WHEN 'COMMENT1' THEN [SPMT_BTADetails].[COMMENT1] END,
-     CASE @OrderBy WHEN 'COMMENT1 DESC' THEN [SPMT_BTADetails].[COMMENT1] END DESC,
-     CASE @OrderBy WHEN 'COMMENT2' THEN [SPMT_BTADetails].[COMMENT2] END,
-     CASE @OrderBy WHEN 'COMMENT2 DESC' THEN [SPMT_BTADetails].[COMMENT2] END DESC,
-     CASE @OrderBy WHEN 'COMMENT3' THEN [SPMT_BTADetails].[COMMENT3] END,
-     CASE @OrderBy WHEN 'COMMENT3 DESC' THEN [SPMT_BTADetails].[COMMENT3] END DESC,
-     CASE @OrderBy WHEN 'MERCHANT_NAME' THEN [SPMT_BTADetails].[MERCHANT_NAME] END,
-     CASE @OrderBy WHEN 'MERCHANT_NAME DESC' THEN [SPMT_BTADetails].[MERCHANT_NAME] END DESC,
-     CASE @OrderBy WHEN 'BatchNo' THEN [SPMT_BTADetails].[BatchNo] END,
-     CASE @OrderBy WHEN 'BatchNo DESC' THEN [SPMT_BTADetails].[BatchNo] END DESC,
-     CASE @OrderBy WHEN 'StatusID' THEN [SPMT_BTADetails].[StatusID] END,
-     CASE @OrderBy WHEN 'StatusID DESC' THEN [SPMT_BTADetails].[StatusID] END DESC,
-     CASE @OrderBy WHEN 'CreatedBy' THEN [SPMT_BTADetails].[CreatedBy] END,
-     CASE @OrderBy WHEN 'CreatedBy DESC' THEN [SPMT_BTADetails].[CreatedBy] END DESC,
-     CASE @OrderBy WHEN 'CreatedOn' THEN [SPMT_BTADetails].[CreatedOn] END,
-     CASE @OrderBy WHEN 'CreatedOn DESC' THEN [SPMT_BTADetails].[CreatedOn] END DESC,
-     CASE @OrderBy WHEN 'aspnet_Users1_UserFullName' THEN [aspnet_Users1].[UserFullName] END,
-     CASE @OrderBy WHEN 'aspnet_Users1_UserFullName DESC' THEN [aspnet_Users1].[UserFullName] END DESC,
-     CASE @OrderBy WHEN 'SPMT_BTAStatus2_Descriptions' THEN [SPMT_BTAStatus2].[Descriptions] END,
-     CASE @OrderBy WHEN 'SPMT_BTAStatus2_Descriptions DESC' THEN [SPMT_BTAStatus2].[Descriptions] END DESC 
-  SET @RecordCount = @@RowCount
-  GO
-
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spspmtBTADetailsAutoCompleteList]') AND type in (N'P', N'PC'))
-DROP PROCEDURE [dbo].[spspmtBTADetailsAutoCompleteList]
-GO
- 
-CREATE PROCEDURE [dbo].[spspmtBTADetailsAutoCompleteList]
-  @LoginID NVarChar(8),
-  @Prefix NVarChar(250),
-  @Records Int,
-  @ByCode Int 
-  AS 
-  BEGIN 
-  DECLARE @Prefix1 VarChar(260)
-  SET @Prefix1 = LOWER(@Prefix) + '%'
-  DECLARE @LGSQL VarChar(8000)
-  SET @LGSQL = 'SELECT TOP (' + STR(@Records) + ') ' 
-  SET @LGSQL = @LGSQL + ' [SPMT_BTADetails].[TICKET_NO]' 
-  SET @LGSQL = @LGSQL + ',[SPMT_BTADetails].[SerialNo]' 
-  SET @LGSQL = @LGSQL + ' FROM [SPMT_BTADetails] ' 
-  SET @LGSQL = @LGSQL + ' WHERE 1 = 1 ' 
-  SET @LGSQL = @LGSQL + ' AND (LTRIM(STR(ISNULL([SPMT_BTADetails].[SerialNo],0))) LIKE ''' + @Prefix1 + ''''
-  SET @LGSQL = @LGSQL + ' OR LOWER(ISNULL([SPMT_BTADetails].[TICKET_NO],'''')) LIKE ''' + @Prefix1 + ''''
-  SET @LGSQL = @LGSQL + ')' 
-  
-  EXEC (@LGSQL)
-  END 
-  GO
-
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spspmtBTADetailsSelectByID]') AND type in (N'P', N'PC'))
-DROP PROCEDURE [dbo].[spspmtBTADetailsSelectByID]
-GO
- 
-CREATE PROCEDURE [dbo].[spspmtBTADetailsSelectByID]
-  @LoginID NVarChar(8),
-  @SerialNo Int 
-  AS
-  SELECT
-    [SPMT_BTADetails].* ,
-    [aspnet_Users1].[UserFullName] AS aspnet_Users1_UserFullName,
-    [SPMT_BTAStatus2].[Descriptions] AS SPMT_BTAStatus2_Descriptions 
-  FROM [SPMT_BTADetails] 
-  LEFT OUTER JOIN [aspnet_users] AS [aspnet_users1]
-    ON [SPMT_BTADetails].[CreatedBy] = [aspnet_users1].[LoginID]
-  LEFT OUTER JOIN [SPMT_BTAStatus] AS [SPMT_BTAStatus2]
-    ON [SPMT_BTADetails].[StatusID] = [SPMT_BTAStatus2].[StatusID]
-  WHERE
-  [SPMT_BTADetails].[SerialNo] = @SerialNo
-  GO
-
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spspmtBTADetailsSelectListSearch]') AND type in (N'P', N'PC'))
-DROP PROCEDURE [dbo].[spspmtBTADetailsSelectListSearch]
-GO
- 
-CREATE PROCEDURE [dbo].[spspmtBTADetailsSelectListSearch]
+CREATE PROCEDURE [dbo].[spSPMTerpDCIPendingSelectListSearch]
   @LoginID NVarChar(8),
   @StartRowIndex int,
   @MaximumRows int,
@@ -158,126 +19,190 @@ CREATE PROCEDURE [dbo].[spspmtBTADetailsSelectListSearch]
     SET @KeyWord1 = '%' + LOWER(@KeyWord) + '%'
   CREATE TABLE #PageIndex (
   IndexID INT IDENTITY (1, 1) NOT NULL
+ ,ChallanID NVarChar(20) NOT NULL
  ,SerialNo Int NOT NULL
   )
-  INSERT INTO #PageIndex (SerialNo)
-  SELECT [SPMT_BTADetails].[SerialNo] FROM [SPMT_BTADetails]
-  LEFT OUTER JOIN [aspnet_users] AS [aspnet_users1]
-    ON [SPMT_BTADetails].[CreatedBy] = [aspnet_users1].[LoginID]
-  LEFT OUTER JOIN [SPMT_BTAStatus] AS [SPMT_BTAStatus2]
-    ON [SPMT_BTADetails].[StatusID] = [SPMT_BTAStatus2].[StatusID]
+  INSERT INTO #PageIndex (ChallanID, SerialNo)
+  SELECT [SPMT_erpDCInventory].[ChallanID], [SPMT_erpDCInventory].[SerialNo] FROM [SPMT_erpDCInventory]
+  LEFT OUTER JOIN [IDM_Projects] AS [IDM_Projects1]
+    ON [SPMT_erpDCInventory].[ProjectID] = [IDM_Projects1].[ProjectID]
+  LEFT OUTER JOIN [SPMT_BillTypes] AS [SPMT_BillTypes2]
+    ON [SPMT_erpDCInventory].[BillTypeID] = [SPMT_BillTypes2].[BillType]
+  INNER JOIN [SPMT_erpDCH] AS [SPMT_erpDCH3]
+    ON [SPMT_erpDCInventory].[ChallanID] = [SPMT_erpDCH3].[ChallanID]
+  LEFT OUTER JOIN [SPMT_ERPStates] AS [SPMT_ERPStates4]
+    ON [SPMT_erpDCInventory].[ConsignerStateID] = [SPMT_ERPStates4].[StateID]
+  LEFT OUTER JOIN [SPMT_ERPUnits] AS [SPMT_ERPUnits5]
+    ON [SPMT_erpDCInventory].[UOM] = [SPMT_ERPUnits5].[UOM]
+  LEFT OUTER JOIN [SPMT_HSNSACCodes] AS [SPMT_HSNSACCodes6]
+    ON [SPMT_erpDCInventory].[BillTypeID] = [SPMT_HSNSACCodes6].[BillType]
+    AND [SPMT_erpDCInventory].[HSNSACCode] = [SPMT_HSNSACCodes6].[HSNSACCode]
+  LEFT OUTER JOIN [SPMT_IsgecGSTIN] AS [SPMT_IsgecGSTIN7]
+    ON [SPMT_erpDCInventory].[ConsignerIsgecID] = [SPMT_IsgecGSTIN7].[GSTID]
+  LEFT OUTER JOIN [VR_BPGSTIN] AS [VR_BPGSTIN8]
+    ON [SPMT_erpDCInventory].[ConsignerBPID] = [VR_BPGSTIN8].[BPID]
+    AND [SPMT_erpDCInventory].[ConsignerGSTIN] = [VR_BPGSTIN8].[GSTIN]
+  LEFT OUTER JOIN [VR_BusinessPartner] AS [VR_BusinessPartner9]
+    ON [SPMT_erpDCInventory].[ConsignerBPID] = [VR_BusinessPartner9].[BPID]
+  INNER JOIN [SPMT_erpDCD] AS [SPMT_erpDCD10]
+    ON [SPMT_erpDCInventory].[ChallanID] = [SPMT_erpDCD10].[ChallanID]
+    AND [SPMT_erpDCInventory].[SerialNo] = [SPMT_erpDCD10].[SerialNo]
  WHERE  
    ( 
-         STR(ISNULL([SPMT_BTADetails].[SerialNo], 0)) LIKE @KeyWord1
-     OR LOWER(ISNULL([SPMT_BTADetails].[CORP_2],'')) LIKE @KeyWord1
-     OR LOWER(ISNULL([SPMT_BTADetails].[CORP_1],'')) LIKE @KeyWord1
-     OR LOWER(ISNULL([SPMT_BTADetails].[BTA_ACCT],'')) LIKE @KeyWord1
-     OR LOWER(ISNULL([SPMT_BTADetails].[STMT_REF_NO],'')) LIKE @KeyWord1
-     OR LOWER(ISNULL([SPMT_BTADetails].[CUST_REF],'')) LIKE @KeyWord1
-     OR LOWER(ISNULL([SPMT_BTADetails].[TRIP_REQ],'')) LIKE @KeyWord1
-     OR LOWER(ISNULL([SPMT_BTADetails].[JOB_NO],'')) LIKE @KeyWord1
-     OR LOWER(ISNULL([SPMT_BTADetails].[PAX_NM],'')) LIKE @KeyWord1
-     OR STR(ISNULL([SPMT_BTADetails].[AMOUNT_EX_GST], 0)) LIKE @KeyWord1
-     OR STR(ISNULL([SPMT_BTADetails].[GST], 0)) LIKE @KeyWord1
-     OR STR(ISNULL([SPMT_BTADetails].[UNPAID_AMT], 0)) LIKE @KeyWord1
-     OR LOWER(ISNULL([SPMT_BTADetails].[TICKET_NO],'')) LIKE @KeyWord1
-     OR LOWER(ISNULL([SPMT_BTADetails].[CARRIER],'')) LIKE @KeyWord1
-     OR LOWER(ISNULL([SPMT_BTADetails].[CLASS],'')) LIKE @KeyWord1
-     OR LOWER(ISNULL([SPMT_BTADetails].[DI],'')) LIKE @KeyWord1
-     OR LOWER(ISNULL([SPMT_BTADetails].[ROUTING],'')) LIKE @KeyWord1
-     OR LOWER(ISNULL([SPMT_BTADetails].[Merchant_ABN],'')) LIKE @KeyWord1
-     OR LOWER(ISNULL([SPMT_BTADetails].[Book_Ref],'')) LIKE @KeyWord1
-     OR LOWER(ISNULL([SPMT_BTADetails].[COMMENT1],'')) LIKE @KeyWord1
-     OR LOWER(ISNULL([SPMT_BTADetails].[COMMENT2],'')) LIKE @KeyWord1
-     OR LOWER(ISNULL([SPMT_BTADetails].[COMMENT3],'')) LIKE @KeyWord1
-     OR LOWER(ISNULL([SPMT_BTADetails].[MERCHANT_NAME],'')) LIKE @KeyWord1
-     OR STR(ISNULL([SPMT_BTADetails].[BatchNo], 0)) LIKE @KeyWord1
-     OR STR(ISNULL([SPMT_BTADetails].[StatusID], 0)) LIKE @KeyWord1
-     OR LOWER(ISNULL([SPMT_BTADetails].[CreatedBy],'')) LIKE @KeyWord1
+         LOWER(ISNULL([SPMT_erpDCInventory].[ChallanID],'')) LIKE @KeyWord1
+     OR STR(ISNULL([SPMT_erpDCInventory].[SerialNo], 0)) LIKE @KeyWord1
+     OR LOWER(ISNULL([SPMT_erpDCInventory].[ItemDescription],'')) LIKE @KeyWord1
+     OR STR(ISNULL([SPMT_erpDCInventory].[BaseRate], 0)) LIKE @KeyWord1
+     OR STR(ISNULL([SPMT_erpDCInventory].[BillTypeID], 0)) LIKE @KeyWord1
+     OR LOWER(ISNULL([SPMT_erpDCInventory].[HSNSACCode],'')) LIKE @KeyWord1
+     OR LOWER(ISNULL([SPMT_erpDCInventory].[UOM],'')) LIKE @KeyWord1
+     OR STR(ISNULL([SPMT_erpDCInventory].[Quantity], 0)) LIKE @KeyWord1
+     OR STR(ISNULL([SPMT_erpDCInventory].[Price], 0)) LIKE @KeyWord1
+     OR STR(ISNULL([SPMT_erpDCInventory].[AssessableValue], 0)) LIKE @KeyWord1
+     OR STR(ISNULL([SPMT_erpDCInventory].[IGSTRate], 0)) LIKE @KeyWord1
+     OR STR(ISNULL([SPMT_erpDCInventory].[IGSTAmount], 0)) LIKE @KeyWord1
+     OR STR(ISNULL([SPMT_erpDCInventory].[SGSTRate], 0)) LIKE @KeyWord1
+     OR STR(ISNULL([SPMT_erpDCInventory].[SGSTAmount], 0)) LIKE @KeyWord1
+     OR STR(ISNULL([SPMT_erpDCInventory].[CGSTRate], 0)) LIKE @KeyWord1
+     OR STR(ISNULL([SPMT_erpDCInventory].[CGSTAmount], 0)) LIKE @KeyWord1
+     OR STR(ISNULL([SPMT_erpDCInventory].[CessRate], 0)) LIKE @KeyWord1
+     OR STR(ISNULL([SPMT_erpDCInventory].[CessAmount], 0)) LIKE @KeyWord1
+     OR STR(ISNULL([SPMT_erpDCInventory].[TotalGST], 0)) LIKE @KeyWord1
+     OR STR(ISNULL([SPMT_erpDCInventory].[TotalAmount], 0)) LIKE @KeyWord1
+     OR STR(ISNULL([SPMT_erpDCInventory].[FinalRate], 0)) LIKE @KeyWord1
+     OR STR(ISNULL([SPMT_erpDCInventory].[FinalAmount], 0)) LIKE @KeyWord1
+     OR STR(ISNULL([SPMT_erpDCInventory].[ConsignerIsgecID], 0)) LIKE @KeyWord1
+     OR LOWER(ISNULL([SPMT_erpDCInventory].[ConsignerBPID],'')) LIKE @KeyWord1
+     OR STR(ISNULL([SPMT_erpDCInventory].[ConsignerGSTIN], 0)) LIKE @KeyWord1
+     OR LOWER(ISNULL([SPMT_erpDCInventory].[ConsignerName],'')) LIKE @KeyWord1
+     OR LOWER(ISNULL([SPMT_erpDCInventory].[ConsignerGSTINNo],'')) LIKE @KeyWord1
+     OR LOWER(ISNULL([SPMT_erpDCInventory].[ConsignerStateID],'')) LIKE @KeyWord1
+     OR LOWER(ISNULL([SPMT_erpDCInventory].[ProjectID],'')) LIKE @KeyWord1
+     OR STR(ISNULL([SPMT_erpDCInventory].[QuantityUsed], 0)) LIKE @KeyWord1
    ) 
   ORDER BY
-     CASE @OrderBy WHEN 'SerialNo' THEN [SPMT_BTADetails].[SerialNo] END,
-     CASE @OrderBy WHEN 'SerialNo DESC' THEN [SPMT_BTADetails].[SerialNo] END DESC,
-     CASE @OrderBy WHEN 'CORP_2' THEN [SPMT_BTADetails].[CORP_2] END,
-     CASE @OrderBy WHEN 'CORP_2 DESC' THEN [SPMT_BTADetails].[CORP_2] END DESC,
-     CASE @OrderBy WHEN 'CORP_1' THEN [SPMT_BTADetails].[CORP_1] END,
-     CASE @OrderBy WHEN 'CORP_1 DESC' THEN [SPMT_BTADetails].[CORP_1] END DESC,
-     CASE @OrderBy WHEN 'BTA_ACCT' THEN [SPMT_BTADetails].[BTA_ACCT] END,
-     CASE @OrderBy WHEN 'BTA_ACCT DESC' THEN [SPMT_BTADetails].[BTA_ACCT] END DESC,
-     CASE @OrderBy WHEN 'STMT_DT' THEN [SPMT_BTADetails].[STMT_DT] END,
-     CASE @OrderBy WHEN 'STMT_DT DESC' THEN [SPMT_BTADetails].[STMT_DT] END DESC,
-     CASE @OrderBy WHEN 'STMT_REF_NO' THEN [SPMT_BTADetails].[STMT_REF_NO] END,
-     CASE @OrderBy WHEN 'STMT_REF_NO DESC' THEN [SPMT_BTADetails].[STMT_REF_NO] END DESC,
-     CASE @OrderBy WHEN 'CUST_REF' THEN [SPMT_BTADetails].[CUST_REF] END,
-     CASE @OrderBy WHEN 'CUST_REF DESC' THEN [SPMT_BTADetails].[CUST_REF] END DESC,
-     CASE @OrderBy WHEN 'TRIP_REQ' THEN [SPMT_BTADetails].[TRIP_REQ] END,
-     CASE @OrderBy WHEN 'TRIP_REQ DESC' THEN [SPMT_BTADetails].[TRIP_REQ] END DESC,
-     CASE @OrderBy WHEN 'JOB_NO' THEN [SPMT_BTADetails].[JOB_NO] END,
-     CASE @OrderBy WHEN 'JOB_NO DESC' THEN [SPMT_BTADetails].[JOB_NO] END DESC,
-     CASE @OrderBy WHEN 'PAX_NM' THEN [SPMT_BTADetails].[PAX_NM] END,
-     CASE @OrderBy WHEN 'PAX_NM DESC' THEN [SPMT_BTADetails].[PAX_NM] END DESC,
-     CASE @OrderBy WHEN 'AMOUNT_EX_GST' THEN [SPMT_BTADetails].[AMOUNT_EX_GST] END,
-     CASE @OrderBy WHEN 'AMOUNT_EX_GST DESC' THEN [SPMT_BTADetails].[AMOUNT_EX_GST] END DESC,
-     CASE @OrderBy WHEN 'GST' THEN [SPMT_BTADetails].[GST] END,
-     CASE @OrderBy WHEN 'GST DESC' THEN [SPMT_BTADetails].[GST] END DESC,
-     CASE @OrderBy WHEN 'UNPAID_AMT' THEN [SPMT_BTADetails].[UNPAID_AMT] END,
-     CASE @OrderBy WHEN 'UNPAID_AMT DESC' THEN [SPMT_BTADetails].[UNPAID_AMT] END DESC,
-     CASE @OrderBy WHEN 'CHARGE_DTE' THEN [SPMT_BTADetails].[CHARGE_DTE] END,
-     CASE @OrderBy WHEN 'CHARGE_DTE DESC' THEN [SPMT_BTADetails].[CHARGE_DTE] END DESC,
-     CASE @OrderBy WHEN 'BKNG_DATE' THEN [SPMT_BTADetails].[BKNG_DATE] END,
-     CASE @OrderBy WHEN 'BKNG_DATE DESC' THEN [SPMT_BTADetails].[BKNG_DATE] END DESC,
-     CASE @OrderBy WHEN 'DEPT_DATE' THEN [SPMT_BTADetails].[DEPT_DATE] END,
-     CASE @OrderBy WHEN 'DEPT_DATE DESC' THEN [SPMT_BTADetails].[DEPT_DATE] END DESC,
-     CASE @OrderBy WHEN 'TICKET_NO' THEN [SPMT_BTADetails].[TICKET_NO] END,
-     CASE @OrderBy WHEN 'TICKET_NO DESC' THEN [SPMT_BTADetails].[TICKET_NO] END DESC,
-     CASE @OrderBy WHEN 'CARRIER' THEN [SPMT_BTADetails].[CARRIER] END,
-     CASE @OrderBy WHEN 'CARRIER DESC' THEN [SPMT_BTADetails].[CARRIER] END DESC,
-     CASE @OrderBy WHEN 'CLASS' THEN [SPMT_BTADetails].[CLASS] END,
-     CASE @OrderBy WHEN 'CLASS DESC' THEN [SPMT_BTADetails].[CLASS] END DESC,
-     CASE @OrderBy WHEN 'DI' THEN [SPMT_BTADetails].[DI] END,
-     CASE @OrderBy WHEN 'DI DESC' THEN [SPMT_BTADetails].[DI] END DESC,
-     CASE @OrderBy WHEN 'ROUTING' THEN [SPMT_BTADetails].[ROUTING] END,
-     CASE @OrderBy WHEN 'ROUTING DESC' THEN [SPMT_BTADetails].[ROUTING] END DESC,
-     CASE @OrderBy WHEN 'TXN_DATE' THEN [SPMT_BTADetails].[TXN_DATE] END,
-     CASE @OrderBy WHEN 'TXN_DATE DESC' THEN [SPMT_BTADetails].[TXN_DATE] END DESC,
-     CASE @OrderBy WHEN 'Merchant_ABN' THEN [SPMT_BTADetails].[Merchant_ABN] END,
-     CASE @OrderBy WHEN 'Merchant_ABN DESC' THEN [SPMT_BTADetails].[Merchant_ABN] END DESC,
-     CASE @OrderBy WHEN 'Book_Ref' THEN [SPMT_BTADetails].[Book_Ref] END,
-     CASE @OrderBy WHEN 'Book_Ref DESC' THEN [SPMT_BTADetails].[Book_Ref] END DESC,
-     CASE @OrderBy WHEN 'COMMENT1' THEN [SPMT_BTADetails].[COMMENT1] END,
-     CASE @OrderBy WHEN 'COMMENT1 DESC' THEN [SPMT_BTADetails].[COMMENT1] END DESC,
-     CASE @OrderBy WHEN 'COMMENT2' THEN [SPMT_BTADetails].[COMMENT2] END,
-     CASE @OrderBy WHEN 'COMMENT2 DESC' THEN [SPMT_BTADetails].[COMMENT2] END DESC,
-     CASE @OrderBy WHEN 'COMMENT3' THEN [SPMT_BTADetails].[COMMENT3] END,
-     CASE @OrderBy WHEN 'COMMENT3 DESC' THEN [SPMT_BTADetails].[COMMENT3] END DESC,
-     CASE @OrderBy WHEN 'MERCHANT_NAME' THEN [SPMT_BTADetails].[MERCHANT_NAME] END,
-     CASE @OrderBy WHEN 'MERCHANT_NAME DESC' THEN [SPMT_BTADetails].[MERCHANT_NAME] END DESC,
-     CASE @OrderBy WHEN 'BatchNo' THEN [SPMT_BTADetails].[BatchNo] END,
-     CASE @OrderBy WHEN 'BatchNo DESC' THEN [SPMT_BTADetails].[BatchNo] END DESC,
-     CASE @OrderBy WHEN 'StatusID' THEN [SPMT_BTADetails].[StatusID] END,
-     CASE @OrderBy WHEN 'StatusID DESC' THEN [SPMT_BTADetails].[StatusID] END DESC,
-     CASE @OrderBy WHEN 'CreatedBy' THEN [SPMT_BTADetails].[CreatedBy] END,
-     CASE @OrderBy WHEN 'CreatedBy DESC' THEN [SPMT_BTADetails].[CreatedBy] END DESC,
-     CASE @OrderBy WHEN 'CreatedOn' THEN [SPMT_BTADetails].[CreatedOn] END,
-     CASE @OrderBy WHEN 'CreatedOn DESC' THEN [SPMT_BTADetails].[CreatedOn] END DESC,
-     CASE @OrderBy WHEN 'aspnet_Users1_UserFullName' THEN [aspnet_Users1].[UserFullName] END,
-     CASE @OrderBy WHEN 'aspnet_Users1_UserFullName DESC' THEN [aspnet_Users1].[UserFullName] END DESC,
-     CASE @OrderBy WHEN 'SPMT_BTAStatus2_Descriptions' THEN [SPMT_BTAStatus2].[Descriptions] END,
-     CASE @OrderBy WHEN 'SPMT_BTAStatus2_Descriptions DESC' THEN [SPMT_BTAStatus2].[Descriptions] END DESC 
+     CASE @OrderBy WHEN 'ChallanID' THEN [SPMT_erpDCInventory].[ChallanID] END,
+     CASE @OrderBy WHEN 'ChallanID DESC' THEN [SPMT_erpDCInventory].[ChallanID] END DESC,
+     CASE @OrderBy WHEN 'SerialNo' THEN [SPMT_erpDCInventory].[SerialNo] END,
+     CASE @OrderBy WHEN 'SerialNo DESC' THEN [SPMT_erpDCInventory].[SerialNo] END DESC,
+     CASE @OrderBy WHEN 'ItemDescription' THEN [SPMT_erpDCInventory].[ItemDescription] END,
+     CASE @OrderBy WHEN 'ItemDescription DESC' THEN [SPMT_erpDCInventory].[ItemDescription] END DESC,
+     CASE @OrderBy WHEN 'BaseRate' THEN [SPMT_erpDCInventory].[BaseRate] END,
+     CASE @OrderBy WHEN 'BaseRate DESC' THEN [SPMT_erpDCInventory].[BaseRate] END DESC,
+     CASE @OrderBy WHEN 'BillTypeID' THEN [SPMT_erpDCInventory].[BillTypeID] END,
+     CASE @OrderBy WHEN 'BillTypeID DESC' THEN [SPMT_erpDCInventory].[BillTypeID] END DESC,
+     CASE @OrderBy WHEN 'HSNSACCode' THEN [SPMT_erpDCInventory].[HSNSACCode] END,
+     CASE @OrderBy WHEN 'HSNSACCode DESC' THEN [SPMT_erpDCInventory].[HSNSACCode] END DESC,
+     CASE @OrderBy WHEN 'UOM' THEN [SPMT_erpDCInventory].[UOM] END,
+     CASE @OrderBy WHEN 'UOM DESC' THEN [SPMT_erpDCInventory].[UOM] END DESC,
+     CASE @OrderBy WHEN 'Quantity' THEN [SPMT_erpDCInventory].[Quantity] END,
+     CASE @OrderBy WHEN 'Quantity DESC' THEN [SPMT_erpDCInventory].[Quantity] END DESC,
+     CASE @OrderBy WHEN 'Price' THEN [SPMT_erpDCInventory].[Price] END,
+     CASE @OrderBy WHEN 'Price DESC' THEN [SPMT_erpDCInventory].[Price] END DESC,
+     CASE @OrderBy WHEN 'AssessableValue' THEN [SPMT_erpDCInventory].[AssessableValue] END,
+     CASE @OrderBy WHEN 'AssessableValue DESC' THEN [SPMT_erpDCInventory].[AssessableValue] END DESC,
+     CASE @OrderBy WHEN 'IGSTRate' THEN [SPMT_erpDCInventory].[IGSTRate] END,
+     CASE @OrderBy WHEN 'IGSTRate DESC' THEN [SPMT_erpDCInventory].[IGSTRate] END DESC,
+     CASE @OrderBy WHEN 'IGSTAmount' THEN [SPMT_erpDCInventory].[IGSTAmount] END,
+     CASE @OrderBy WHEN 'IGSTAmount DESC' THEN [SPMT_erpDCInventory].[IGSTAmount] END DESC,
+     CASE @OrderBy WHEN 'SGSTRate' THEN [SPMT_erpDCInventory].[SGSTRate] END,
+     CASE @OrderBy WHEN 'SGSTRate DESC' THEN [SPMT_erpDCInventory].[SGSTRate] END DESC,
+     CASE @OrderBy WHEN 'SGSTAmount' THEN [SPMT_erpDCInventory].[SGSTAmount] END,
+     CASE @OrderBy WHEN 'SGSTAmount DESC' THEN [SPMT_erpDCInventory].[SGSTAmount] END DESC,
+     CASE @OrderBy WHEN 'CGSTRate' THEN [SPMT_erpDCInventory].[CGSTRate] END,
+     CASE @OrderBy WHEN 'CGSTRate DESC' THEN [SPMT_erpDCInventory].[CGSTRate] END DESC,
+     CASE @OrderBy WHEN 'CGSTAmount' THEN [SPMT_erpDCInventory].[CGSTAmount] END,
+     CASE @OrderBy WHEN 'CGSTAmount DESC' THEN [SPMT_erpDCInventory].[CGSTAmount] END DESC,
+     CASE @OrderBy WHEN 'CessRate' THEN [SPMT_erpDCInventory].[CessRate] END,
+     CASE @OrderBy WHEN 'CessRate DESC' THEN [SPMT_erpDCInventory].[CessRate] END DESC,
+     CASE @OrderBy WHEN 'CessAmount' THEN [SPMT_erpDCInventory].[CessAmount] END,
+     CASE @OrderBy WHEN 'CessAmount DESC' THEN [SPMT_erpDCInventory].[CessAmount] END DESC,
+     CASE @OrderBy WHEN 'TotalGST' THEN [SPMT_erpDCInventory].[TotalGST] END,
+     CASE @OrderBy WHEN 'TotalGST DESC' THEN [SPMT_erpDCInventory].[TotalGST] END DESC,
+     CASE @OrderBy WHEN 'TotalAmount' THEN [SPMT_erpDCInventory].[TotalAmount] END,
+     CASE @OrderBy WHEN 'TotalAmount DESC' THEN [SPMT_erpDCInventory].[TotalAmount] END DESC,
+     CASE @OrderBy WHEN 'FinalRate' THEN [SPMT_erpDCInventory].[FinalRate] END,
+     CASE @OrderBy WHEN 'FinalRate DESC' THEN [SPMT_erpDCInventory].[FinalRate] END DESC,
+     CASE @OrderBy WHEN 'FinalAmount' THEN [SPMT_erpDCInventory].[FinalAmount] END,
+     CASE @OrderBy WHEN 'FinalAmount DESC' THEN [SPMT_erpDCInventory].[FinalAmount] END DESC,
+     CASE @OrderBy WHEN 'ConsignerIsgecID' THEN [SPMT_erpDCInventory].[ConsignerIsgecID] END,
+     CASE @OrderBy WHEN 'ConsignerIsgecID DESC' THEN [SPMT_erpDCInventory].[ConsignerIsgecID] END DESC,
+     CASE @OrderBy WHEN 'ConsignerBPID' THEN [SPMT_erpDCInventory].[ConsignerBPID] END,
+     CASE @OrderBy WHEN 'ConsignerBPID DESC' THEN [SPMT_erpDCInventory].[ConsignerBPID] END DESC,
+     CASE @OrderBy WHEN 'ConsignerGSTIN' THEN [SPMT_erpDCInventory].[ConsignerGSTIN] END,
+     CASE @OrderBy WHEN 'ConsignerGSTIN DESC' THEN [SPMT_erpDCInventory].[ConsignerGSTIN] END DESC,
+     CASE @OrderBy WHEN 'ConsignerName' THEN [SPMT_erpDCInventory].[ConsignerName] END,
+     CASE @OrderBy WHEN 'ConsignerName DESC' THEN [SPMT_erpDCInventory].[ConsignerName] END DESC,
+     CASE @OrderBy WHEN 'ConsignerGSTINNo' THEN [SPMT_erpDCInventory].[ConsignerGSTINNo] END,
+     CASE @OrderBy WHEN 'ConsignerGSTINNo DESC' THEN [SPMT_erpDCInventory].[ConsignerGSTINNo] END DESC,
+     CASE @OrderBy WHEN 'ConsignerStateID' THEN [SPMT_erpDCInventory].[ConsignerStateID] END,
+     CASE @OrderBy WHEN 'ConsignerStateID DESC' THEN [SPMT_erpDCInventory].[ConsignerStateID] END DESC,
+     CASE @OrderBy WHEN 'ProjectID' THEN [SPMT_erpDCInventory].[ProjectID] END,
+     CASE @OrderBy WHEN 'ProjectID DESC' THEN [SPMT_erpDCInventory].[ProjectID] END DESC,
+     CASE @OrderBy WHEN 'QuantityUsed' THEN [SPMT_erpDCInventory].[QuantityUsed] END,
+     CASE @OrderBy WHEN 'QuantityUsed DESC' THEN [SPMT_erpDCInventory].[QuantityUsed] END DESC,
+     CASE @OrderBy WHEN 'IDM_Projects1_Description' THEN [IDM_Projects1].[Description] END,
+     CASE @OrderBy WHEN 'IDM_Projects1_Description DESC' THEN [IDM_Projects1].[Description] END DESC,
+     CASE @OrderBy WHEN 'SPMT_BillTypes2_Description' THEN [SPMT_BillTypes2].[Description] END,
+     CASE @OrderBy WHEN 'SPMT_BillTypes2_Description DESC' THEN [SPMT_BillTypes2].[Description] END DESC,
+     CASE @OrderBy WHEN 'SPMT_erpDCH3_PlaceOfDelivery' THEN [SPMT_erpDCH3].[PlaceOfDelivery] END,
+     CASE @OrderBy WHEN 'SPMT_erpDCH3_PlaceOfDelivery DESC' THEN [SPMT_erpDCH3].[PlaceOfDelivery] END DESC,
+     CASE @OrderBy WHEN 'SPMT_ERPStates4_Description' THEN [SPMT_ERPStates4].[Description] END,
+     CASE @OrderBy WHEN 'SPMT_ERPStates4_Description DESC' THEN [SPMT_ERPStates4].[Description] END DESC,
+     CASE @OrderBy WHEN 'SPMT_ERPUnits5_Description' THEN [SPMT_ERPUnits5].[Description] END,
+     CASE @OrderBy WHEN 'SPMT_ERPUnits5_Description DESC' THEN [SPMT_ERPUnits5].[Description] END DESC,
+     CASE @OrderBy WHEN 'SPMT_HSNSACCodes6_HSNSACCode' THEN [SPMT_HSNSACCodes6].[HSNSACCode] END,
+     CASE @OrderBy WHEN 'SPMT_HSNSACCodes6_HSNSACCode DESC' THEN [SPMT_HSNSACCodes6].[HSNSACCode] END DESC,
+     CASE @OrderBy WHEN 'SPMT_IsgecGSTIN7_Description' THEN [SPMT_IsgecGSTIN7].[Description] END,
+     CASE @OrderBy WHEN 'SPMT_IsgecGSTIN7_Description DESC' THEN [SPMT_IsgecGSTIN7].[Description] END DESC,
+     CASE @OrderBy WHEN 'VR_BPGSTIN8_Description' THEN [VR_BPGSTIN8].[Description] END,
+     CASE @OrderBy WHEN 'VR_BPGSTIN8_Description DESC' THEN [VR_BPGSTIN8].[Description] END DESC,
+     CASE @OrderBy WHEN 'VR_BusinessPartner9_BPName' THEN [VR_BusinessPartner9].[BPName] END,
+     CASE @OrderBy WHEN 'VR_BusinessPartner9_BPName DESC' THEN [VR_BusinessPartner9].[BPName] END DESC,
+     CASE @OrderBy WHEN 'SPMT_erpDCD10_ItemDescription' THEN [SPMT_erpDCD10].[ItemDescription] END,
+     CASE @OrderBy WHEN 'SPMT_erpDCD10_ItemDescription DESC' THEN [SPMT_erpDCD10].[ItemDescription] END DESC 
 
     SET @RecordCount = @@RowCount
 
   SELECT
-    [SPMT_BTADetails].* ,
-    [aspnet_Users1].[UserFullName] AS aspnet_Users1_UserFullName,
-    [SPMT_BTAStatus2].[Descriptions] AS SPMT_BTAStatus2_Descriptions 
-  FROM [SPMT_BTADetails] 
+    [SPMT_erpDCInventory].* ,
+    [IDM_Projects1].[Description] AS IDM_Projects1_Description,
+    [SPMT_BillTypes2].[Description] AS SPMT_BillTypes2_Description,
+    [SPMT_erpDCH3].[PlaceOfDelivery] AS SPMT_erpDCH3_PlaceOfDelivery,
+    [SPMT_ERPStates4].[Description] AS SPMT_ERPStates4_Description,
+    [SPMT_ERPUnits5].[Description] AS SPMT_ERPUnits5_Description,
+    [SPMT_HSNSACCodes6].[HSNSACCode] AS SPMT_HSNSACCodes6_HSNSACCode,
+    [SPMT_IsgecGSTIN7].[Description] AS SPMT_IsgecGSTIN7_Description,
+    [VR_BPGSTIN8].[Description] AS VR_BPGSTIN8_Description,
+    [VR_BusinessPartner9].[BPName] AS VR_BusinessPartner9_BPName,
+    [SPMT_erpDCD10].[ItemDescription] AS SPMT_erpDCD10_ItemDescription 
+  FROM [SPMT_erpDCInventory] 
       INNER JOIN #PageIndex
-          ON [SPMT_BTADetails].[SerialNo] = #PageIndex.SerialNo
-  LEFT OUTER JOIN [aspnet_users] AS [aspnet_users1]
-    ON [SPMT_BTADetails].[CreatedBy] = [aspnet_users1].[LoginID]
-  LEFT OUTER JOIN [SPMT_BTAStatus] AS [SPMT_BTAStatus2]
-    ON [SPMT_BTADetails].[StatusID] = [SPMT_BTAStatus2].[StatusID]
+          ON [SPMT_erpDCInventory].[ChallanID] = #PageIndex.ChallanID
+          AND [SPMT_erpDCInventory].[SerialNo] = #PageIndex.SerialNo
+  LEFT OUTER JOIN [IDM_Projects] AS [IDM_Projects1]
+    ON [SPMT_erpDCInventory].[ProjectID] = [IDM_Projects1].[ProjectID]
+  LEFT OUTER JOIN [SPMT_BillTypes] AS [SPMT_BillTypes2]
+    ON [SPMT_erpDCInventory].[BillTypeID] = [SPMT_BillTypes2].[BillType]
+  INNER JOIN [SPMT_erpDCH] AS [SPMT_erpDCH3]
+    ON [SPMT_erpDCInventory].[ChallanID] = [SPMT_erpDCH3].[ChallanID]
+  LEFT OUTER JOIN [SPMT_ERPStates] AS [SPMT_ERPStates4]
+    ON [SPMT_erpDCInventory].[ConsignerStateID] = [SPMT_ERPStates4].[StateID]
+  LEFT OUTER JOIN [SPMT_ERPUnits] AS [SPMT_ERPUnits5]
+    ON [SPMT_erpDCInventory].[UOM] = [SPMT_ERPUnits5].[UOM]
+  LEFT OUTER JOIN [SPMT_HSNSACCodes] AS [SPMT_HSNSACCodes6]
+    ON [SPMT_erpDCInventory].[BillTypeID] = [SPMT_HSNSACCodes6].[BillType]
+    AND [SPMT_erpDCInventory].[HSNSACCode] = [SPMT_HSNSACCodes6].[HSNSACCode]
+  LEFT OUTER JOIN [SPMT_IsgecGSTIN] AS [SPMT_IsgecGSTIN7]
+    ON [SPMT_erpDCInventory].[ConsignerIsgecID] = [SPMT_IsgecGSTIN7].[GSTID]
+  LEFT OUTER JOIN [VR_BPGSTIN] AS [VR_BPGSTIN8]
+    ON [SPMT_erpDCInventory].[ConsignerBPID] = [VR_BPGSTIN8].[BPID]
+    AND [SPMT_erpDCInventory].[ConsignerGSTIN] = [VR_BPGSTIN8].[GSTIN]
+  LEFT OUTER JOIN [VR_BusinessPartner] AS [VR_BusinessPartner9]
+    ON [SPMT_erpDCInventory].[ConsignerBPID] = [VR_BusinessPartner9].[BPID]
+  INNER JOIN [SPMT_erpDCD] AS [SPMT_erpDCD10]
+    ON [SPMT_erpDCInventory].[ChallanID] = [SPMT_erpDCD10].[ChallanID]
+    AND [SPMT_erpDCInventory].[SerialNo] = [SPMT_erpDCD10].[SerialNo]
   WHERE
         #PageIndex.IndexID > @StartRowIndex
         AND #PageIndex.IndexID < (@StartRowIndex + @MaximumRows + 1)
@@ -286,11 +211,12 @@ CREATE PROCEDURE [dbo].[spspmtBTADetailsSelectListSearch]
   END
   GO
 
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spspmtBTADetailsSelectListFilteres]') AND type in (N'P', N'PC'))
-DROP PROCEDURE [dbo].[spspmtBTADetailsSelectListFilteres]
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spSPMTerpDCIPendingSelectListFilteres]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[spSPMTerpDCIPendingSelectListFilteres]
 GO
  
-CREATE PROCEDURE [dbo].[spspmtBTADetailsSelectListFilteres]
+CREATE PROCEDURE [dbo].[spSPMTerpDCIPendingSelectListFilteres]
+  @Filter_ChallanID NVarChar(20),
   @LoginID NVarChar(8),
   @StartRowIndex int,
   @MaximumRows int,
@@ -301,464 +227,170 @@ CREATE PROCEDURE [dbo].[spspmtBTADetailsSelectListFilteres]
   DECLARE @LGSQL VarChar(8000)
   CREATE TABLE #PageIndex (
   IndexID INT IDENTITY (1, 1) NOT NULL
+ ,ChallanID NVarChar(20) NOT NULL
  ,SerialNo Int NOT NULL
   )
   SET @LGSQL = 'INSERT INTO #PageIndex (' 
-  SET @LGSQL = @LGSQL + 'SerialNo'
+  SET @LGSQL = @LGSQL + 'ChallanID'
+  SET @LGSQL = @LGSQL + ', SerialNo'
   SET @LGSQL = @LGSQL + ')'
   SET @LGSQL = @LGSQL + ' SELECT '
-  SET @LGSQL = @LGSQL + '[SPMT_BTADetails].[SerialNo]'
-  SET @LGSQL = @LGSQL + ' FROM [SPMT_BTADetails] '
-  SET @LGSQL = @LGSQL + '  LEFT OUTER JOIN [aspnet_users] AS [aspnet_users1]'
-  SET @LGSQL = @LGSQL + '    ON [SPMT_BTADetails].[CreatedBy] = [aspnet_users1].[LoginID]'
-  SET @LGSQL = @LGSQL + '  LEFT OUTER JOIN [SPMT_BTAStatus] AS [SPMT_BTAStatus2]'
-  SET @LGSQL = @LGSQL + '    ON [SPMT_BTADetails].[StatusID] = [SPMT_BTAStatus2].[StatusID]'
+  SET @LGSQL = @LGSQL + '[SPMT_erpDCInventory].[ChallanID]'
+  SET @LGSQL = @LGSQL + ', [SPMT_erpDCInventory].[SerialNo]'
+  SET @LGSQL = @LGSQL + ' FROM [SPMT_erpDCInventory] '
+  SET @LGSQL = @LGSQL + '  LEFT OUTER JOIN [IDM_Projects] AS [IDM_Projects1]'
+  SET @LGSQL = @LGSQL + '    ON [SPMT_erpDCInventory].[ProjectID] = [IDM_Projects1].[ProjectID]'
+  SET @LGSQL = @LGSQL + '  LEFT OUTER JOIN [SPMT_BillTypes] AS [SPMT_BillTypes2]'
+  SET @LGSQL = @LGSQL + '    ON [SPMT_erpDCInventory].[BillTypeID] = [SPMT_BillTypes2].[BillType]'
+  SET @LGSQL = @LGSQL + '  INNER JOIN [SPMT_erpDCH] AS [SPMT_erpDCH3]'
+  SET @LGSQL = @LGSQL + '    ON [SPMT_erpDCInventory].[ChallanID] = [SPMT_erpDCH3].[ChallanID]'
+  SET @LGSQL = @LGSQL + '  LEFT OUTER JOIN [SPMT_ERPStates] AS [SPMT_ERPStates4]'
+  SET @LGSQL = @LGSQL + '    ON [SPMT_erpDCInventory].[ConsignerStateID] = [SPMT_ERPStates4].[StateID]'
+  SET @LGSQL = @LGSQL + '  LEFT OUTER JOIN [SPMT_ERPUnits] AS [SPMT_ERPUnits5]'
+  SET @LGSQL = @LGSQL + '    ON [SPMT_erpDCInventory].[UOM] = [SPMT_ERPUnits5].[UOM]'
+  SET @LGSQL = @LGSQL + '  LEFT OUTER JOIN [SPMT_HSNSACCodes] AS [SPMT_HSNSACCodes6]'
+  SET @LGSQL = @LGSQL + '    ON [SPMT_erpDCInventory].[BillTypeID] = [SPMT_HSNSACCodes6].[BillType]'
+  SET @LGSQL = @LGSQL + '    AND [SPMT_erpDCInventory].[HSNSACCode] = [SPMT_HSNSACCodes6].[HSNSACCode]'
+  SET @LGSQL = @LGSQL + '  LEFT OUTER JOIN [SPMT_IsgecGSTIN] AS [SPMT_IsgecGSTIN7]'
+  SET @LGSQL = @LGSQL + '    ON [SPMT_erpDCInventory].[ConsignerIsgecID] = [SPMT_IsgecGSTIN7].[GSTID]'
+  SET @LGSQL = @LGSQL + '  LEFT OUTER JOIN [VR_BPGSTIN] AS [VR_BPGSTIN8]'
+  SET @LGSQL = @LGSQL + '    ON [SPMT_erpDCInventory].[ConsignerBPID] = [VR_BPGSTIN8].[BPID]'
+  SET @LGSQL = @LGSQL + '    AND [SPMT_erpDCInventory].[ConsignerGSTIN] = [VR_BPGSTIN8].[GSTIN]'
+  SET @LGSQL = @LGSQL + '  LEFT OUTER JOIN [VR_BusinessPartner] AS [VR_BusinessPartner9]'
+  SET @LGSQL = @LGSQL + '    ON [SPMT_erpDCInventory].[ConsignerBPID] = [VR_BusinessPartner9].[BPID]'
+  SET @LGSQL = @LGSQL + '  INNER JOIN [SPMT_erpDCD] AS [SPMT_erpDCD10]'
+  SET @LGSQL = @LGSQL + '    ON [SPMT_erpDCInventory].[ChallanID] = [SPMT_erpDCD10].[ChallanID]'
+  SET @LGSQL = @LGSQL + '    AND [SPMT_erpDCInventory].[SerialNo] = [SPMT_erpDCD10].[SerialNo]'
   SET @LGSQL = @LGSQL + '  WHERE 1 = 1 '
+  IF (@Filter_ChallanID > '') 
+    SET @LGSQL = @LGSQL + ' AND [SPMT_erpDCInventory].[ChallanID] = ''' + @Filter_ChallanID + ''''
   SET @LGSQL = @LGSQL + '  ORDER BY '
   SET @LGSQL = @LGSQL + CASE @OrderBy
-                        WHEN 'SerialNo' THEN '[SPMT_BTADetails].[SerialNo]'
-                        WHEN 'SerialNo DESC' THEN '[SPMT_BTADetails].[SerialNo] DESC'
-                        WHEN 'CORP_2' THEN '[SPMT_BTADetails].[CORP_2]'
-                        WHEN 'CORP_2 DESC' THEN '[SPMT_BTADetails].[CORP_2] DESC'
-                        WHEN 'CORP_1' THEN '[SPMT_BTADetails].[CORP_1]'
-                        WHEN 'CORP_1 DESC' THEN '[SPMT_BTADetails].[CORP_1] DESC'
-                        WHEN 'BTA_ACCT' THEN '[SPMT_BTADetails].[BTA_ACCT]'
-                        WHEN 'BTA_ACCT DESC' THEN '[SPMT_BTADetails].[BTA_ACCT] DESC'
-                        WHEN 'STMT_DT' THEN '[SPMT_BTADetails].[STMT_DT]'
-                        WHEN 'STMT_DT DESC' THEN '[SPMT_BTADetails].[STMT_DT] DESC'
-                        WHEN 'STMT_REF_NO' THEN '[SPMT_BTADetails].[STMT_REF_NO]'
-                        WHEN 'STMT_REF_NO DESC' THEN '[SPMT_BTADetails].[STMT_REF_NO] DESC'
-                        WHEN 'CUST_REF' THEN '[SPMT_BTADetails].[CUST_REF]'
-                        WHEN 'CUST_REF DESC' THEN '[SPMT_BTADetails].[CUST_REF] DESC'
-                        WHEN 'TRIP_REQ' THEN '[SPMT_BTADetails].[TRIP_REQ]'
-                        WHEN 'TRIP_REQ DESC' THEN '[SPMT_BTADetails].[TRIP_REQ] DESC'
-                        WHEN 'JOB_NO' THEN '[SPMT_BTADetails].[JOB_NO]'
-                        WHEN 'JOB_NO DESC' THEN '[SPMT_BTADetails].[JOB_NO] DESC'
-                        WHEN 'PAX_NM' THEN '[SPMT_BTADetails].[PAX_NM]'
-                        WHEN 'PAX_NM DESC' THEN '[SPMT_BTADetails].[PAX_NM] DESC'
-                        WHEN 'AMOUNT_EX_GST' THEN '[SPMT_BTADetails].[AMOUNT_EX_GST]'
-                        WHEN 'AMOUNT_EX_GST DESC' THEN '[SPMT_BTADetails].[AMOUNT_EX_GST] DESC'
-                        WHEN 'GST' THEN '[SPMT_BTADetails].[GST]'
-                        WHEN 'GST DESC' THEN '[SPMT_BTADetails].[GST] DESC'
-                        WHEN 'UNPAID_AMT' THEN '[SPMT_BTADetails].[UNPAID_AMT]'
-                        WHEN 'UNPAID_AMT DESC' THEN '[SPMT_BTADetails].[UNPAID_AMT] DESC'
-                        WHEN 'CHARGE_DTE' THEN '[SPMT_BTADetails].[CHARGE_DTE]'
-                        WHEN 'CHARGE_DTE DESC' THEN '[SPMT_BTADetails].[CHARGE_DTE] DESC'
-                        WHEN 'BKNG_DATE' THEN '[SPMT_BTADetails].[BKNG_DATE]'
-                        WHEN 'BKNG_DATE DESC' THEN '[SPMT_BTADetails].[BKNG_DATE] DESC'
-                        WHEN 'DEPT_DATE' THEN '[SPMT_BTADetails].[DEPT_DATE]'
-                        WHEN 'DEPT_DATE DESC' THEN '[SPMT_BTADetails].[DEPT_DATE] DESC'
-                        WHEN 'TICKET_NO' THEN '[SPMT_BTADetails].[TICKET_NO]'
-                        WHEN 'TICKET_NO DESC' THEN '[SPMT_BTADetails].[TICKET_NO] DESC'
-                        WHEN 'CARRIER' THEN '[SPMT_BTADetails].[CARRIER]'
-                        WHEN 'CARRIER DESC' THEN '[SPMT_BTADetails].[CARRIER] DESC'
-                        WHEN 'CLASS' THEN '[SPMT_BTADetails].[CLASS]'
-                        WHEN 'CLASS DESC' THEN '[SPMT_BTADetails].[CLASS] DESC'
-                        WHEN 'DI' THEN '[SPMT_BTADetails].[DI]'
-                        WHEN 'DI DESC' THEN '[SPMT_BTADetails].[DI] DESC'
-                        WHEN 'ROUTING' THEN '[SPMT_BTADetails].[ROUTING]'
-                        WHEN 'ROUTING DESC' THEN '[SPMT_BTADetails].[ROUTING] DESC'
-                        WHEN 'TXN_DATE' THEN '[SPMT_BTADetails].[TXN_DATE]'
-                        WHEN 'TXN_DATE DESC' THEN '[SPMT_BTADetails].[TXN_DATE] DESC'
-                        WHEN 'Merchant_ABN' THEN '[SPMT_BTADetails].[Merchant_ABN]'
-                        WHEN 'Merchant_ABN DESC' THEN '[SPMT_BTADetails].[Merchant_ABN] DESC'
-                        WHEN 'Book_Ref' THEN '[SPMT_BTADetails].[Book_Ref]'
-                        WHEN 'Book_Ref DESC' THEN '[SPMT_BTADetails].[Book_Ref] DESC'
-                        WHEN 'COMMENT1' THEN '[SPMT_BTADetails].[COMMENT1]'
-                        WHEN 'COMMENT1 DESC' THEN '[SPMT_BTADetails].[COMMENT1] DESC'
-                        WHEN 'COMMENT2' THEN '[SPMT_BTADetails].[COMMENT2]'
-                        WHEN 'COMMENT2 DESC' THEN '[SPMT_BTADetails].[COMMENT2] DESC'
-                        WHEN 'COMMENT3' THEN '[SPMT_BTADetails].[COMMENT3]'
-                        WHEN 'COMMENT3 DESC' THEN '[SPMT_BTADetails].[COMMENT3] DESC'
-                        WHEN 'MERCHANT_NAME' THEN '[SPMT_BTADetails].[MERCHANT_NAME]'
-                        WHEN 'MERCHANT_NAME DESC' THEN '[SPMT_BTADetails].[MERCHANT_NAME] DESC'
-                        WHEN 'BatchNo' THEN '[SPMT_BTADetails].[BatchNo]'
-                        WHEN 'BatchNo DESC' THEN '[SPMT_BTADetails].[BatchNo] DESC'
-                        WHEN 'StatusID' THEN '[SPMT_BTADetails].[StatusID]'
-                        WHEN 'StatusID DESC' THEN '[SPMT_BTADetails].[StatusID] DESC'
-                        WHEN 'CreatedBy' THEN '[SPMT_BTADetails].[CreatedBy]'
-                        WHEN 'CreatedBy DESC' THEN '[SPMT_BTADetails].[CreatedBy] DESC'
-                        WHEN 'CreatedOn' THEN '[SPMT_BTADetails].[CreatedOn]'
-                        WHEN 'CreatedOn DESC' THEN '[SPMT_BTADetails].[CreatedOn] DESC'
-                        WHEN 'aspnet_Users1_UserFullName' THEN '[aspnet_Users1].[UserFullName]'
-                        WHEN 'aspnet_Users1_UserFullName DESC' THEN '[aspnet_Users1].[UserFullName] DESC'
-                        WHEN 'SPMT_BTAStatus2_Descriptions' THEN '[SPMT_BTAStatus2].[Descriptions]'
-                        WHEN 'SPMT_BTAStatus2_Descriptions DESC' THEN '[SPMT_BTAStatus2].[Descriptions] DESC'
-                        ELSE '[SPMT_BTADetails].[SerialNo]'
+                        WHEN 'ChallanID' THEN '[SPMT_erpDCInventory].[ChallanID]'
+                        WHEN 'ChallanID DESC' THEN '[SPMT_erpDCInventory].[ChallanID] DESC'
+                        WHEN 'SerialNo' THEN '[SPMT_erpDCInventory].[SerialNo]'
+                        WHEN 'SerialNo DESC' THEN '[SPMT_erpDCInventory].[SerialNo] DESC'
+                        WHEN 'ItemDescription' THEN '[SPMT_erpDCInventory].[ItemDescription]'
+                        WHEN 'ItemDescription DESC' THEN '[SPMT_erpDCInventory].[ItemDescription] DESC'
+                        WHEN 'BaseRate' THEN '[SPMT_erpDCInventory].[BaseRate]'
+                        WHEN 'BaseRate DESC' THEN '[SPMT_erpDCInventory].[BaseRate] DESC'
+                        WHEN 'BillTypeID' THEN '[SPMT_erpDCInventory].[BillTypeID]'
+                        WHEN 'BillTypeID DESC' THEN '[SPMT_erpDCInventory].[BillTypeID] DESC'
+                        WHEN 'HSNSACCode' THEN '[SPMT_erpDCInventory].[HSNSACCode]'
+                        WHEN 'HSNSACCode DESC' THEN '[SPMT_erpDCInventory].[HSNSACCode] DESC'
+                        WHEN 'UOM' THEN '[SPMT_erpDCInventory].[UOM]'
+                        WHEN 'UOM DESC' THEN '[SPMT_erpDCInventory].[UOM] DESC'
+                        WHEN 'Quantity' THEN '[SPMT_erpDCInventory].[Quantity]'
+                        WHEN 'Quantity DESC' THEN '[SPMT_erpDCInventory].[Quantity] DESC'
+                        WHEN 'Price' THEN '[SPMT_erpDCInventory].[Price]'
+                        WHEN 'Price DESC' THEN '[SPMT_erpDCInventory].[Price] DESC'
+                        WHEN 'AssessableValue' THEN '[SPMT_erpDCInventory].[AssessableValue]'
+                        WHEN 'AssessableValue DESC' THEN '[SPMT_erpDCInventory].[AssessableValue] DESC'
+                        WHEN 'IGSTRate' THEN '[SPMT_erpDCInventory].[IGSTRate]'
+                        WHEN 'IGSTRate DESC' THEN '[SPMT_erpDCInventory].[IGSTRate] DESC'
+                        WHEN 'IGSTAmount' THEN '[SPMT_erpDCInventory].[IGSTAmount]'
+                        WHEN 'IGSTAmount DESC' THEN '[SPMT_erpDCInventory].[IGSTAmount] DESC'
+                        WHEN 'SGSTRate' THEN '[SPMT_erpDCInventory].[SGSTRate]'
+                        WHEN 'SGSTRate DESC' THEN '[SPMT_erpDCInventory].[SGSTRate] DESC'
+                        WHEN 'SGSTAmount' THEN '[SPMT_erpDCInventory].[SGSTAmount]'
+                        WHEN 'SGSTAmount DESC' THEN '[SPMT_erpDCInventory].[SGSTAmount] DESC'
+                        WHEN 'CGSTRate' THEN '[SPMT_erpDCInventory].[CGSTRate]'
+                        WHEN 'CGSTRate DESC' THEN '[SPMT_erpDCInventory].[CGSTRate] DESC'
+                        WHEN 'CGSTAmount' THEN '[SPMT_erpDCInventory].[CGSTAmount]'
+                        WHEN 'CGSTAmount DESC' THEN '[SPMT_erpDCInventory].[CGSTAmount] DESC'
+                        WHEN 'CessRate' THEN '[SPMT_erpDCInventory].[CessRate]'
+                        WHEN 'CessRate DESC' THEN '[SPMT_erpDCInventory].[CessRate] DESC'
+                        WHEN 'CessAmount' THEN '[SPMT_erpDCInventory].[CessAmount]'
+                        WHEN 'CessAmount DESC' THEN '[SPMT_erpDCInventory].[CessAmount] DESC'
+                        WHEN 'TotalGST' THEN '[SPMT_erpDCInventory].[TotalGST]'
+                        WHEN 'TotalGST DESC' THEN '[SPMT_erpDCInventory].[TotalGST] DESC'
+                        WHEN 'TotalAmount' THEN '[SPMT_erpDCInventory].[TotalAmount]'
+                        WHEN 'TotalAmount DESC' THEN '[SPMT_erpDCInventory].[TotalAmount] DESC'
+                        WHEN 'FinalRate' THEN '[SPMT_erpDCInventory].[FinalRate]'
+                        WHEN 'FinalRate DESC' THEN '[SPMT_erpDCInventory].[FinalRate] DESC'
+                        WHEN 'FinalAmount' THEN '[SPMT_erpDCInventory].[FinalAmount]'
+                        WHEN 'FinalAmount DESC' THEN '[SPMT_erpDCInventory].[FinalAmount] DESC'
+                        WHEN 'ConsignerIsgecID' THEN '[SPMT_erpDCInventory].[ConsignerIsgecID]'
+                        WHEN 'ConsignerIsgecID DESC' THEN '[SPMT_erpDCInventory].[ConsignerIsgecID] DESC'
+                        WHEN 'ConsignerBPID' THEN '[SPMT_erpDCInventory].[ConsignerBPID]'
+                        WHEN 'ConsignerBPID DESC' THEN '[SPMT_erpDCInventory].[ConsignerBPID] DESC'
+                        WHEN 'ConsignerGSTIN' THEN '[SPMT_erpDCInventory].[ConsignerGSTIN]'
+                        WHEN 'ConsignerGSTIN DESC' THEN '[SPMT_erpDCInventory].[ConsignerGSTIN] DESC'
+                        WHEN 'ConsignerName' THEN '[SPMT_erpDCInventory].[ConsignerName]'
+                        WHEN 'ConsignerName DESC' THEN '[SPMT_erpDCInventory].[ConsignerName] DESC'
+                        WHEN 'ConsignerGSTINNo' THEN '[SPMT_erpDCInventory].[ConsignerGSTINNo]'
+                        WHEN 'ConsignerGSTINNo DESC' THEN '[SPMT_erpDCInventory].[ConsignerGSTINNo] DESC'
+                        WHEN 'ConsignerStateID' THEN '[SPMT_erpDCInventory].[ConsignerStateID]'
+                        WHEN 'ConsignerStateID DESC' THEN '[SPMT_erpDCInventory].[ConsignerStateID] DESC'
+                        WHEN 'ProjectID' THEN '[SPMT_erpDCInventory].[ProjectID]'
+                        WHEN 'ProjectID DESC' THEN '[SPMT_erpDCInventory].[ProjectID] DESC'
+                        WHEN 'QuantityUsed' THEN '[SPMT_erpDCInventory].[QuantityUsed]'
+                        WHEN 'QuantityUsed DESC' THEN '[SPMT_erpDCInventory].[QuantityUsed] DESC'
+                        WHEN 'IDM_Projects1_Description' THEN '[IDM_Projects1].[Description]'
+                        WHEN 'IDM_Projects1_Description DESC' THEN '[IDM_Projects1].[Description] DESC'
+                        WHEN 'SPMT_BillTypes2_Description' THEN '[SPMT_BillTypes2].[Description]'
+                        WHEN 'SPMT_BillTypes2_Description DESC' THEN '[SPMT_BillTypes2].[Description] DESC'
+                        WHEN 'SPMT_erpDCH3_PlaceOfDelivery' THEN '[SPMT_erpDCH3].[PlaceOfDelivery]'
+                        WHEN 'SPMT_erpDCH3_PlaceOfDelivery DESC' THEN '[SPMT_erpDCH3].[PlaceOfDelivery] DESC'
+                        WHEN 'SPMT_ERPStates4_Description' THEN '[SPMT_ERPStates4].[Description]'
+                        WHEN 'SPMT_ERPStates4_Description DESC' THEN '[SPMT_ERPStates4].[Description] DESC'
+                        WHEN 'SPMT_ERPUnits5_Description' THEN '[SPMT_ERPUnits5].[Description]'
+                        WHEN 'SPMT_ERPUnits5_Description DESC' THEN '[SPMT_ERPUnits5].[Description] DESC'
+                        WHEN 'SPMT_HSNSACCodes6_HSNSACCode' THEN '[SPMT_HSNSACCodes6].[HSNSACCode]'
+                        WHEN 'SPMT_HSNSACCodes6_HSNSACCode DESC' THEN '[SPMT_HSNSACCodes6].[HSNSACCode] DESC'
+                        WHEN 'SPMT_IsgecGSTIN7_Description' THEN '[SPMT_IsgecGSTIN7].[Description]'
+                        WHEN 'SPMT_IsgecGSTIN7_Description DESC' THEN '[SPMT_IsgecGSTIN7].[Description] DESC'
+                        WHEN 'VR_BPGSTIN8_Description' THEN '[VR_BPGSTIN8].[Description]'
+                        WHEN 'VR_BPGSTIN8_Description DESC' THEN '[VR_BPGSTIN8].[Description] DESC'
+                        WHEN 'VR_BusinessPartner9_BPName' THEN '[VR_BusinessPartner9].[BPName]'
+                        WHEN 'VR_BusinessPartner9_BPName DESC' THEN '[VR_BusinessPartner9].[BPName] DESC'
+                        WHEN 'SPMT_erpDCD10_ItemDescription' THEN '[SPMT_erpDCD10].[ItemDescription]'
+                        WHEN 'SPMT_erpDCD10_ItemDescription DESC' THEN '[SPMT_erpDCD10].[ItemDescription] DESC'
+                        ELSE '[SPMT_erpDCInventory].[ChallanID],[SPMT_erpDCInventory].[SerialNo]'
                     END
   EXEC (@LGSQL)
 
   SET @RecordCount = @@RowCount
 
   SELECT
-    [SPMT_BTADetails].* ,
-    [aspnet_Users1].[UserFullName] AS aspnet_Users1_UserFullName,
-    [SPMT_BTAStatus2].[Descriptions] AS SPMT_BTAStatus2_Descriptions 
-  FROM [SPMT_BTADetails] 
+    [SPMT_erpDCInventory].* ,
+    [IDM_Projects1].[Description] AS IDM_Projects1_Description,
+    [SPMT_BillTypes2].[Description] AS SPMT_BillTypes2_Description,
+    [SPMT_erpDCH3].[PlaceOfDelivery] AS SPMT_erpDCH3_PlaceOfDelivery,
+    [SPMT_ERPStates4].[Description] AS SPMT_ERPStates4_Description,
+    [SPMT_ERPUnits5].[Description] AS SPMT_ERPUnits5_Description,
+    [SPMT_HSNSACCodes6].[HSNSACCode] AS SPMT_HSNSACCodes6_HSNSACCode,
+    [SPMT_IsgecGSTIN7].[Description] AS SPMT_IsgecGSTIN7_Description,
+    [VR_BPGSTIN8].[Description] AS VR_BPGSTIN8_Description,
+    [VR_BusinessPartner9].[BPName] AS VR_BusinessPartner9_BPName,
+    [SPMT_erpDCD10].[ItemDescription] AS SPMT_erpDCD10_ItemDescription 
+  FROM [SPMT_erpDCInventory] 
       INNER JOIN #PageIndex
-          ON [SPMT_BTADetails].[SerialNo] = #PageIndex.SerialNo
-  LEFT OUTER JOIN [aspnet_users] AS [aspnet_users1]
-    ON [SPMT_BTADetails].[CreatedBy] = [aspnet_users1].[LoginID]
-  LEFT OUTER JOIN [SPMT_BTAStatus] AS [SPMT_BTAStatus2]
-    ON [SPMT_BTADetails].[StatusID] = [SPMT_BTAStatus2].[StatusID]
-  WHERE
-        #PageIndex.IndexID > @StartRowIndex
-        AND #PageIndex.IndexID < (@StartRowIndex + @MaximumRows + 1)
-  ORDER BY
-    #PageIndex.IndexID
-  END
-  GO
-
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spspmtBTADetailsInsert]') AND type in (N'P', N'PC'))
-DROP PROCEDURE [dbo].[spspmtBTADetailsInsert]
-GO
- 
-CREATE PROCEDURE [dbo].[spspmtBTADetailsInsert]
-  @CORP_2 NVarChar(15),
-  @CORP_1 NVarChar(15),
-  @BTA_ACCT NVarChar(15),
-  @STMT_DT DateTime,
-  @STMT_REF_NO NVarChar(15),
-  @CUST_REF NVarChar(20),
-  @TRIP_REQ NVarChar(20),
-  @JOB_NO NVarChar(20),
-  @PAX_NM NVarChar(30),
-  @AMOUNT_EX_GST Decimal(18,2),
-  @GST Decimal(18,2),
-  @UNPAID_AMT Decimal(18,2),
-  @CHARGE_DTE DateTime,
-  @BKNG_DATE DateTime,
-  @DEPT_DATE DateTime,
-  @TICKET_NO NVarChar(10),
-  @CARRIER NVarChar(30),
-  @CLASS NVarChar(10),
-  @DI NVarChar(2),
-  @ROUTING NVarChar(80),
-  @TXN_DATE DateTime,
-  @Merchant_ABN NVarChar(16),
-  @Book_Ref NVarChar(9),
-  @COMMENT1 NVarChar(45),
-  @COMMENT2 NVarChar(45),
-  @COMMENT3 NVarChar(450),
-  @MERCHANT_NAME NVarChar(31),
-  @BatchNo Int,
-  @StatusID Int,
-  @CreatedBy NVarChar(8),
-  @CreatedOn DateTime,
-  @Return_SerialNo Int = null OUTPUT 
-  AS
-  INSERT [SPMT_BTADetails]
-  (
-   [CORP_2]
-  ,[CORP_1]
-  ,[BTA_ACCT]
-  ,[STMT_DT]
-  ,[STMT_REF_NO]
-  ,[CUST_REF]
-  ,[TRIP_REQ]
-  ,[JOB_NO]
-  ,[PAX_NM]
-  ,[AMOUNT_EX_GST]
-  ,[GST]
-  ,[UNPAID_AMT]
-  ,[CHARGE_DTE]
-  ,[BKNG_DATE]
-  ,[DEPT_DATE]
-  ,[TICKET_NO]
-  ,[CARRIER]
-  ,[CLASS]
-  ,[DI]
-  ,[ROUTING]
-  ,[TXN_DATE]
-  ,[Merchant_ABN]
-  ,[Book_Ref]
-  ,[COMMENT1]
-  ,[COMMENT2]
-  ,[COMMENT3]
-  ,[MERCHANT_NAME]
-  ,[BatchNo]
-  ,[StatusID]
-  ,[CreatedBy]
-  ,[CreatedOn]
-  )
-  VALUES
-  (
-   @CORP_2
-  ,@CORP_1
-  ,@BTA_ACCT
-  ,@STMT_DT
-  ,@STMT_REF_NO
-  ,@CUST_REF
-  ,@TRIP_REQ
-  ,@JOB_NO
-  ,@PAX_NM
-  ,@AMOUNT_EX_GST
-  ,@GST
-  ,@UNPAID_AMT
-  ,@CHARGE_DTE
-  ,@BKNG_DATE
-  ,@DEPT_DATE
-  ,@TICKET_NO
-  ,@CARRIER
-  ,@CLASS
-  ,@DI
-  ,@ROUTING
-  ,@TXN_DATE
-  ,@Merchant_ABN
-  ,@Book_Ref
-  ,@COMMENT1
-  ,@COMMENT2
-  ,@COMMENT3
-  ,@MERCHANT_NAME
-  ,@BatchNo
-  ,@StatusID
-  ,@CreatedBy
-  ,@CreatedOn
-  )
-  SET @Return_SerialNo = Scope_Identity()
-  GO
-
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spspmtBTADetailsUpdate]') AND type in (N'P', N'PC'))
-DROP PROCEDURE [dbo].[spspmtBTADetailsUpdate]
-GO
- 
-CREATE PROCEDURE [dbo].[spspmtBTADetailsUpdate]
-  @Original_SerialNo Int, 
-  @CORP_2 NVarChar(15),
-  @CORP_1 NVarChar(15),
-  @BTA_ACCT NVarChar(15),
-  @STMT_DT DateTime,
-  @STMT_REF_NO NVarChar(15),
-  @CUST_REF NVarChar(20),
-  @TRIP_REQ NVarChar(20),
-  @JOB_NO NVarChar(20),
-  @PAX_NM NVarChar(30),
-  @AMOUNT_EX_GST Decimal(18,2),
-  @GST Decimal(18,2),
-  @UNPAID_AMT Decimal(18,2),
-  @CHARGE_DTE DateTime,
-  @BKNG_DATE DateTime,
-  @DEPT_DATE DateTime,
-  @TICKET_NO NVarChar(10),
-  @CARRIER NVarChar(30),
-  @CLASS NVarChar(10),
-  @DI NVarChar(2),
-  @ROUTING NVarChar(80),
-  @TXN_DATE DateTime,
-  @Merchant_ABN NVarChar(16),
-  @Book_Ref NVarChar(9),
-  @COMMENT1 NVarChar(45),
-  @COMMENT2 NVarChar(45),
-  @COMMENT3 NVarChar(450),
-  @MERCHANT_NAME NVarChar(31),
-  @BatchNo Int,
-  @StatusID Int,
-  @CreatedBy NVarChar(8),
-  @CreatedOn DateTime,
-  @RowCount int = null OUTPUT
-  AS
-  UPDATE [SPMT_BTADetails] SET 
-   [CORP_2] = @CORP_2
-  ,[CORP_1] = @CORP_1
-  ,[BTA_ACCT] = @BTA_ACCT
-  ,[STMT_DT] = @STMT_DT
-  ,[STMT_REF_NO] = @STMT_REF_NO
-  ,[CUST_REF] = @CUST_REF
-  ,[TRIP_REQ] = @TRIP_REQ
-  ,[JOB_NO] = @JOB_NO
-  ,[PAX_NM] = @PAX_NM
-  ,[AMOUNT_EX_GST] = @AMOUNT_EX_GST
-  ,[GST] = @GST
-  ,[UNPAID_AMT] = @UNPAID_AMT
-  ,[CHARGE_DTE] = @CHARGE_DTE
-  ,[BKNG_DATE] = @BKNG_DATE
-  ,[DEPT_DATE] = @DEPT_DATE
-  ,[TICKET_NO] = @TICKET_NO
-  ,[CARRIER] = @CARRIER
-  ,[CLASS] = @CLASS
-  ,[DI] = @DI
-  ,[ROUTING] = @ROUTING
-  ,[TXN_DATE] = @TXN_DATE
-  ,[Merchant_ABN] = @Merchant_ABN
-  ,[Book_Ref] = @Book_Ref
-  ,[COMMENT1] = @COMMENT1
-  ,[COMMENT2] = @COMMENT2
-  ,[COMMENT3] = @COMMENT3
-  ,[MERCHANT_NAME] = @MERCHANT_NAME
-  ,[BatchNo] = @BatchNo
-  ,[StatusID] = @StatusID
-  ,[CreatedBy] = @CreatedBy
-  ,[CreatedOn] = @CreatedOn
-  WHERE
-  [SerialNo] = @Original_SerialNo
-  SET @RowCount = @@RowCount
-  GO
-
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spspmtBTADetailsDelete]') AND type in (N'P', N'PC'))
-DROP PROCEDURE [dbo].[spspmtBTADetailsDelete]
-GO
- 
-CREATE PROCEDURE [dbo].[spspmtBTADetailsDelete]
-  @Original_SerialNo Int,
-  @RowCount int = null OUTPUT
-  AS
-  DELETE [SPMT_BTADetails]
-  WHERE
-  [SPMT_BTADetails].[SerialNo] = @Original_SerialNo
-  SET @RowCount = @@RowCount
-  GO
-
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spspmtBTAStatusSelectList]') AND type in (N'P', N'PC'))
-DROP PROCEDURE [dbo].[spspmtBTAStatusSelectList]
-GO
- 
-CREATE PROCEDURE [dbo].[spspmtBTAStatusSelectList]
-  @LoginID NVarChar(8),
-  @OrderBy NVarChar(50),
-  @RecordCount Int = 0 OUTPUT
-  AS
-  SELECT
-    [SPMT_BTAStatus].*  
-  FROM [SPMT_BTAStatus] 
-  WHERE 1 = 1  
-  ORDER BY
-     CASE @OrderBy WHEN 'StatusID' THEN [SPMT_BTAStatus].[StatusID] END,
-     CASE @OrderBy WHEN 'StatusID DESC' THEN [SPMT_BTAStatus].[StatusID] END DESC,
-     CASE @OrderBy WHEN 'Descriptions' THEN [SPMT_BTAStatus].[Descriptions] END,
-     CASE @OrderBy WHEN 'Descriptions DESC' THEN [SPMT_BTAStatus].[Descriptions] END DESC 
-  SET @RecordCount = @@RowCount
-  GO
-
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spspmtBTAStatusAutoCompleteList]') AND type in (N'P', N'PC'))
-DROP PROCEDURE [dbo].[spspmtBTAStatusAutoCompleteList]
-GO
- 
-CREATE PROCEDURE [dbo].[spspmtBTAStatusAutoCompleteList]
-  @LoginID NVarChar(8),
-  @Prefix NVarChar(250),
-  @Records Int,
-  @ByCode Int 
-  AS 
-  BEGIN 
-  DECLARE @Prefix1 VarChar(260)
-  SET @Prefix1 = LOWER(@Prefix) + '%'
-  DECLARE @LGSQL VarChar(8000)
-  SET @LGSQL = 'SELECT TOP (' + STR(@Records) + ') ' 
-  SET @LGSQL = @LGSQL + ' [SPMT_BTAStatus].[Descriptions]' 
-  SET @LGSQL = @LGSQL + ',[SPMT_BTAStatus].[StatusID]' 
-  SET @LGSQL = @LGSQL + ' FROM [SPMT_BTAStatus] ' 
-  SET @LGSQL = @LGSQL + ' WHERE 1 = 1 ' 
-  SET @LGSQL = @LGSQL + ' AND (LTRIM(STR(ISNULL([SPMT_BTAStatus].[StatusID],0))) LIKE ''' + @Prefix1 + ''''
-  SET @LGSQL = @LGSQL + ' OR LOWER(ISNULL([SPMT_BTAStatus].[Descriptions],'''')) LIKE ''' + @Prefix1 + ''''
-  SET @LGSQL = @LGSQL + ')' 
-  
-  EXEC (@LGSQL)
-  END 
-  GO
-
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spspmtBTAStatusSelectByID]') AND type in (N'P', N'PC'))
-DROP PROCEDURE [dbo].[spspmtBTAStatusSelectByID]
-GO
- 
-CREATE PROCEDURE [dbo].[spspmtBTAStatusSelectByID]
-  @LoginID NVarChar(8),
-  @StatusID Int 
-  AS
-  SELECT
-    [SPMT_BTAStatus].*  
-  FROM [SPMT_BTAStatus] 
-  WHERE
-  [SPMT_BTAStatus].[StatusID] = @StatusID
-  GO
-
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spspmtBTAStatusSelectListSearch]') AND type in (N'P', N'PC'))
-DROP PROCEDURE [dbo].[spspmtBTAStatusSelectListSearch]
-GO
- 
-CREATE PROCEDURE [dbo].[spspmtBTAStatusSelectListSearch]
-  @LoginID NVarChar(8),
-  @StartRowIndex int,
-  @MaximumRows int,
-  @KeyWord VarChar(250),
-  @OrderBy NVarChar(50),
-  @RecordCount Int = 0 OUTPUT
-  AS
-  BEGIN
-    DECLARE @KeyWord1 VarChar(260)
-    SET @KeyWord1 = '%' + LOWER(@KeyWord) + '%'
-  CREATE TABLE #PageIndex (
-  IndexID INT IDENTITY (1, 1) NOT NULL
- ,StatusID Int NOT NULL
-  )
-  INSERT INTO #PageIndex (StatusID)
-  SELECT [SPMT_BTAStatus].[StatusID] FROM [SPMT_BTAStatus]
- WHERE  
-   ( 
-         STR(ISNULL([SPMT_BTAStatus].[StatusID], 0)) LIKE @KeyWord1
-     OR LOWER(ISNULL([SPMT_BTAStatus].[Descriptions],'')) LIKE @KeyWord1
-   ) 
-  ORDER BY
-     CASE @OrderBy WHEN 'StatusID' THEN [SPMT_BTAStatus].[StatusID] END,
-     CASE @OrderBy WHEN 'StatusID DESC' THEN [SPMT_BTAStatus].[StatusID] END DESC,
-     CASE @OrderBy WHEN 'Descriptions' THEN [SPMT_BTAStatus].[Descriptions] END,
-     CASE @OrderBy WHEN 'Descriptions DESC' THEN [SPMT_BTAStatus].[Descriptions] END DESC 
-
-    SET @RecordCount = @@RowCount
-
-  SELECT
-    [SPMT_BTAStatus].*  
-  FROM [SPMT_BTAStatus] 
-      INNER JOIN #PageIndex
-          ON [SPMT_BTAStatus].[StatusID] = #PageIndex.StatusID
-  WHERE
-        #PageIndex.IndexID > @StartRowIndex
-        AND #PageIndex.IndexID < (@StartRowIndex + @MaximumRows + 1)
-  ORDER BY
-    #PageIndex.IndexID
-  END
-  GO
-
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spspmtBTAStatusSelectListFilteres]') AND type in (N'P', N'PC'))
-DROP PROCEDURE [dbo].[spspmtBTAStatusSelectListFilteres]
-GO
- 
-CREATE PROCEDURE [dbo].[spspmtBTAStatusSelectListFilteres]
-  @LoginID NVarChar(8),
-  @StartRowIndex int,
-  @MaximumRows int,
-  @OrderBy NVarChar(50),
-  @RecordCount Int = 0 OUTPUT
-  AS
-  BEGIN
-  DECLARE @LGSQL VarChar(8000)
-  CREATE TABLE #PageIndex (
-  IndexID INT IDENTITY (1, 1) NOT NULL
- ,StatusID Int NOT NULL
-  )
-  SET @LGSQL = 'INSERT INTO #PageIndex (' 
-  SET @LGSQL = @LGSQL + 'StatusID'
-  SET @LGSQL = @LGSQL + ')'
-  SET @LGSQL = @LGSQL + ' SELECT '
-  SET @LGSQL = @LGSQL + '[SPMT_BTAStatus].[StatusID]'
-  SET @LGSQL = @LGSQL + ' FROM [SPMT_BTAStatus] '
-  SET @LGSQL = @LGSQL + '  WHERE 1 = 1 '
-  SET @LGSQL = @LGSQL + '  ORDER BY '
-  SET @LGSQL = @LGSQL + CASE @OrderBy
-                        WHEN 'StatusID' THEN '[SPMT_BTAStatus].[StatusID]'
-                        WHEN 'StatusID DESC' THEN '[SPMT_BTAStatus].[StatusID] DESC'
-                        WHEN 'Descriptions' THEN '[SPMT_BTAStatus].[Descriptions]'
-                        WHEN 'Descriptions DESC' THEN '[SPMT_BTAStatus].[Descriptions] DESC'
-                        ELSE '[SPMT_BTAStatus].[StatusID]'
-                    END
-  EXEC (@LGSQL)
-
-  SET @RecordCount = @@RowCount
-
-  SELECT
-    [SPMT_BTAStatus].*  
-  FROM [SPMT_BTAStatus] 
-      INNER JOIN #PageIndex
-          ON [SPMT_BTAStatus].[StatusID] = #PageIndex.StatusID
+          ON [SPMT_erpDCInventory].[ChallanID] = #PageIndex.ChallanID
+          AND [SPMT_erpDCInventory].[SerialNo] = #PageIndex.SerialNo
+  LEFT OUTER JOIN [IDM_Projects] AS [IDM_Projects1]
+    ON [SPMT_erpDCInventory].[ProjectID] = [IDM_Projects1].[ProjectID]
+  LEFT OUTER JOIN [SPMT_BillTypes] AS [SPMT_BillTypes2]
+    ON [SPMT_erpDCInventory].[BillTypeID] = [SPMT_BillTypes2].[BillType]
+  INNER JOIN [SPMT_erpDCH] AS [SPMT_erpDCH3]
+    ON [SPMT_erpDCInventory].[ChallanID] = [SPMT_erpDCH3].[ChallanID]
+  LEFT OUTER JOIN [SPMT_ERPStates] AS [SPMT_ERPStates4]
+    ON [SPMT_erpDCInventory].[ConsignerStateID] = [SPMT_ERPStates4].[StateID]
+  LEFT OUTER JOIN [SPMT_ERPUnits] AS [SPMT_ERPUnits5]
+    ON [SPMT_erpDCInventory].[UOM] = [SPMT_ERPUnits5].[UOM]
+  LEFT OUTER JOIN [SPMT_HSNSACCodes] AS [SPMT_HSNSACCodes6]
+    ON [SPMT_erpDCInventory].[BillTypeID] = [SPMT_HSNSACCodes6].[BillType]
+    AND [SPMT_erpDCInventory].[HSNSACCode] = [SPMT_HSNSACCodes6].[HSNSACCode]
+  LEFT OUTER JOIN [SPMT_IsgecGSTIN] AS [SPMT_IsgecGSTIN7]
+    ON [SPMT_erpDCInventory].[ConsignerIsgecID] = [SPMT_IsgecGSTIN7].[GSTID]
+  LEFT OUTER JOIN [VR_BPGSTIN] AS [VR_BPGSTIN8]
+    ON [SPMT_erpDCInventory].[ConsignerBPID] = [VR_BPGSTIN8].[BPID]
+    AND [SPMT_erpDCInventory].[ConsignerGSTIN] = [VR_BPGSTIN8].[GSTIN]
+  LEFT OUTER JOIN [VR_BusinessPartner] AS [VR_BusinessPartner9]
+    ON [SPMT_erpDCInventory].[ConsignerBPID] = [VR_BusinessPartner9].[BPID]
+  INNER JOIN [SPMT_erpDCD] AS [SPMT_erpDCD10]
+    ON [SPMT_erpDCInventory].[ChallanID] = [SPMT_erpDCD10].[ChallanID]
+    AND [SPMT_erpDCInventory].[SerialNo] = [SPMT_erpDCD10].[SerialNo]
   WHERE
         #PageIndex.IndexID > @StartRowIndex
         AND #PageIndex.IndexID < (@StartRowIndex + @MaximumRows + 1)

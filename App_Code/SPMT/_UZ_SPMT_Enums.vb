@@ -27,3 +27,11 @@ Public Enum spmtDHStates
   UnderReceiptEntry = 10
   UnderClosureEntry = 11
 End Enum
+Public Enum spmtLineTypes
+  NewRecord = 0
+  DirectInventory = 1
+  CompositInventory = 2
+  LockedNewRecord = 3
+  LockedDirectInventory = 4
+  LockedCompositInventory = 5
+End Enum

@@ -5,6 +5,7 @@ Imports System.Data.SqlClient
 Imports System.ComponentModel
 Namespace SIS.SPMT
   Partial Public Class spmtDCHeader
+    Public Property DCType As String = ""
     Public Function GetColor() As System.Drawing.Color
       Dim mRet As System.Drawing.Color = Drawing.Color.Blue
       Return mRet
@@ -249,7 +250,7 @@ Namespace SIS.SPMT
       Return Results
     End Function
     Public Shared Function UZ_spmtDCHeaderInsert(ByVal Record As SIS.SPMT.spmtDCHeader) As SIS.SPMT.spmtDCHeader
-      Dim DCNo As String = SIS.SPMT.spmtDCLastNumber.GetNextDCNo()
+      Dim DCNo As String = SIS.SPMT.spmtDCLastNumber.GetNextDCNo(Record.DCType, Record.FK_SPMT_DCHeader_IssuerID.Description)
       Record.ChallanID = DCNo
       Dim _Result As SIS.SPMT.spmtDCHeader = spmtDCHeaderInsert(Record)
       Return _Result
@@ -259,7 +260,7 @@ Namespace SIS.SPMT
       Return _Result
     End Function
     Public Shared Function UZ_spmtDCHeaderDelete(ByVal Record As SIS.SPMT.spmtDCHeader) As Integer
-      Dim _Result as Integer = spmtDCHeaderDelete(Record)
+      Dim _Result As Integer = spmtDCHeaderDelete(Record)
       Return _Result
     End Function
     Public Shared Function SetDefaultValues(ByVal sender As System.Web.UI.WebControls.FormView, ByVal e As System.EventArgs) As System.Web.UI.WebControls.FormView

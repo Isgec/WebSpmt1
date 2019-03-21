@@ -355,7 +355,7 @@
                       <asp:ListItem Value="220" Text="220"></asp:ListItem>
                       <asp:ListItem Value="230" Text="230"></asp:ListItem>
                       <asp:ListItem Value="240" Text="240"></asp:ListItem>
-                      <asp:ListItem Value="240" Text="250"></asp:ListItem>
+                      <asp:ListItem Value="250" Text="250"></asp:ListItem>
                       <asp:ListItem Value="290" Text="290"></asp:ListItem>
                       <asp:ListItem Value="400" Text="400"></asp:ListItem>
                     </asp:DropDownList>

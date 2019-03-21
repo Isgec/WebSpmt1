@@ -56,6 +56,7 @@ Partial Class LC_spmtIsgecGSTIN
     End Get
     Set(ByVal value As String)
       RequiredFieldValidatorspmtIsgecGSTIN.Text = value
+      If value = "" Then RequiredFieldValidatorspmtIsgecGSTIN.Enabled = False Else RequiredFieldValidatorspmtIsgecGSTIN.Enabled = True
     End Set
   End Property
   Public Property ValidationGroup() As String

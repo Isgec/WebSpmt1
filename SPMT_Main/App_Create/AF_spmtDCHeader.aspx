@@ -27,7 +27,7 @@
         <td class="alignright">
           <b><asp:Label ID="L_ChallanID" ForeColor="#CC6633" runat="server" Text="Challan ID :" /><span style="color:red">*</span></b>
         </td>
-        <td colspan="3">
+        <td>
           <asp:TextBox ID="F_ChallanID"
             Text='<%# Bind("ChallanID") %>'
             CssClass = "mypktxt"
@@ -39,6 +39,21 @@
             Enabled="false"
             Width="168px"
             runat="server" />
+        </td>
+        <td class="alignright">
+          <b><asp:Label ID="Label1" ForeColor="#CC6633" runat="server" Text="Challan Type :" /><span style="color:red">*</span></b>
+        </td>
+        <td>
+          <asp:DropDownList
+            ID="F_DCType"
+            SelectedValue='<%# Bind("DCType") %>'
+            ValidationGroup="spmtDCHeader"
+            CssClass = "mypktxt"
+            Width="200px"
+            runat="server">
+            <asp:ListItem Selected="True" Value="J" Text="Jobwork"></asp:ListItem>
+            <asp:ListItem Value="S" Text="Supply/Site Transfer"></asp:ListItem>
+          </asp:DropDownList>
         </td>
       </tr>
       <tr>

@@ -1619,6 +1619,7 @@ Namespace SIS.SPMT
         .CreatedBy = Global.System.Web.HttpContext.Current.Session("LoginID")
         .Declaration2Line = Record.Declaration2Line
         .Declaration1Line = Record.Declaration1Line
+        .DCType = Record.DCType
       End With
       Return SIS.SPMT.spmtDCHeader.InsertData(_Rec)
     End Function
@@ -1695,6 +1696,7 @@ Namespace SIS.SPMT
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@CreatedBy", SqlDbType.NVarChar, 9, IIf(Record.CreatedBy = "", Convert.DBNull, Record.CreatedBy))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Declaration2Line", SqlDbType.NVarChar, 251, IIf(Record.Declaration2Line = "", Convert.DBNull, Record.Declaration2Line))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Declaration1Line", SqlDbType.NVarChar, 251, IIf(Record.Declaration1Line = "", Convert.DBNull, Record.Declaration1Line))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@DCType", SqlDbType.NVarChar, 11, Record.DCType)
           Cmd.Parameters.Add("@Return_ChallanID", SqlDbType.NVarChar, 21)
           Cmd.Parameters("@Return_ChallanID").Direction = ParameterDirection.Output
           Con.Open()
@@ -1847,6 +1849,7 @@ Namespace SIS.SPMT
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@CreatedBy", SqlDbType.NVarChar, 9, IIf(Record.CreatedBy = "", Convert.DBNull, Record.CreatedBy))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Declaration2Line", SqlDbType.NVarChar, 251, IIf(Record.Declaration2Line = "", Convert.DBNull, Record.Declaration2Line))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Declaration1Line", SqlDbType.NVarChar, 251, IIf(Record.Declaration1Line = "", Convert.DBNull, Record.Declaration1Line))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@DCType", SqlDbType.NVarChar, 11, Record.DCType)
           Cmd.Parameters.Add("@RowCount", SqlDbType.Int)
           Cmd.Parameters("@RowCount").Direction = ParameterDirection.Output
           _RecordCount = -1

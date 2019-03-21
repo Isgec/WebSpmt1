@@ -227,7 +227,7 @@ Namespace SIS.SPMT
       Dim _Result As Integer = spmtSupplierBillDelete(Record)
       Return _Result
     End Function
-    Public Shared Function GetBPFromERP(ByVal BPID As String) As SIS.SPMT.spmtBusinessPartner
+    Public Shared Function GetBPFromERP(ByVal BPID As String, Optional ByVal Comp As String = "200") As SIS.SPMT.spmtBusinessPartner
       Dim Results As SIS.SPMT.spmtBusinessPartner = Nothing
       Dim Sql As String = ""
       Sql &= "select                                                     "
@@ -244,9 +244,9 @@ Namespace SIS.SPMT
       Sql &= "  cnh.t_fuln as ContactPerson,                                   "
       Sql &= "  cnh.t_telp as ContactNo,                                       "
       Sql &= "  cnh.t_info as EMailID                                          "
-      Sql &= "  from ttccom100200 as suh                                       "
-      Sql &= "  left outer join ttccom130200 as adh on suh.t_cadr = adh.t_cadr "
-      Sql &= "  left outer join ttccom140200 as cnh on suh.t_ccnt = cnh.t_ccnt "
+      Sql &= "  from ttccom100" & Comp & " as suh                                       "
+      Sql &= "  left outer join ttccom130" & Comp & " as adh on suh.t_cadr = adh.t_cadr "
+      Sql &= "  left outer join ttccom140" & Comp & " as cnh on suh.t_ccnt = cnh.t_ccnt "
       Sql &= "  where suh.t_bpid ='" & BPID & "'"
       Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
@@ -261,19 +261,27 @@ Namespace SIS.SPMT
         End Using
       End Using
       If Results IsNot Nothing Then
-        Results = SIS.SPMT.spmtBusinessPartner.InsertData(Results)
-        GetBPGSTINFromERP(BPID, 0)
+        If Comp <> "200" Then Results.BPID = "S" & Comp & Right(Results.BPID, 5)
+        Try
+          Results = SIS.SPMT.spmtBusinessPartner.InsertData(Results)
+        Catch ex As Exception
+        End Try
+        If Comp <> "200" Then
+          GetBPGSTINFromERP(BPID, 0, Comp, Results.BPID)
+        Else
+          GetBPGSTINFromERP(Results.BPID, 0)
+        End If
       End If
       Return Results
     End Function
-    Public Shared Function GetBPGSTINFromERP(ByVal BPID As String, Optional ByVal GSTIN As Int32 = 0) As List(Of SIS.SPMT.spmtBPGSTIN)
+    Public Shared Function GetBPGSTINFromERP(ByVal BPID As String, Optional ByVal GSTIN As Int32 = 0, Optional ByVal Comp As String = "200", Optional ByVal NewBPID As String = "") As List(Of SIS.SPMT.spmtBPGSTIN)
       Dim Results As New List(Of SIS.SPMT.spmtBPGSTIN)
       Dim Sql As String = ""
       Sql &= "select                                "
       Sql &= "  t_bpid as BPID,                     "
       Sql &= "  t_fovn as Description,              "
       Sql &= "  t_seqn_l as GSTIN                   "
-      Sql &= "  from ttctax400200                   "
+      Sql &= "  from ttctax400" & Comp & "                   "
       Sql &= "  where t_bpid ='" & BPID & "'"
       Sql &= "  and t_catg_l = 9 "
       If GSTIN > 0 Then
@@ -293,6 +301,7 @@ Namespace SIS.SPMT
       End Using
       If Results.Count > 0 Then
         For Each tmp As SIS.SPMT.spmtBPGSTIN In Results
+          If Comp <> "200" Then tmp.BPID = NewBPID
           Try
             SIS.SPMT.spmtBPGSTIN.InsertData(tmp)
           Catch ex As Exception

@@ -51,5 +51,18 @@ Namespace SIS.SPMT
       End With
       Return sender
     End Function
+    Public Shared Function spmtERPStatesGetIDByCode(ByVal StateCode As String) As String
+      Dim mRet As String = ""
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+        Using Cmd As SqlCommand = Con.CreateCommand()
+          Cmd.CommandType = CommandType.Text
+          Cmd.CommandText = "Select isnull(StateID,'') from SPMT_ERPStates Where StateCode='" & StateCode & "'"
+          Con.Open()
+          mRet = Cmd.ExecuteScalar
+          If mRet Is Nothing Then mRet = ""
+        End Using
+      End Using
+      Return mRet
+    End Function
   End Class
 End Namespace
