@@ -49,10 +49,11 @@
             SelectedValue='<%# Bind("DCType") %>'
             ValidationGroup="spmtDCHeader"
             CssClass = "mypktxt"
+            Enabled="false"
             Width="200px"
             runat="server">
-            <asp:ListItem Selected="True" Value="J" Text="Jobwork"></asp:ListItem>
-            <asp:ListItem Value="S" Text="Supply/Site Transfer"></asp:ListItem>
+            <asp:ListItem Value="J" Text="Jobwork"></asp:ListItem>
+            <asp:ListItem Selected Value="S" Text="Supply/Site Transfer"></asp:ListItem>
           </asp:DropDownList>
         </td>
       </tr>

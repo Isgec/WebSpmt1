@@ -1,3 +1,4 @@
+Imports System.Web.Script.Serialization
 Partial Class EF_spmtNewPA
   Inherits SIS.SYS.UpdateBase
   Public Property Editable() As Boolean
@@ -73,7 +74,7 @@ Partial Class EF_spmtNewPA
   Protected Sub GVspmtNewLinkedSBH_RowCommand(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewCommandEventArgs) Handles GVspmtNewLinkedSBH.RowCommand
     If e.CommandName.ToLower = "lgedit".ToLower Then
       Try
-        Dim IRNo As Int32 = GVspmtNewLinkedSBH.DataKeys(e.CommandArgument).Values("IRNo")  
+        Dim IRNo As Int32 = GVspmtNewLinkedSBH.DataKeys(e.CommandArgument).Values("IRNo")
         Dim RedirectUrl As String = TBLspmtNewLinkedSBH.EditUrl & "?IRNo=" & IRNo
         Response.Redirect(RedirectUrl)
       Catch ex As Exception
@@ -81,7 +82,7 @@ Partial Class EF_spmtNewPA
     End If
     If e.CommandName.ToLower = "Deletewf".ToLower Then
       Try
-        Dim IRNo As Int32 = GVspmtNewLinkedSBH.DataKeys(e.CommandArgument).Values("IRNo")  
+        Dim IRNo As Int32 = GVspmtNewLinkedSBH.DataKeys(e.CommandArgument).Values("IRNo")
         SIS.SPMT.spmtNewLinkedSBH.DeleteWF(IRNo)
         GVspmtNewLinkedSBH.DataBind()
         GVspmtNewUnLinkedSBH.DataBind()
@@ -101,7 +102,7 @@ Partial Class EF_spmtNewPA
   Protected Sub GVspmtNewUnLinkedSBH_RowCommand(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewCommandEventArgs) Handles GVspmtNewUnLinkedSBH.RowCommand
     If e.CommandName.ToLower = "lgedit".ToLower Then
       Try
-        Dim IRNo As Int32 = GVspmtNewUnLinkedSBH.DataKeys(e.CommandArgument).Values("IRNo")  
+        Dim IRNo As Int32 = GVspmtNewUnLinkedSBH.DataKeys(e.CommandArgument).Values("IRNo")
         Dim RedirectUrl As String = TBLspmtNewUnLinkedSBH.EditUrl & "?IRNo=" & IRNo
         Response.Redirect(RedirectUrl)
       Catch ex As Exception
@@ -115,42 +116,45 @@ Partial Class EF_spmtNewPA
         GVspmtNewLinkedSBH.DataBind()
         FVspmtNewPA.DataBind()
       Catch ex As Exception
+        Dim message As String = New JavaScriptSerializer().Serialize(ex.Message)
+        Dim script As String = String.Format("alert({0});", message)
+        ScriptManager.RegisterClientScriptBlock(Page, Page.GetType(), "", script, True)
       End Try
     End If
   End Sub
-  <System.Web.Services.WebMethod()> _
-  <System.Web.Script.Services.ScriptMethod()> _
+  <System.Web.Services.WebMethod()>
+  <System.Web.Script.Services.ScriptMethod()>
   Public Shared Function BPIDCompletionList(ByVal prefixText As String, ByVal count As Integer, ByVal contextKey As String) As String()
     Return SIS.SPMT.spmtBusinessPartner.SelectspmtBusinessPartnerAutoCompleteList(prefixText, count, contextKey)
   End Function
-  <System.Web.Services.WebMethod()> _
-  <System.Web.Script.Services.ScriptMethod()> _
+  <System.Web.Services.WebMethod()>
+  <System.Web.Script.Services.ScriptMethod()>
   Public Shared Function ConcernedHODCompletionList(ByVal prefixText As String, ByVal count As Integer, ByVal contextKey As String) As String()
     Return SIS.COM.comEmployees.SelectcomEmployeesAutoCompleteList(prefixText, count, contextKey)
   End Function
-  <System.Web.Services.WebMethod()> _
+  <System.Web.Services.WebMethod()>
   Public Shared Function validate_FK_SPMT_newPA_ConcernedHOD(ByVal value As String) As String
     Dim aVal() As String = value.Split(",".ToCharArray)
-    Dim mRet As String="0|" & aVal(0)
-    Dim ConcernedHOD As String = CType(aVal(1),String)
+    Dim mRet As String = "0|" & aVal(0)
+    Dim ConcernedHOD As String = CType(aVal(1), String)
     Dim oVar As SIS.COM.comEmployees = SIS.COM.comEmployees.comEmployeesGetByID(ConcernedHOD)
     If oVar Is Nothing Then
-      mRet = "1|" & aVal(0) & "|Record not found." 
+      mRet = "1|" & aVal(0) & "|Record not found."
     Else
-      mRet = "0|" & aVal(0) & "|" & oVar.DisplayField 
+      mRet = "0|" & aVal(0) & "|" & oVar.DisplayField
     End If
     Return mRet
   End Function
-  <System.Web.Services.WebMethod()> _
+  <System.Web.Services.WebMethod()>
   Public Shared Function validate_FK_SPMT_newPA_BPID(ByVal value As String) As String
     Dim aVal() As String = value.Split(",".ToCharArray)
-    Dim mRet As String="0|" & aVal(0)
-    Dim BPID As String = CType(aVal(1),String)
+    Dim mRet As String = "0|" & aVal(0)
+    Dim BPID As String = CType(aVal(1), String)
     Dim oVar As SIS.SPMT.spmtBusinessPartner = SIS.SPMT.spmtBusinessPartner.spmtBusinessPartnerGetByID(BPID)
     If oVar Is Nothing Then
-      mRet = "1|" & aVal(0) & "|Record not found." 
+      mRet = "1|" & aVal(0) & "|Record not found."
     Else
-      mRet = "0|" & aVal(0) & "|" & oVar.DisplayField 
+      mRet = "0|" & aVal(0) & "|" & oVar.DisplayField
     End If
     Return mRet
   End Function

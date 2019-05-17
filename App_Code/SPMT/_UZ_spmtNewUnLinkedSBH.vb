@@ -56,6 +56,9 @@ Namespace SIS.SPMT
     Public Shared Function SelectWF(ByVal IRNo As Int32, ByVal PrimaryKey As String) As SIS.SPMT.spmtNewUnLinkedSBH
       Dim aVal() As String = PrimaryKey.Split("|".ToCharArray)
       Dim AdviceNo As Integer = aVal(0)
+      If Not BillAttached(IRNo, "J_SPMTNEWSB") Then
+        Throw New Exception("Bill is NOT attached, First attach Bill in Supplier Bill.")
+      End If
       Dim Results As SIS.SPMT.spmtNewUnLinkedSBH = spmtNewUnLinkedSBHGetByID(IRNo)
       With Results
         .AdviceNo = AdviceNo
@@ -63,6 +66,26 @@ Namespace SIS.SPMT
       SIS.SPMT.spmtNewUnLinkedSBH.UpdateData(Results)
       SIS.SPMT.spmtNewPA.ValidateAdvice(AdviceNo)
       Return Results
+    End Function
+    Public Shared Function BillAttached(ByVal Index As String, ByVal Handle As String) As Boolean
+      Dim mRet As Boolean = False
+      Dim cnt As Integer = 0
+      Dim Sql As String = ""
+      Sql &= " select isnull(count(t_Indx),0) "
+      Sql &= " from ttcisg132200"
+      Sql &= " where t_hndl='" & Handle & "' "
+      Sql &= " and t_indx='" & Index & "'"
+      Sql &= ""
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
+        Using Cmd As SqlCommand = Con.CreateCommand()
+          Cmd.CommandType = CommandType.Text
+          Cmd.CommandText = Sql
+          Con.Open()
+          cnt = Cmd.ExecuteScalar
+        End Using
+      End Using
+      If cnt > 0 Then mRet = True
+      Return mRet
     End Function
     Public Shared Function UZ_spmtNewUnLinkedSBHSelectList(ByVal StartRowIndex As Integer, ByVal MaximumRows As Integer, ByVal OrderBy As String, ByVal SearchState As Boolean, ByVal SearchText As String, ByVal TranTypeID As String, ByVal BPID As String, ByVal SupplierName As String) As List(Of SIS.SPMT.spmtNewUnLinkedSBH)
       Dim Results As List(Of SIS.SPMT.spmtNewUnLinkedSBH) = Nothing
@@ -77,13 +100,13 @@ Namespace SIS.SPMT
           Else
             Cmd.CommandText = "spspmt_LG_NewUnLinkedSBHSelectListFilteres"
             Cmd.CommandText = "spspmtNewUnLinkedSBHSelectListFilteres"
-            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_TranTypeID",SqlDbType.NVarChar,3, IIf(TranTypeID Is Nothing, String.Empty,TranTypeID))
-            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_BPID",SqlDbType.NVarChar,9, IIf(BPID Is Nothing, String.Empty,BPID))
-            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_SupplierName",SqlDbType.NVarChar,100, IIf(SupplierName Is Nothing, String.Empty,SupplierName))
+            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_TranTypeID", SqlDbType.NVarChar, 3, IIf(TranTypeID Is Nothing, String.Empty, TranTypeID))
+            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_BPID", SqlDbType.NVarChar, 9, IIf(BPID Is Nothing, String.Empty, BPID))
+            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_SupplierName", SqlDbType.NVarChar, 100, IIf(SupplierName Is Nothing, String.Empty, SupplierName))
           End If
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@StartRowIndex", SqlDbType.Int, -1, StartRowIndex)
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@MaximumRows", SqlDbType.Int, -1, MaximumRows)
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NvarChar, 9, HttpContext.Current.Session("LoginID"))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NVarChar, 9, HttpContext.Current.Session("LoginID"))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@OrderBy", SqlDbType.NVarChar, 50, OrderBy)
           Cmd.Parameters.Add("@RecordCount", SqlDbType.Int)
           Cmd.Parameters("@RecordCount").Direction = ParameterDirection.Output

@@ -472,6 +472,13 @@
           <ItemStyle CssClass="alignright" />
           <HeaderStyle CssClass="alignright" Width="80px" />
         </asp:TemplateField>
+        <asp:TemplateField HeaderText="Attatched Documents">
+          <ItemTemplate>
+            <asp:ImageButton ID="cmdAttach" runat="server" AlternateText='<%# Eval("PrimaryKey") %>' ToolTip="View Attached documents." SkinID="attach" OnClientClick='<%# Eval("GetAttachLink") %>' />
+          </ItemTemplate>
+          <ItemStyle CssClass="alignCenter" />
+          <HeaderStyle HorizontalAlign="Center" Width="30px" />
+        </asp:TemplateField>
         <asp:TemplateField HeaderText="Delete">
           <ItemTemplate>
             <asp:ImageButton ID="cmdDelete" ValidationGroup='<%# "Delete" & Container.DataItemIndex %>' CausesValidation="true" runat="server" Visible='<%# EVal("DeleteWFVisible") %>' Enabled='<%# EVal("DeleteWFEnable") %>' AlternateText='<%# EVal("PrimaryKey") %>' ToolTip="Delete" SkinID="Delete" OnClientClick='<%# "return Page_ClientValidate(""Delete" & Container.DataItemIndex & """) && confirm(""Delete record ?"");" %>' CommandName="DeleteWF" CommandArgument='<%# Container.DataItemIndex %>' />

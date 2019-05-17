@@ -5,6 +5,26 @@ Imports System.Data.SqlClient
 Imports System.ComponentModel
 Namespace SIS.SPMT
   Partial Public Class spmtNewSBH
+    Public ReadOnly Property GetAttachLink() As String
+      Get
+        Dim UrlAuthority As String = HttpContext.Current.Request.Url.Authority
+        If UrlAuthority.ToLower <> "cloud.isgec.co.in" Then
+          UrlAuthority = "192.9.200.146"
+        End If
+        Dim mRet As String = HttpContext.Current.Request.Url.Scheme & Uri.SchemeDelimiter & UrlAuthority
+        mRet &= "/Attachment/Attachment.aspx?AthHandle=J_SPMTNEWSB"
+        Dim Index As String = IRNo
+        Dim User As String = HttpContext.Current.Session("LoginID")
+        'User = 1
+        Dim canEdit As String = "n"
+        If Editable Then
+          canEdit = "y"
+        End If
+        mRet &= "&Index=" & Index & "&AttachedBy=" & User & "&ed=" & canEdit
+        mRet = "javascript:window.open('" & mRet & "', 'win" & IRNo & "', 'left=20,top=20,width=1100,height=600,toolbar=1,resizable=1,scrollbars=1'); return false;"
+        Return mRet
+      End Get
+    End Property
     Public Function GetColor() As System.Drawing.Color
       Dim mRet As System.Drawing.Color = Drawing.Color.Blue
       Return mRet

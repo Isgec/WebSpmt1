@@ -226,6 +226,13 @@
           <ItemStyle CssClass="alignCenter" />
           <HeaderStyle HorizontalAlign="Center" Width="30px" />
         </asp:TemplateField>
+        <asp:TemplateField HeaderText="Attatched Documents">
+          <ItemTemplate>
+            <asp:ImageButton ID="cmdAttach" runat="server" AlternateText='<%# Eval("AdviceNo") %>' Visible='<%# Eval("AttatchVisible") %>' ToolTip="View Attached documents in Bills." SkinID="attach" OnClientClick='<%# Eval("GetAttachLink") %>' />
+          </ItemTemplate>
+          <ItemStyle CssClass="alignCenter" />
+          <HeaderStyle HorizontalAlign="Center" Width="30px" />
+        </asp:TemplateField>
       </Columns>
       <EmptyDataTemplate>
         <asp:Label ID="LabelEmpty" runat="server" Font-Size="Small" ForeColor="Red" Text="No record found !!!"></asp:Label>

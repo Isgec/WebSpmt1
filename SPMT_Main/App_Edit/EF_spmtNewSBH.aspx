@@ -566,6 +566,15 @@
         </td>
       </tr>
       <tr><td colspan="4" style="border-top: solid 1pt LightGrey" ></td></tr>
+      <tr>
+        <td class="alignright">
+          <asp:Label ID="Label1" runat="server" Text="Attach / View Document :" />&nbsp;
+        </td>
+        <td colspan="3">
+          <asp:Button ID="cmdAttach" runat="server" Text="Click to Attach/View" ForeColor="red" OnClientClick='<%# Eval("GetAttachLink") %>' />
+        </td>
+
+      </tr>
     </table>
   </div>
 <fieldset class="ui-widget-content page">

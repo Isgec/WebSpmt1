@@ -5,6 +5,26 @@ Imports System.Data.SqlClient
 Imports System.ComponentModel
 Namespace SIS.SPMT
   Partial Public Class spmtNewPA
+    Public ReadOnly Property GetAttachLink() As String
+      Get
+        Dim UrlAuthority As String = HttpContext.Current.Request.Url.Authority
+        If UrlAuthority.ToLower <> "cloud.isgec.co.in" Then
+          UrlAuthority = "192.9.200.146"
+        End If
+        Dim mRet As String = HttpContext.Current.Request.Url.Scheme & Uri.SchemeDelimiter & UrlAuthority
+        mRet &= "/Attachment/Attachment.aspx?AthHandle=J_SPMTNEWPA"
+        Dim Index As String = AdviceNo
+        Dim User As String = HttpContext.Current.Session("LoginID")
+        'User = 1
+        Dim canEdit As String = "n"
+        'If Editable Then
+        '  canEdit = "y"
+        'End If
+        mRet &= "&Index=" & Index & "&AttachedBy=" & User & "&ed=" & canEdit
+        mRet = "javascript:window.open('" & mRet & "', 'win" & AdviceNo & "', 'left=20,top=20,width=1100,height=600,toolbar=1,resizable=1,scrollbars=1'); return false;"
+        Return mRet
+      End Get
+    End Property
     Public Function GetColor() As System.Drawing.Color
       Dim mRet As System.Drawing.Color = Drawing.Color.Black
       Select Case StatusID
@@ -67,6 +87,19 @@ Namespace SIS.SPMT
         Return mRet
       End Get
     End Property
+    Public ReadOnly Property AttatchVisible() As Boolean
+      Get
+        Dim mRet As Boolean = True
+        Try
+          Select Case Me.StatusID
+            Case spmtPAStates.Returned, spmtPAStates.Free
+              mRet = False
+          End Select
+        Catch ex As Exception
+        End Try
+        Return mRet
+      End Get
+    End Property
     Public ReadOnly Property InitiateWFVisible() As Boolean
       Get
         Dim mRet As Boolean = False
@@ -93,10 +126,39 @@ Namespace SIS.SPMT
     Public Shared Function InitiateWF(ByVal AdviceNo As Int32) As SIS.SPMT.spmtNewPA
       Dim Results As SIS.SPMT.spmtNewPA = spmtNewPAGetByID(AdviceNo)
       Results.StatusID = spmtPAStates.ForwardedToAC
+      'Copy Bill Attachments to Advice Attachments
+      Dim tmpBills As List(Of SIS.SPMT.spmtNewLinkedSBH) = SIS.SPMT.spmtNewLinkedSBH.UZ_spmtNewLinkedSBHSelectList(0, 99999, "", False, "", Results.AdviceNo)
+      For Each tmpBill As SIS.SPMT.spmtNewLinkedSBH In tmpBills
+        Dim IndexS As String = tmpBill.IRNo
+        Dim IndexT As String = Results.AdviceNo
+        '======Copy Attachment===========
+        'CopyAttachment(IndexS, IndexT)
+        DirectNewCopyAttachment(IndexS, IndexT, "J_SPMTNEWSB", "J_SPMTNEWPA")
+        '======End Copy Attachment=======
+      Next
       Results = CopyToOldPaymentAdvice(Results)
       SIS.SPMT.spmtNewPA.UpdateData(Results)
       Return Results
     End Function
+    Public Shared Sub DirectNewCopyAttachment(ByVal S_Index As String, ByVal T_Index As String, ByVal S_Handle As String, ByVal T_Handle As String)
+      Dim Sql As String = ""
+      Sql &= " insert into ttcisg132200 (t_drid,t_dcid,t_hndl,t_indx,t_prcd,t_fnam,t_lbcd,t_atby,t_aton,t_Refcntd,t_Refcntu)"
+      Sql &= " select 1000000 + (ABS(CHECKSUM(NEWID())) % 1000000)  as t_drid ,t_dcid, '" & T_Handle & "' AS t_hndl, "
+      Sql &= " '" & T_Index & "' as t_indx,"
+      Sql &= " t_prcd,t_fnam,t_lbcd,t_atby,t_aton,t_Refcntd,t_Refcntu "
+      Sql &= " from ttcisg132200"
+      Sql &= " where t_hndl='" & S_Handle & "' "
+      Sql &= " and t_indx='" & S_Index & "'"
+      Sql &= ""
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
+        Using Cmd As SqlCommand = Con.CreateCommand()
+          Cmd.CommandType = CommandType.Text
+          Cmd.CommandText = Sql
+          Con.Open()
+          Cmd.ExecuteNonQuery()
+        End Using
+      End Using
+    End Sub
     Public Shared Function UZ_spmtNewPASelectList(ByVal StartRowIndex As Integer, ByVal MaximumRows As Integer, ByVal OrderBy As String, ByVal SearchState As Boolean, ByVal SearchText As String, ByVal TranTypeID As String, ByVal CreatedBy As String, ByVal BPID As String) As List(Of SIS.SPMT.spmtNewPA)
       Dim Results As List(Of SIS.SPMT.spmtNewPA) = Nothing
       Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
@@ -110,13 +172,13 @@ Namespace SIS.SPMT
           Else
             Cmd.CommandText = "spspmt_LG_NewPASelectListFilteres"
             Cmd.CommandText = "spspmtNewPASelectListFilteres"
-            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_TranTypeID",SqlDbType.NVarChar,3, IIf(TranTypeID Is Nothing, String.Empty,TranTypeID))
-            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_CreatedBy",SqlDbType.NVarChar,8, IIf(CreatedBy Is Nothing, String.Empty,CreatedBy))
-            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_BPID",SqlDbType.NVarChar,9, IIf(BPID Is Nothing, String.Empty,BPID))
+            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_TranTypeID", SqlDbType.NVarChar, 3, IIf(TranTypeID Is Nothing, String.Empty, TranTypeID))
+            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_CreatedBy", SqlDbType.NVarChar, 8, IIf(CreatedBy Is Nothing, String.Empty, CreatedBy))
+            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_BPID", SqlDbType.NVarChar, 9, IIf(BPID Is Nothing, String.Empty, BPID))
           End If
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@StartRowIndex", SqlDbType.Int, -1, StartRowIndex)
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@MaximumRows", SqlDbType.Int, -1, MaximumRows)
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NvarChar, 9, HttpContext.Current.Session("LoginID"))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NVarChar, 9, HttpContext.Current.Session("LoginID"))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@OrderBy", SqlDbType.NVarChar, 50, OrderBy)
           Cmd.Parameters.Add("@RecordCount", SqlDbType.Int)
           Cmd.Parameters("@RecordCount").Direction = ParameterDirection.Output
@@ -274,7 +336,13 @@ Namespace SIS.SPMT
             .DepartmentID = sbd.DepartmentID
           End With
           tmpSB = SIS.SPMT.spmtSupplierBill.InsertData(tmpSB)
+          '=========Copy Bill Attachment to OLD BILLs===========
+          DirectNewCopyAttachment(sbh.IRNo, tmpSB.IRNo, "J_SPMTNEWSB", "J_SPMTSUPPLIERBILL")
+          '=============================================
         Next
+        '=========Copy Bill Attachment to OLD PA===========
+        DirectNewCopyAttachment(sbh.IRNo, tPA.AdviceNo, "J_SPMTNEWSB", "J_SPMTPAYMENTADVICE")
+        '=============================================
       Next
       Return sPA
     End Function
