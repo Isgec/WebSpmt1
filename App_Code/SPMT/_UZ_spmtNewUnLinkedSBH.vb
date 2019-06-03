@@ -71,7 +71,7 @@ Namespace SIS.SPMT
       Dim mRet As Boolean = False
       Dim cnt As Integer = 0
       Dim Sql As String = ""
-      Sql &= " select isnull(count(t_Indx),0) "
+      Sql &= " select isnull(count(t_indx),0) "
       Sql &= " from ttcisg132200"
       Sql &= " where t_hndl='" & Handle & "' "
       Sql &= " and t_indx='" & Index & "'"
