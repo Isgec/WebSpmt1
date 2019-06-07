@@ -56,10 +56,13 @@ Namespace SIS.SPMT
     Public Shared Function SelectWF(ByVal IRNo As Int32, ByVal PrimaryKey As String) As SIS.SPMT.spmtNewUnLinkedSBH
       Dim aVal() As String = PrimaryKey.Split("|".ToCharArray)
       Dim AdviceNo As Integer = aVal(0)
-      If Not BillAttached(IRNo, "J_SPMTNEWSB") Then
-        Throw New Exception("Bill is NOT attached, First attach Bill in Supplier Bill.")
-      End If
       Dim Results As SIS.SPMT.spmtNewUnLinkedSBH = spmtNewUnLinkedSBHGetByID(IRNo)
+      Select Case Results.PurchaseType
+        Case "Purchase from Registered Dealer", "Purchase from Composition Dealer"
+          If Not BillAttached(IRNo, "J_SPMTNEWSB") Then
+            Throw New Exception("Bill is NOT attached, First attach Bill in Supplier Bill.")
+          End If
+      End Select
       With Results
         .AdviceNo = AdviceNo
       End With

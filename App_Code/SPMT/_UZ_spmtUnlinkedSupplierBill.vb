@@ -36,11 +36,14 @@ Namespace SIS.SPMT
       End Get
     End Property
     Public Shared Function ApproveWF(ByVal IRNo As Int32, ByVal AdviceNo As Integer) As SIS.SPMT.spmtUnlinkedSupplierBill
-      If Not BillAttached(IRNo, "J_SPMTSUPPLIERBILL") Then
-        Throw New Exception("Bill is NOT attached, First attach Bill in Supplier Bill.")
-      End If
-
       Dim Results As SIS.SPMT.spmtUnlinkedSupplierBill = spmtUnlinkedSupplierBillGetByID(IRNo)
+      Select Case Results.PurchaseType
+        Case "Purchase from Registered Dealer", "Purchase from Composition Dealer"
+          If Not BillAttached(IRNo, "J_SPMTSUPPLIERBILL") Then
+            Throw New Exception("Bill is NOT attached, First attach Bill in Supplier Bill.")
+          End If
+      End Select
+
       With Results
         .AdviceNo = AdviceNo
         .LogisticLinked = True
