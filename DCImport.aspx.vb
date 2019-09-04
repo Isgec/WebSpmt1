@@ -6,6 +6,7 @@ Partial Class DCImport
   Private Sub DCImport_Load(sender As Object, e As EventArgs) Handles Me.Load
     Dim PrimaryKey As String = ""
     Dim Comp As String = "200"
+    Dim UserID As String = ""
     If Request.QueryString("ChallanID") IsNot Nothing Then
       PrimaryKey = Request.QueryString("ChallanID")
       If Request.QueryString("Comp") IsNot Nothing Then
@@ -13,6 +14,13 @@ Partial Class DCImport
       Else
         Comp = "200"
       End If
+      If Request.QueryString("UserID") IsNot Nothing Then
+        UserID = Request.QueryString("UserID")
+        If UserID <> "" Then
+          SIS.SYS.Utilities.SessionManager.DoLogin(UserID)
+        End If
+      End If
+      HttpContext.Current.Session("LoginID") = UserID
       Dim tmp As String = SIS.SPMT.SPMTerpDCH.ImportDC(PrimaryKey, Comp)
       If tmp = "" Then
         Response.Redirect("~/SPMT_Main/App_Edit/EF_SPMTerpDCH_M.aspx?ChallanID=" & PrimaryKey)

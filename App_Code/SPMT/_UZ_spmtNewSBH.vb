@@ -111,10 +111,67 @@ Namespace SIS.SPMT
       Return Results
     End Function
     Public Shared Function UZ_spmtNewSBHInsert(ByVal Record As SIS.SPMT.spmtNewSBH) As SIS.SPMT.spmtNewSBH
+      Dim DuplicateBill As Boolean = False
+      Dim Sql As String = ""
+      If Record.BPID = "" Then
+        Sql &= " select isnull(count(irno),0) as cnt from spmt_supplierBill "
+        Sql &= " where "
+        Sql &= " lower(billNumber) = lower('" & Record.BillNumber & "') "
+        Sql &= " and billDate = convert(datetime,'" & Record.BillDate & "',103) "
+        Sql &= " and lower(suppliername) = lower('" & Record.SupplierName & "') "
+      Else
+        Sql &= " select isnull(count(irno),0) as cnt from spmt_supplierBill "
+        Sql &= " where "
+        Sql &= " lower(billNumber) = lower('" & Record.BillNumber & "') "
+        Sql &= " and billDate = convert(datetime,'" & Record.BillDate & "',103) "
+        Sql &= " and lower(BPID) = lower('" & Record.BPID & "') "
+      End If
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+        Using Cmd As SqlCommand = Con.CreateCommand()
+          Cmd.CommandType = CommandType.Text
+          Cmd.CommandText = Sql
+          Con.Open()
+          Dim cnt As Integer = Cmd.ExecuteScalar
+          If cnt > 0 Then DuplicateBill = True
+        End Using
+      End Using
+      If DuplicateBill Then
+        Throw New Exception("<h3>Duplicate Bill Entry NOT Allowed</h3>")
+      End If
+
       Dim _Result As SIS.SPMT.spmtNewSBH = spmtNewSBHInsert(Record)
       Return _Result
     End Function
     Public Shared Function UZ_spmtNewSBHUpdate(ByVal Record As SIS.SPMT.spmtNewSBH) As SIS.SPMT.spmtNewSBH
+      Dim DuplicateBill As Boolean = False
+      Dim Sql As String = ""
+      If Record.BPID = "" Then
+        Sql &= " select isnull(count(irno),0) as cnt from spmt_supplierBill "
+        Sql &= " where "
+        Sql &= " lower(billNumber) = lower('" & Record.BillNumber & "') "
+        Sql &= " and billDate = convert(datetime,'" & Record.BillDate & "',103) "
+        Sql &= " and lower(suppliername) = lower('" & Record.SupplierName & "') "
+        Sql &= " and irno <> " & Record.IRNo
+      Else
+        Sql &= " select isnull(count(irno),0) as cnt from spmt_supplierBill "
+        Sql &= " where "
+        Sql &= " lower(billNumber) = lower('" & Record.BillNumber & "') "
+        Sql &= " and billDate = convert(datetime,'" & Record.BillDate & "',103) "
+        Sql &= " and lower(BPID) = lower('" & Record.BPID & "') "
+        Sql &= " and irno <> " & Record.IRNo
+      End If
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+        Using Cmd As SqlCommand = Con.CreateCommand()
+          Cmd.CommandType = CommandType.Text
+          Cmd.CommandText = Sql
+          Con.Open()
+          Dim cnt As Integer = Cmd.ExecuteScalar
+          If cnt > 0 Then DuplicateBill = True
+        End Using
+      End Using
+      If DuplicateBill Then
+        Throw New Exception("<h3>Duplicate Bill Entry NOT Allowed</h3>")
+      End If
       Dim _Result As SIS.SPMT.spmtNewSBH = spmtNewSBHUpdate(Record)
       Return _Result
     End Function

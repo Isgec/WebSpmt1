@@ -23,6 +23,32 @@ Namespace SIS.SYS.Utilities
   End Class
   Public Class SessionManager
     Public Shared ci As System.Globalization.CultureInfo = New System.Globalization.CultureInfo("en-GB", True)
+    Public Shared Function DoLogin(ByVal UserID As String) As Boolean
+      Dim mRet As Boolean = False
+      If Membership.ValidateUser(UserID, GetPassword(UserID)) Then
+        FormsAuthentication.RedirectFromLoginPage(UserID, True)
+        SIS.SYS.Utilities.SessionManager.InitializeEnvironment(UserID)
+        mRet = True
+      End If
+      Return mRet
+    End Function
+    Public Shared Function GetPassword(ByVal Uid As String) As String
+      Dim mRet As String = ""
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString)
+        Using Cmd As SqlCommand = Con.CreateCommand()
+          Dim mSql As String = "Select ISNULL(pw,'') from aspnet_users WHERE UserName = '" & Uid & "'"
+          Cmd.CommandType = System.Data.CommandType.Text
+          Cmd.CommandText = mSql
+          Con.Open()
+          mRet = Cmd.ExecuteScalar()
+          If mRet Is Nothing Then
+            mRet = ""
+          End If
+        End Using
+      End Using
+      Return mRet
+    End Function
+
     Public Shared Function GetObj(ByVal Source As Object, ByVal Target As Object) As Object
       For Each pi As System.Reflection.PropertyInfo In Target.GetType.GetProperties
         If pi.MemberType = Reflection.MemberTypes.Property Then

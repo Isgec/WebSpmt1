@@ -296,7 +296,8 @@ Namespace SIS.SPMT
       If tmp Is Nothing Then
         tmp = SIS.SPMT.SPMTerpDCH.erpDCHGetFromERP(ChallanID, Comp)
         '====================
-        tmp.CreatedBy = "0340"
+
+        tmp.CreatedBy = HttpContext.Current.Session("LoginID")
         tmp.StatusID = spmtDHStates.Created
         '====================
         Dim oVar As SIS.SPMT.spmtBusinessPartner = Nothing
@@ -344,7 +345,11 @@ Namespace SIS.SPMT
         tmp.PlaceOfDelivery = SIS.SPMT.spmtERPStates.spmtERPStatesGetIDByCode(tmp.PlaceOfDelivery)
         tmp.PlaceOfSupply = SIS.SPMT.spmtERPStates.spmtERPStatesGetIDByCode(tmp.PlaceOfSupply)
         tmp.ConsigneeGSTIN = SIS.SPMT.spmtBPGSTIN.spmtGSTINByDescription(tmp.ConsigneeGSTIN)
-        tmp.ConsignerGSTIN = SIS.SPMT.spmtBPGSTIN.spmtGSTINByDescription(tmp.ConsignerGSTIN)
+        Try
+          tmp.ConsignerGSTIN = SIS.SPMT.spmtBPGSTIN.spmtGSTINByDescription(tmp.ConsignerGSTIN)
+        Catch ex As Exception
+          tmp.ConsignerGSTIN = ""
+        End Try
         '6. Insert Challan
         Try
           SIS.SPMT.SPMTerpDCH.InsertData(tmp)

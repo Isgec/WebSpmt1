@@ -117,8 +117,35 @@ Namespace SIS.SPMT
       Return Results
     End Function
     Public Shared Function UZ_spmtSupplierBillInsert(ByVal Record As SIS.SPMT.spmtSupplierBill) As SIS.SPMT.spmtSupplierBill
+      Dim DuplicateBill As Boolean = False
+      Dim Sql As String = ""
+      If Record.BPID = "" Then
+        Sql &= " select isnull(count(irno),0) as cnt from spmt_supplierBill "
+        Sql &= " where "
+        Sql &= " lower(billNumber) = lower('" & Record.BillNumber & "') "
+        Sql &= " and billDate = convert(datetime,'" & Record.BillDate & "',103) "
+        Sql &= " and lower(suppliername) = lower('" & Record.SupplierName & "') "
+      Else
+        Sql &= " select isnull(count(irno),0) as cnt from spmt_supplierBill "
+        Sql &= " where "
+        Sql &= " lower(billNumber) = lower('" & Record.BillNumber & "') "
+        Sql &= " and billDate = convert(datetime,'" & Record.BillDate & "',103) "
+        Sql &= " and lower(BPID) = lower('" & Record.BPID & "') "
+      End If
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+        Using Cmd As SqlCommand = Con.CreateCommand()
+          Cmd.CommandType = CommandType.Text
+          Cmd.CommandText = Sql
+          Con.Open()
+          Dim cnt As Integer = Cmd.ExecuteScalar
+          If cnt > 0 Then DuplicateBill = True
+        End Using
+      End Using
+      If DuplicateBill Then
+        Throw New Exception("<h3>Duplicate Bill Entry NOT Allowed</h3>")
+      End If
       Dim _Rec As SIS.SPMT.spmtSupplierBill = SIS.SPMT.spmtSupplierBill.spmtSupplierBillGetNewRecord()
-      With _Rec
+        With _Rec
         .TranTypeID = Record.TranTypeID.Split("|".ToCharArray)(0)
         .BillStatusID = 4
         .BillStatusDate = Now
@@ -171,6 +198,35 @@ Namespace SIS.SPMT
       Return SIS.SPMT.spmtSupplierBill.InsertData(_Rec)
     End Function
     Public Shared Function UZ_spmtSupplierBillUpdate(ByVal Record As SIS.SPMT.spmtSupplierBill) As SIS.SPMT.spmtSupplierBill
+      Dim DuplicateBill As Boolean = False
+      Dim Sql As String = ""
+      If Record.BPID = "" Then
+        Sql &= " select isnull(count(irno),0) as cnt from spmt_supplierBill "
+        Sql &= " where "
+        Sql &= " lower(billNumber) = lower('" & Record.BillNumber & "') "
+        Sql &= " and billDate = convert(datetime,'" & Record.BillDate & "',103) "
+        Sql &= " and lower(suppliername) = lower('" & Record.SupplierName & "') "
+        Sql &= " and irno <> " & Record.IRNo
+      Else
+        Sql &= " select isnull(count(irno),0) as cnt from spmt_supplierBill "
+        Sql &= " where "
+        Sql &= " lower(billNumber) = lower('" & Record.BillNumber & "') "
+        Sql &= " and billDate = convert(datetime,'" & Record.BillDate & "',103) "
+        Sql &= " and lower(BPID) = lower('" & Record.BPID & "') "
+        Sql &= " and irno <> " & Record.IRNo
+      End If
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+        Using Cmd As SqlCommand = Con.CreateCommand()
+          Cmd.CommandType = CommandType.Text
+          Cmd.CommandText = Sql
+          Con.Open()
+          Dim cnt As Integer = Cmd.ExecuteScalar
+          If cnt > 0 Then DuplicateBill = True
+        End Using
+      End Using
+      If DuplicateBill Then
+        Throw New Exception("<h3>Duplicate Bill Entry NOT Allowed</h3>")
+      End If
       Dim _Rec As SIS.SPMT.spmtSupplierBill = SIS.SPMT.spmtSupplierBill.spmtSupplierBillGetByID(Record.IRNo)
       With _Rec
         .TranTypeID = Record.TranTypeID.Split("|".ToCharArray)(0)
