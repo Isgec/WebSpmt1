@@ -1,6 +1,5 @@
 Partial Class RP_spmtPaymentAdvice
   Inherits System.Web.UI.Page
-
   Private Sub RP_spmtPaymentAdvice_Load(sender As Object, e As EventArgs) Handles Me.Load
     Dim aVal() As String = Request.QueryString("pk").Split("|".ToCharArray)
     Dim AdviceNo As Int32 = CType(aVal(0), Int32)
@@ -1510,6 +1509,7 @@ Public Class RPT_spmtPaymentAdvice
   End Sub
 
   Public Function ProcessReport() As String
+    'ici = System.Globalization.CultureInfo.CreateSpecificCulture("hi-IN")
     Report = ""
     Dim Hdr As String = "PAYMENT ADVICE"
 
