@@ -90,12 +90,12 @@ Namespace SIS.SPMT
       End Using
       Return Results
     End Function
-    Public Shared Function spmtGSTINByDescription(ByVal Description As String) As String
+    Public Shared Function spmtGSTINByDescription(ByVal BPID As String, ByVal Description As String) As String
       Dim mRet As String = ""
       Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.Text
-          Cmd.CommandText = "Select isnull(GSTIN,'') from VR_BPGSTIN Where Description='" & Description & "'"
+          Cmd.CommandText = "Select isnull(GSTIN,'') from VR_BPGSTIN Where BPID='" & BPID & "' and Description='" & Description & "'"
           Con.Open()
           mRet = Cmd.ExecuteScalar
           If mRet Is Nothing Then mRet = ""

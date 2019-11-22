@@ -58,7 +58,6 @@ Partial Class RP_spmtOrderToStock
     Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
       Using Cmd As SqlCommand = Con.CreateCommand()
         Cmd.CommandType = CommandType.StoredProcedure
-        Cmd.CommandText = "spspmt_LG_OrderToStockByDateRange"
         Cmd.CommandText = "spspmt_LG_vOrderToStockByDateRange"
         SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@sDt", SqlDbType.DateTime, 21, sDt)
         SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@tDt", SqlDbType.DateTime, 21, tDt)

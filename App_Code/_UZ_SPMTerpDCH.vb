@@ -344,18 +344,18 @@ Namespace SIS.SPMT
         'tmp.DestinationStateID = SIS.SPMT.spmtERPStates.spmtERPStatesGetIDByCode(tmp.DestinationStateID)
         tmp.PlaceOfDelivery = SIS.SPMT.spmtERPStates.spmtERPStatesGetIDByCode(tmp.PlaceOfDelivery)
         tmp.PlaceOfSupply = SIS.SPMT.spmtERPStates.spmtERPStatesGetIDByCode(tmp.PlaceOfSupply)
-        tmp.ConsigneeGSTIN = SIS.SPMT.spmtBPGSTIN.spmtGSTINByDescription(tmp.ConsigneeGSTIN)
+        tmp.ConsigneeGSTIN = SIS.SPMT.spmtBPGSTIN.spmtGSTINByDescription(tmp.ConsigneeBPID, tmp.ConsigneeGSTIN)
         Try
-          tmp.ConsignerGSTIN = SIS.SPMT.spmtBPGSTIN.spmtGSTINByDescription(tmp.ConsignerGSTIN)
+          tmp.ConsignerGSTIN = SIS.SPMT.spmtBPGSTIN.spmtGSTINByDescription(tmp.ConsignerBPID, tmp.ConsignerGSTIN)
         Catch ex As Exception
           tmp.ConsignerGSTIN = ""
         End Try
         '6. Insert Challan
-        Try
-          SIS.SPMT.SPMTerpDCH.InsertData(tmp)
-        Catch ex As Exception
-          mRet = ex.Message
-        End Try
+        SIS.SPMT.SPMTerpDCH.InsertData(tmp)
+        'Try
+        'Catch ex As Exception
+        '  mRet = ex.Message
+        'End Try
       End If
       Return mRet
     End Function
@@ -476,6 +476,36 @@ Namespace SIS.SPMT
           Reader.Close()
         End Using
       End Using
+      Dim IsgecGSTIN As String = ""
+      Sql = ""
+      Sql &= " select distinct isnull(ttctax940" & Comp & ".t_regn,'') "
+      Sql &= " from ttdisg027" & Comp & ", twhinh312" & Comp & ", ttdpur401" & Comp & ", ttctax940" & Comp & " "
+      Sql &= " where ttdisg027" & Comp & ".t_rcno = twhinh312" & Comp & ".t_rcno "
+      Sql &= " and twhinh312" & Comp & ".t_orno = ttdpur401" & Comp & ".t_orno "
+      Sql &= " and ttdpur401" & Comp & ".t_rnso_l = ttctax940" & Comp & ".t_seqn "
+      Sql &= " and t_dech = '" & ChallanID & "'"
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
+        Using Cmd As SqlCommand = Con.CreateCommand()
+          Cmd.CommandType = CommandType.Text
+          Cmd.CommandText = Sql
+          Con.Open()
+          IsgecGSTIN = Cmd.ExecuteScalar
+        End Using
+      End Using
+      If IsgecGSTIN <> "" Then
+        Dim tmpISG As SIS.SPMT.spmtIsgecGSTIN = SIS.SPMT.spmtIsgecGSTIN.spmtIsgecGSTINGetByGSTIN(IsgecGSTIN)
+        With Results
+          .DCType = "S"
+          .UnitID = "ISGEC."
+          .IssuerID = tmpISG.GSTID
+          .IssuerCompanyName = tmpISG.CompanyName
+          .IssuerAddress1Line = tmpISG.Address1Line
+          .IssuerAddress2Line = tmpISG.Address2Line
+          'PAN and CIN is same for all ISGEC REgs.
+          '.IssuerPAN = tmpISG.PAN
+          '.IssuerCIN = tmpISG.CIN
+        End With
+      End If
       Return Results
     End Function
     ' select top 1 

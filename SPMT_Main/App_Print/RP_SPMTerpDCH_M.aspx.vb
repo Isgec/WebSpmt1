@@ -688,7 +688,7 @@ Partial Class RP_SPMTerpDCH_M
     oCol.Font.Bold = True
     oRow.Cells.Add(oCol)
     oCol = New TableCell
-    oCol.Text = oVar.TotalAmount
+    oCol.Text = ospmtDCDetailss.Sum((Function(x) Convert.ToDecimal(x.TotalAmount))) '    oVar.TotalAmount
     oCol.Style.Add("text-align", "right")
     oCol.ColumnSpan = "2"
     oRow.Cells.Add(oCol)
