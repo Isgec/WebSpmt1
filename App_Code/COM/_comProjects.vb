@@ -387,6 +387,7 @@ Namespace SIS.COM
 			Return Results.ToArray
 		End Function
     Public Shared Function GetProjectFromERP(ByVal ProjectID As String, ByVal Comp As String) As SIS.COM.comProjects
+      Comp = HttpContext.Current.Session("FinanceCompany")
       Dim Ret As SIS.COM.comProjects = Nothing
       Dim Sql As String = ""
       Sql &= "select top 1  "

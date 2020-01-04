@@ -205,7 +205,7 @@ Namespace SIS.COM
     <DataObjectMethod(DataObjectMethodType.Select)> _
     Public Shared Function SelectList(ByVal orderBy As String) As List(Of SIS.COM.comUsers)
       Dim Results As List(Of SIS.COM.comUsers) = Nothing
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomUsersSelectList"
@@ -225,7 +225,7 @@ Namespace SIS.COM
       End Using
       Return Results
     End Function
-    <DataObjectMethod(DataObjectMethodType.Select)> _
+    <DataObjectMethod(DataObjectMethodType.Select)>
     Public Shared Function GetNewRecord() As SIS.COM.comUsers
       Dim Results As SIS.COM.comUsers = Nothing
       Results = New SIS.COM.comUsers()
@@ -237,7 +237,7 @@ Namespace SIS.COM
     <DataObjectMethod(DataObjectMethodType.Select)>
     Public Shared Function GetByID(ByVal LoginID As String) As SIS.COM.comUsers
       Dim Results As SIS.COM.comUsers = Nothing
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomUsersSelectByID"
@@ -252,18 +252,18 @@ Namespace SIS.COM
       End Using
       Return Results
     End Function
-    <DataObjectMethod(DataObjectMethodType.Select)> _
+    <DataObjectMethod(DataObjectMethodType.Select)>
     Public Shared Function SelectList(ByVal startRowIndex As Integer, ByVal maximumRows As Integer, ByVal orderBy As String, ByVal SearchState As Boolean, ByVal SearchText As String) As List(Of SIS.COM.comUsers)
       Dim Results As List(Of SIS.COM.comUsers) = Nothing
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
-					If SearchState Then
-						Cmd.CommandText = "spcomUsersSelectListSearch"
-						SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@KeyWord", SqlDbType.NVarChar, 250, SearchText)
-					Else
-						Cmd.CommandText = "spcomUsersSelectListFilteres"
-					End If
+          If SearchState Then
+            Cmd.CommandText = "spcomUsersSelectListSearch"
+            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@KeyWord", SqlDbType.NVarChar, 250, SearchText)
+          Else
+            Cmd.CommandText = "spcomUsersSelectListFilteres"
+          End If
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@startRowIndex", SqlDbType.Int, -1, startRowIndex)
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@maximumRows", SqlDbType.Int, -1, maximumRows)
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@OrderBy", SqlDbType.NVarChar, 50, orderBy)
@@ -285,32 +285,32 @@ Namespace SIS.COM
     Public Shared Function SelectCount(ByVal SearchState As Boolean, ByVal SearchText As String) As Integer
       Return _RecordCount
     End Function
-      'Select By ID One Record Filtered Overloaded GetByID
-'		Autocomplete Method
-		Public Shared Function SelectcomUsersAutoCompleteList(ByVal Prefix As String, ByVal count As Integer, ByVal contextKey As String) As String()
-			Dim Results As List(Of String) = Nothing
+    'Select By ID One Record Filtered Overloaded GetByID
+    '		Autocomplete Method
+    Public Shared Function SelectcomUsersAutoCompleteList(ByVal Prefix As String, ByVal count As Integer, ByVal contextKey As String) As String()
+      Dim Results As List(Of String) = Nothing
       Dim aVal() As String = contextKey.Split("|".ToCharArray)
-			Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
-				Using Cmd As SqlCommand = Con.CreateCommand()
-					Cmd.CommandType = CommandType.StoredProcedure
-					Cmd.CommandText = "spcomUsersAutoCompleteList"
-					SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@prefix", SqlDbType.NVarChar, 50, Prefix)
-					SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@records", SqlDbType.Int, -1, count)
-					SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@bycode", SqlDbType.Int, 1, IIf(IsNumeric(Prefix),0,IIf(Prefix.ToLower=Prefix, 0, 1)))
-					Results = New List(Of String)()
-					Con.Open()
-					Dim Reader As SqlDataReader = Cmd.ExecuteReader()
-					If Not Reader.HasRows Then
-					  Results.Add(AjaxControlToolkit.AutoCompleteExtender.CreateAutoCompleteItem("---Select Value---".PadRight(50, " "),""))
-					End If
-					While (Reader.Read())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
+        Using Cmd As SqlCommand = Con.CreateCommand()
+          Cmd.CommandType = CommandType.StoredProcedure
+          Cmd.CommandText = "spcomUsersAutoCompleteList"
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@prefix", SqlDbType.NVarChar, 50, Prefix)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@records", SqlDbType.Int, -1, count)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@bycode", SqlDbType.Int, 1, IIf(IsNumeric(Prefix), 0, IIf(Prefix.ToLower = Prefix, 0, 1)))
+          Results = New List(Of String)()
+          Con.Open()
+          Dim Reader As SqlDataReader = Cmd.ExecuteReader()
+          If Not Reader.HasRows Then
+            Results.Add(AjaxControlToolkit.AutoCompleteExtender.CreateAutoCompleteItem("---Select Value---".PadRight(50, " "), ""))
+          End If
+          While (Reader.Read())
             Dim Tmp As SIS.COM.comUsers = New SIS.COM.comUsers(Reader)
-					  Results.Add(AjaxControlToolkit.AutoCompleteExtender.CreateAutoCompleteItem(Tmp.DisplayField, Tmp.PrimaryKey))
-					End While
-					Reader.Close()
-				End Using
-			End Using
-			Return Results.ToArray
+            Results.Add(AjaxControlToolkit.AutoCompleteExtender.CreateAutoCompleteItem(Tmp.DisplayField, Tmp.PrimaryKey))
+          End While
+          Reader.Close()
+        End Using
+      End Using
+      Return Results.ToArray
 		End Function
     Public Sub New(ByVal Reader As SqlDataReader)
       On Error Resume Next

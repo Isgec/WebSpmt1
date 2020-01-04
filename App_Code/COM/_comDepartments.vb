@@ -173,11 +173,11 @@ Namespace SIS.COM
           While (Reader.Read())
             Dim Tmp As SIS.COM.comDepartments = New SIS.COM.comDepartments(Reader)
             Results.Add(AjaxControlToolkit.AutoCompleteExtender.CreateAutoCompleteItem(Tmp.DisplayField, Tmp.PrimaryKey))
-					End While
-					Reader.Close()
-				End Using
-			End Using
-			Return Results.ToArray
+          End While
+          Reader.Close()
+        End Using
+      End Using
+      Return Results.ToArray
 		End Function
     Public Sub New(ByVal Reader As SqlDataReader)
       On Error Resume Next

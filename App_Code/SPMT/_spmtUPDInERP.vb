@@ -530,7 +530,7 @@ Namespace SIS.SPMT
       Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
-          Cmd.CommandText = "spspmtUPDInERPSelectByID"
+          Cmd.CommandText = SIS.SYS.Utilities.SessionManager.GetspName("spspmtUPDInERPSelectByID")
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@t_sour", SqlDbType.VarChar, t_sour.ToString.Length, t_sour)
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@t_ninv", SqlDbType.Int, t_ninv.ToString.Length, t_ninv)
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NVarChar, 9, HttpContext.Current.Session("LoginID"))
@@ -551,10 +551,10 @@ Namespace SIS.SPMT
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           If SearchState Then
-            Cmd.CommandText = "spspmtUPDInERPSelectListSearch"
+            Cmd.CommandText = SIS.SYS.Utilities.SessionManager.GetspName("spspmtUPDInERPSelectListSearch")
             SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@KeyWord", SqlDbType.NVarChar, 250, SearchText)
           Else
-            Cmd.CommandText = "spspmtUPDInERPSelectListFilteres"
+            Cmd.CommandText = SIS.SYS.Utilities.SessionManager.GetspName("spspmtUPDInERPSelectListFilteres")
           End If
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@StartRowIndex", SqlDbType.Int, -1, StartRowIndex)
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@MaximumRows", SqlDbType.Int, -1, MaximumRows)
@@ -641,7 +641,7 @@ Namespace SIS.SPMT
       Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
-          Cmd.CommandText = "spspmtUPDInERPInsert"
+          Cmd.CommandText = SIS.SYS.Utilities.SessionManager.GetspName("spspmtUPDInERPInsert")
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@t_sour", SqlDbType.VarChar, 11, Record.t_sour)
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@t_ninv", SqlDbType.Int, 11, Record.t_ninv)
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@t_irdt", SqlDbType.DateTime, 21, Record.t_irdt)
@@ -765,7 +765,7 @@ Namespace SIS.SPMT
       Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
-          Cmd.CommandText = "spspmtUPDInERPUpdate"
+          Cmd.CommandText = SIS.SYS.Utilities.SessionManager.GetspName("spspmtUPDInERPUpdate")
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Original_t_sour", SqlDbType.VarChar, 11, Record.t_sour)
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Original_t_ninv", SqlDbType.Int, 11, Record.t_ninv)
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@t_sour", SqlDbType.VarChar, 11, Record.t_sour)
@@ -835,7 +835,7 @@ Namespace SIS.SPMT
       Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
-          Cmd.CommandText = "spspmtUPDInERPDelete"
+          Cmd.CommandText = SIS.SYS.Utilities.SessionManager.GetspName("spspmtUPDInERPDelete")
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Original_t_sour", SqlDbType.VarChar, Record.t_sour.ToString.Length, Record.t_sour)
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Original_t_ninv", SqlDbType.Int, Record.t_ninv.ToString.Length, Record.t_ninv)
           Cmd.Parameters.Add("@RowCount", SqlDbType.Int)

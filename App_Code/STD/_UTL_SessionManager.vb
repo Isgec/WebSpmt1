@@ -23,6 +23,13 @@ Namespace SIS.SYS.Utilities
   End Class
   Public Class SessionManager
     Public Shared ci As System.Globalization.CultureInfo = New System.Globalization.CultureInfo("en-GB", True)
+    Public Shared Function GetspName(spName As String) As String
+      Select Case HttpContext.Current.Session("FinanceCompany")
+        Case "700", "651"
+          Return spName & HttpContext.Current.Session("FinanceCompany")
+      End Select
+      Return spName
+    End Function
     Public Shared Function DoLogin(ByVal UserID As String) As Boolean
       Dim mRet As Boolean = False
       If Membership.ValidateUser(UserID, GetPassword(UserID)) Then
@@ -34,7 +41,7 @@ Namespace SIS.SYS.Utilities
     End Function
     Public Shared Function GetPassword(ByVal Uid As String) As String
       Dim mRet As String = ""
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString)
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString)
         Using Cmd As SqlCommand = Con.CreateCommand()
           Dim mSql As String = "Select ISNULL(pw,'') from aspnet_users WHERE UserName = '" & Uid & "'"
           Cmd.CommandType = System.Data.CommandType.Text
@@ -252,7 +259,7 @@ Namespace SIS.SYS.Utilities
         Case "DF_"
           FileName = FileName.Replace("DF_", "GD_")
       End Select
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spSYS_LG_VRSessionByUserFile"

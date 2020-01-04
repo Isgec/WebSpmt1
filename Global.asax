@@ -4,12 +4,12 @@
 
   Sub Application_Start(ByVal sender As Object, ByVal e As EventArgs)
   End Sub
-    
-    Sub Application_End(ByVal sender As Object, ByVal e As EventArgs)
-        ' Code that runs on application shutdown
-    End Sub
-        
-    Sub Application_Error(ByVal sender As Object, ByVal e As EventArgs)
+
+  Sub Application_End(ByVal sender As Object, ByVal e As EventArgs)
+    ' Code that runs on application shutdown
+  End Sub
+
+  Sub Application_Error(ByVal sender As Object, ByVal e As EventArgs)
     ' StringBuilder message = new StringBuilder(); 
     ' if (Server != null) {
     '   Exception e;
@@ -37,24 +37,24 @@
 
   End Sub
 
-	Sub Session_Start(ByVal sender As Object, ByVal e As EventArgs)
-		Try
-			SIS.SYS.Utilities.SessionManager.CreateSessionEnvironement()
-			
-		Catch ex As Exception
+  Sub Session_Start(ByVal sender As Object, ByVal e As EventArgs)
+    Try
+      SIS.SYS.Utilities.SessionManager.CreateSessionEnvironement()
 
-		End Try
-	End Sub
+    Catch ex As Exception
 
-	Sub Session_End(ByVal sender As Object, ByVal e As EventArgs)
-		Try
-			SIS.SYS.Utilities.SessionManager.DestroySessionEnvironement()
-		Catch ex As Exception
-		End Try
-	End Sub
+    End Try
+  End Sub
+
+  Sub Session_End(ByVal sender As Object, ByVal e As EventArgs)
+    Try
+      SIS.SYS.Utilities.SessionManager.DestroySessionEnvironement()
+    Catch ex As Exception
+    End Try
+  End Sub
 
   Protected Sub Application_BeginRequest(ByVal sender As Object, ByVal e As System.EventArgs)
-    
+
     'Dim mFile As String = Server.MapPath(Request.AppRelativeCurrentExecutionFilePath)
     'If mFile.IndexOf("App_Forms") < 0 Then Exit Sub
     'Dim ts As IO.StreamReader = New IO.StreamReader(mFile)
@@ -73,7 +73,7 @@
     'Dim tr As IO.StreamWriter = New IO.StreamWriter(mFile)
     'tr.Write(Join(aStr, " "))
     'tr.Close()
-    
+
 
   End Sub
 </script>

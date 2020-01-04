@@ -358,6 +358,7 @@
                       <asp:ListItem Value="250" Text="250"></asp:ListItem>
                       <asp:ListItem Value="290" Text="290"></asp:ListItem>
                       <asp:ListItem Value="400" Text="400"></asp:ListItem>
+                      <asp:ListItem Value="651" Text="651"></asp:ListItem>
                     </asp:DropDownList>
                     <asp:RequiredFieldValidator 
                       ID = "RFVBaaNLedger"

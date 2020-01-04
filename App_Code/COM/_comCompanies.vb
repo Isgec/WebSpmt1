@@ -113,7 +113,7 @@ Namespace SIS.COM
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomCompaniesSelectList"
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NvarChar, 9, HttpContext.Current.Session("LoginID"))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NVarChar, 9, HttpContext.Current.Session("LoginID"))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@OrderBy", SqlDbType.NVarChar, 50, OrderBy)
           Cmd.Parameters.Add("@RecordCount", SqlDbType.Int)
           Cmd.Parameters("@RecordCount").Direction = ParameterDirection.Output
@@ -130,19 +130,19 @@ Namespace SIS.COM
       End Using
       Return Results
     End Function
-    <DataObjectMethod(DataObjectMethodType.Select)> _
+    <DataObjectMethod(DataObjectMethodType.Select)>
     Public Shared Function comCompaniesGetNewRecord() As SIS.COM.comCompanies
       Return New SIS.COM.comCompanies()
     End Function
-    <DataObjectMethod(DataObjectMethodType.Select)> _
+    <DataObjectMethod(DataObjectMethodType.Select)>
     Public Shared Function comCompaniesGetByID(ByVal CompanyID As String) As SIS.COM.comCompanies
       Dim Results As SIS.COM.comCompanies = Nothing
       Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomCompaniesSelectByID"
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@CompanyID",SqlDbType.NVarChar,CompanyID.ToString.Length, CompanyID)
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NvarChar, 9, HttpContext.Current.Session("LoginID"))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@CompanyID", SqlDbType.NVarChar, CompanyID.ToString.Length, CompanyID)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NVarChar, 9, HttpContext.Current.Session("LoginID"))
           Con.Open()
           Dim Reader As SqlDataReader = Cmd.ExecuteReader()
           If Reader.Read() Then
@@ -153,7 +153,7 @@ Namespace SIS.COM
       End Using
       Return Results
     End Function
-    <DataObjectMethod(DataObjectMethodType.Select)> _
+    <DataObjectMethod(DataObjectMethodType.Select)>
     Public Shared Function comCompaniesSelectList(ByVal StartRowIndex As Integer, ByVal MaximumRows As Integer, ByVal OrderBy As String, ByVal SearchState As Boolean, ByVal SearchText As String) As List(Of SIS.COM.comCompanies)
       Dim Results As List(Of SIS.COM.comCompanies) = Nothing
       Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
@@ -167,7 +167,7 @@ Namespace SIS.COM
           End If
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@StartRowIndex", SqlDbType.Int, -1, StartRowIndex)
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@MaximumRows", SqlDbType.Int, -1, MaximumRows)
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NvarChar, 9, HttpContext.Current.Session("LoginID"))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NVarChar, 9, HttpContext.Current.Session("LoginID"))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@OrderBy", SqlDbType.NVarChar, 50, OrderBy)
           Cmd.Parameters.Add("@RecordCount", SqlDbType.Int)
           Cmd.Parameters("@RecordCount").Direction = ParameterDirection.Output
@@ -187,8 +187,8 @@ Namespace SIS.COM
     Public Shared Function comCompaniesSelectCount(ByVal SearchState As Boolean, ByVal SearchText As String) As Integer
       Return _RecordCount
     End Function
-      'Select By ID One Record Filtered Overloaded GetByID
-    <DataObjectMethod(DataObjectMethodType.Insert, True)> _
+    'Select By ID One Record Filtered Overloaded GetByID
+    <DataObjectMethod(DataObjectMethodType.Insert, True)>
     Public Shared Function comCompaniesInsert(ByVal Record As SIS.COM.comCompanies) As SIS.COM.comCompanies
       Dim _Rec As SIS.COM.comCompanies = SIS.COM.comCompanies.comCompaniesGetNewRecord()
       With _Rec
@@ -204,10 +204,10 @@ Namespace SIS.COM
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomCompaniesInsert"
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@CompanyID",SqlDbType.NVarChar,7, Record.CompanyID)
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Description",SqlDbType.NVarChar,61, Record.Description)
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@ShortName",SqlDbType.NVarChar,21, Record.ShortName)
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@BaaNID",SqlDbType.NVarChar,4, Iif(Record.BaaNID= "" ,Convert.DBNull, Record.BaaNID))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@CompanyID", SqlDbType.NVarChar, 7, Record.CompanyID)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Description", SqlDbType.NVarChar, 61, Record.Description)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@ShortName", SqlDbType.NVarChar, 21, Record.ShortName)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@BaaNID", SqlDbType.NVarChar, 4, IIf(Record.BaaNID = "", Convert.DBNull, Record.BaaNID))
           Cmd.Parameters.Add("@Return_CompanyID", SqlDbType.NVarChar, 7)
           Cmd.Parameters("@Return_CompanyID").Direction = ParameterDirection.Output
           Con.Open()
@@ -217,7 +217,7 @@ Namespace SIS.COM
       End Using
       Return Record
     End Function
-    <DataObjectMethod(DataObjectMethodType.Update, True)> _
+    <DataObjectMethod(DataObjectMethodType.Update, True)>
     Public Shared Function comCompaniesUpdate(ByVal Record As SIS.COM.comCompanies) As SIS.COM.comCompanies
       Dim _Rec As SIS.COM.comCompanies = SIS.COM.comCompanies.comCompaniesGetByID(Record.CompanyID)
       With _Rec
@@ -232,11 +232,11 @@ Namespace SIS.COM
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomCompaniesUpdate"
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Original_CompanyID",SqlDbType.NVarChar,7, Record.CompanyID)
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@CompanyID",SqlDbType.NVarChar,7, Record.CompanyID)
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Description",SqlDbType.NVarChar,61, Record.Description)
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@ShortName",SqlDbType.NVarChar,21, Record.ShortName)
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@BaaNID",SqlDbType.NVarChar,4, Iif(Record.BaaNID= "" ,Convert.DBNull, Record.BaaNID))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Original_CompanyID", SqlDbType.NVarChar, 7, Record.CompanyID)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@CompanyID", SqlDbType.NVarChar, 7, Record.CompanyID)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Description", SqlDbType.NVarChar, 61, Record.Description)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@ShortName", SqlDbType.NVarChar, 21, Record.ShortName)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@BaaNID", SqlDbType.NVarChar, 4, IIf(Record.BaaNID = "", Convert.DBNull, Record.BaaNID))
           Cmd.Parameters.Add("@RowCount", SqlDbType.Int)
           Cmd.Parameters("@RowCount").Direction = ParameterDirection.Output
           _RecordCount = -1
@@ -247,14 +247,14 @@ Namespace SIS.COM
       End Using
       Return Record
     End Function
-    <DataObjectMethod(DataObjectMethodType.Delete, True)> _
+    <DataObjectMethod(DataObjectMethodType.Delete, True)>
     Public Shared Function comCompaniesDelete(ByVal Record As SIS.COM.comCompanies) As Int32
-      Dim _Result as Integer = 0
+      Dim _Result As Integer = 0
       Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomCompaniesDelete"
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Original_CompanyID",SqlDbType.NVarChar,Record.CompanyID.ToString.Length, Record.CompanyID)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Original_CompanyID", SqlDbType.NVarChar, Record.CompanyID.ToString.Length, Record.CompanyID)
           Cmd.Parameters.Add("@RowCount", SqlDbType.Int)
           Cmd.Parameters("@RowCount").Direction = ParameterDirection.Output
           _RecordCount = -1
@@ -265,7 +265,7 @@ Namespace SIS.COM
       End Using
       Return _RecordCount
     End Function
-'    Autocomplete Method
+    '    Autocomplete Method
     Public Shared Function SelectcomCompaniesAutoCompleteList(ByVal Prefix As String, ByVal count As Integer, ByVal contextKey As String) As String()
       Dim Results As List(Of String) = Nothing
       Dim aVal() As String = contextKey.Split("|".ToCharArray)
@@ -273,15 +273,15 @@ Namespace SIS.COM
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomCompaniesAutoCompleteList"
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NvarChar, 9, HttpContext.Current.Session("LoginID"))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NVarChar, 9, HttpContext.Current.Session("LoginID"))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@prefix", SqlDbType.NVarChar, 50, Prefix)
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@records", SqlDbType.Int, -1, count)
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@bycode", SqlDbType.Int, 1, IIf(IsNumeric(Prefix),0,IIf(Prefix.ToLower=Prefix, 0, 1)))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@bycode", SqlDbType.Int, 1, IIf(IsNumeric(Prefix), 0, IIf(Prefix.ToLower = Prefix, 0, 1)))
           Results = New List(Of String)()
           Con.Open()
           Dim Reader As SqlDataReader = Cmd.ExecuteReader()
           If Not Reader.HasRows Then
-            Results.Add(AjaxControlToolkit.AutoCompleteExtender.CreateAutoCompleteItem("---Select Value---".PadRight(60, " "),""))
+            Results.Add(AjaxControlToolkit.AutoCompleteExtender.CreateAutoCompleteItem("---Select Value---".PadRight(60, " "), ""))
           End If
           While (Reader.Read())
             Dim Tmp As SIS.COM.comCompanies = New SIS.COM.comCompanies(Reader)

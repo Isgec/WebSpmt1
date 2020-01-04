@@ -411,7 +411,7 @@ Namespace SIS.SPMT
       Sql &= "  ,ltrim(fp_tccom139.t_dsca)+' ('+ pd_tfisg003.t_plcf+')' as FromPlace "
       Sql &= "  ,ltrim(tp_tccom139.t_dsca)+' ('+ pd_tfisg003.t_plct+')' as ToPlace "
       Sql &= "  from ttdisg026" & Comp & " as dch  "
-      Sql &= "  inner join ttdisg027200 as dcl on dch.t_dech=dcl.t_dech "
+      Sql &= "  inner join ttdisg027" & Comp & " as dcl on dch.t_dech=dcl.t_dech "
       Sql &= "  /*Pick IR No and Date*/ "
       Sql &= "  left outer join twhinh310" & Comp & " as whinh310 on dcl.t_rcno=whinh310.t_rcno "
       Sql &= "  left outer join ttfacp100" & Comp & " as tfacp100 on convert(int,whinh310.t_dino)=tfacp100.t_ninv "

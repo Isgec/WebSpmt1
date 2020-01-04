@@ -110,20 +110,20 @@ Namespace SIS.COM
       End Using
       Return Results
     End Function
-    <DataObjectMethod(DataObjectMethodType.Select)> _
+    <DataObjectMethod(DataObjectMethodType.Select)>
     Public Shared Function GetNewRecord() As SIS.COM.comDesignations
       Dim Results As SIS.COM.comDesignations = Nothing
       Results = New SIS.COM.comDesignations()
       Return Results
     End Function
-    <DataObjectMethod(DataObjectMethodType.Select)> _
+    <DataObjectMethod(DataObjectMethodType.Select)>
     Public Shared Function GetByID(ByVal DesignationID As Int32) As SIS.COM.comDesignations
       Dim Results As SIS.COM.comDesignations = Nothing
       Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomDesignationsSelectByID"
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@DesignationID",SqlDbType.Int,DesignationID.ToString.Length, DesignationID)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@DesignationID", SqlDbType.Int, DesignationID.ToString.Length, DesignationID)
           Con.Open()
           Dim Reader As SqlDataReader = Cmd.ExecuteReader()
           If Reader.Read() Then
@@ -134,18 +134,18 @@ Namespace SIS.COM
       End Using
       Return Results
     End Function
-    <DataObjectMethod(DataObjectMethodType.Select)> _
+    <DataObjectMethod(DataObjectMethodType.Select)>
     Public Shared Function SelectList(ByVal startRowIndex As Integer, ByVal maximumRows As Integer, ByVal orderBy As String, ByVal SearchState As Boolean, ByVal SearchText As String) As List(Of SIS.COM.comDesignations)
       Dim Results As List(Of SIS.COM.comDesignations) = Nothing
       Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
-					If SearchState Then
-						Cmd.CommandText = "spcomDesignationsSelectListSearch"
-						SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@KeyWord", SqlDbType.NVarChar, 250, SearchText)
-					Else
-						Cmd.CommandText = "spcomDesignationsSelectListFilteres"
-					End If
+          If SearchState Then
+            Cmd.CommandText = "spcomDesignationsSelectListSearch"
+            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@KeyWord", SqlDbType.NVarChar, 250, SearchText)
+          Else
+            Cmd.CommandText = "spcomDesignationsSelectListFilteres"
+          End If
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@startRowIndex", SqlDbType.Int, -1, startRowIndex)
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@maximumRows", SqlDbType.Int, -1, maximumRows)
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@OrderBy", SqlDbType.NVarChar, 50, orderBy)
@@ -167,32 +167,32 @@ Namespace SIS.COM
     Public Shared Function SelectCount(ByVal SearchState As Boolean, ByVal SearchText As String) As Integer
       Return _RecordCount
     End Function
-      'Select By ID One Record Filtered Overloaded GetByID
-'		Autocomplete Method
-		Public Shared Function SelectcomDesignationsAutoCompleteList(ByVal Prefix As String, ByVal count As Integer, ByVal contextKey As String) As String()
-			Dim Results As List(Of String) = Nothing
+    'Select By ID One Record Filtered Overloaded GetByID
+    '		Autocomplete Method
+    Public Shared Function SelectcomDesignationsAutoCompleteList(ByVal Prefix As String, ByVal count As Integer, ByVal contextKey As String) As String()
+      Dim Results As List(Of String) = Nothing
       Dim aVal() As String = contextKey.Split("|".ToCharArray)
-			Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
-				Using Cmd As SqlCommand = Con.CreateCommand()
-					Cmd.CommandType = CommandType.StoredProcedure
-					Cmd.CommandText = "spcomDesignationsAutoCompleteList"
-					SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@prefix", SqlDbType.NVarChar, 50, Prefix)
-					SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@records", SqlDbType.Int, -1, count)
-					SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@bycode", SqlDbType.Int, 1, IIf(IsNumeric(Prefix),0,IIf(Prefix.ToLower=Prefix, 0, 1)))
-					Results = New List(Of String)()
-					Con.Open()
-					Dim Reader As SqlDataReader = Cmd.ExecuteReader()
-					If Not Reader.HasRows Then
-					  Results.Add(AjaxControlToolkit.AutoCompleteExtender.CreateAutoCompleteItem("---Select Value---".PadRight(30, " "),""))
-					End If
-					While (Reader.Read())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+        Using Cmd As SqlCommand = Con.CreateCommand()
+          Cmd.CommandType = CommandType.StoredProcedure
+          Cmd.CommandText = "spcomDesignationsAutoCompleteList"
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@prefix", SqlDbType.NVarChar, 50, Prefix)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@records", SqlDbType.Int, -1, count)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@bycode", SqlDbType.Int, 1, IIf(IsNumeric(Prefix), 0, IIf(Prefix.ToLower = Prefix, 0, 1)))
+          Results = New List(Of String)()
+          Con.Open()
+          Dim Reader As SqlDataReader = Cmd.ExecuteReader()
+          If Not Reader.HasRows Then
+            Results.Add(AjaxControlToolkit.AutoCompleteExtender.CreateAutoCompleteItem("---Select Value---".PadRight(30, " "), ""))
+          End If
+          While (Reader.Read())
             Dim Tmp As SIS.COM.comDesignations = New SIS.COM.comDesignations(Reader)
-					  Results.Add(AjaxControlToolkit.AutoCompleteExtender.CreateAutoCompleteItem(Tmp.DisplayField, Tmp.PrimaryKey))
-					End While
-					Reader.Close()
-				End Using
-			End Using
-			Return Results.ToArray
+            Results.Add(AjaxControlToolkit.AutoCompleteExtender.CreateAutoCompleteItem(Tmp.DisplayField, Tmp.PrimaryKey))
+          End While
+          Reader.Close()
+        End Using
+      End Using
+      Return Results.ToArray
 		End Function
     Public Sub New(ByVal Reader As SqlDataReader)
       On Error Resume Next

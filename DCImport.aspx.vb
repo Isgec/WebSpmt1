@@ -11,9 +11,16 @@ Partial Class DCImport
       PrimaryKey = Request.QueryString("ChallanID")
       If Request.QueryString("Comp") IsNot Nothing Then
         Comp = Request.QueryString("Comp")
+        Select Case Comp
+          Case "700"
+          Case "651"
+          Case Else
+            Comp = "200"
+        End Select
       Else
         Comp = "200"
       End If
+      HttpContext.Current.Session("FinanceCompany") = Comp
       If Request.QueryString("UserID") IsNot Nothing Then
         UserID = Request.QueryString("UserID")
         If UserID <> "" Then
