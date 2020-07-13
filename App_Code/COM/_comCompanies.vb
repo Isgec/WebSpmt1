@@ -109,7 +109,7 @@ Namespace SIS.COM
     <DataObjectMethod(DataObjectMethodType.Select)> _
     Public Shared Function comCompaniesSelectList(ByVal OrderBy As String) As List(Of SIS.COM.comCompanies)
       Dim Results As List(Of SIS.COM.comCompanies) = Nothing
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomCompaniesSelectList"
@@ -137,7 +137,7 @@ Namespace SIS.COM
     <DataObjectMethod(DataObjectMethodType.Select)>
     Public Shared Function comCompaniesGetByID(ByVal CompanyID As String) As SIS.COM.comCompanies
       Dim Results As SIS.COM.comCompanies = Nothing
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomCompaniesSelectByID"
@@ -156,7 +156,7 @@ Namespace SIS.COM
     <DataObjectMethod(DataObjectMethodType.Select)>
     Public Shared Function comCompaniesSelectList(ByVal StartRowIndex As Integer, ByVal MaximumRows As Integer, ByVal OrderBy As String, ByVal SearchState As Boolean, ByVal SearchText As String) As List(Of SIS.COM.comCompanies)
       Dim Results As List(Of SIS.COM.comCompanies) = Nothing
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           If SearchState Then
@@ -200,7 +200,7 @@ Namespace SIS.COM
       Return SIS.COM.comCompanies.InsertData(_Rec)
     End Function
     Public Shared Function InsertData(ByVal Record As SIS.COM.comCompanies) As SIS.COM.comCompanies
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomCompaniesInsert"
@@ -228,7 +228,7 @@ Namespace SIS.COM
       Return SIS.COM.comCompanies.UpdateData(_Rec)
     End Function
     Public Shared Function UpdateData(ByVal Record As SIS.COM.comCompanies) As SIS.COM.comCompanies
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomCompaniesUpdate"
@@ -250,7 +250,7 @@ Namespace SIS.COM
     <DataObjectMethod(DataObjectMethodType.Delete, True)>
     Public Shared Function comCompaniesDelete(ByVal Record As SIS.COM.comCompanies) As Int32
       Dim _Result As Integer = 0
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomCompaniesDelete"
@@ -269,7 +269,7 @@ Namespace SIS.COM
     Public Shared Function SelectcomCompaniesAutoCompleteList(ByVal Prefix As String, ByVal count As Integer, ByVal contextKey As String) As String()
       Dim Results As List(Of String) = Nothing
       Dim aVal() As String = contextKey.Split("|".ToCharArray)
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomCompaniesAutoCompleteList"
@@ -293,21 +293,7 @@ Namespace SIS.COM
       Return Results.ToArray
     End Function
     Public Sub New(ByVal Reader As SqlDataReader)
-      Try
-        For Each pi As System.Reflection.PropertyInfo In Me.GetType.GetProperties
-          If pi.MemberType = Reflection.MemberTypes.Property Then
-            Try
-              If Convert.IsDBNull(Reader(pi.Name)) Then
-                CallByName(Me, pi.Name, CallType.Let, String.Empty)
-              Else
-                CallByName(Me, pi.Name, CallType.Let, Reader(pi.Name))
-              End If
-            Catch ex As Exception
-            End Try
-          End If
-        Next
-      Catch ex As Exception
-      End Try
+      SIS.SYS.SQLDatabase.DBCommon.NewObj(Me, Reader)
     End Sub
     Public Sub New()
     End Sub

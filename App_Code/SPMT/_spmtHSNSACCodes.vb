@@ -190,8 +190,8 @@ Namespace SIS.SPMT
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spspmtHSNSACCodesSelectByID"
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@BillType",SqlDbType.Int,BillType.ToString.Length, BillType)
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@HSNSACCode",SqlDbType.NVarChar,HSNSACCode.ToString.Length, HSNSACCode)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@BillType", SqlDbType.Int, BillType.ToString.Length, BillType)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@HSNSACCode", SqlDbType.NVarChar, HSNSACCode.ToString.Length, HSNSACCode)
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NvarChar, 9, HttpContext.Current.Session("LoginID"))
           Con.Open()
           Dim Reader As SqlDataReader = Cmd.ExecuteReader()
@@ -201,6 +201,9 @@ Namespace SIS.SPMT
           Reader.Close()
         End Using
       End Using
+      If Results Is Nothing Then
+        Results = SIS.SPMT.spmtSupplierBill.GetHSNSACCodeFromERP(BillType, HSNSACCode)
+      End If
       Return Results
     End Function
     <DataObjectMethod(DataObjectMethodType.Select)> _

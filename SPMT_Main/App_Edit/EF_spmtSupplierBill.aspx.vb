@@ -246,13 +246,7 @@ Partial Class EF_spmtSupplierBill
     Dim HSNSACCode As String = CType(aVal(2), String)
     Dim oVar As SIS.SPMT.spmtHSNSACCodes = SIS.SPMT.spmtHSNSACCodes.spmtHSNSACCodesGetByID(BillType, HSNSACCode)
     If oVar Is Nothing Then
-      SIS.SPMT.spmtSupplierBill.GetHSNSACCodeFromERP(BillType, HSNSACCode)
-      oVar = SIS.SPMT.spmtHSNSACCodes.spmtHSNSACCodesGetByID(BillType, HSNSACCode)
-      If oVar Is Nothing Then
-        mRet = "1|" & aVal(0) & "|Record not found in ERP."
-      Else
-        mRet = "0|" & aVal(0) & "|" & oVar.DisplayField
-      End If
+      mRet = "1|" & aVal(0) & "|Record not found in ERP."
     Else
       mRet = "0|" & aVal(0) & "|" & oVar.DisplayField
     End If
@@ -275,7 +269,7 @@ Partial Class EF_spmtSupplierBill
       oVar = SIS.SPMT.spmtBPGSTIN.spmtBPGSTINGetByID(BPID, SupplierGSTIN)
     End If
     If oVar Is Nothing Then
-      SIS.SPMT.spmtSupplierBill.GetBPGSTINFromERP(BPID)
+      SIS.SPMT.spmtBusinessPartner.GetBPGSTINFromERP(BPID, "")
       If sGst > 0 Then
         oVar = SIS.SPMT.spmtBPGSTIN.spmtBPGSTINGetByID(BPID, sGst)
       Else
@@ -298,60 +292,11 @@ Partial Class EF_spmtSupplierBill
     Dim BPID As String = CType(aVal(1), String)
     Dim oVar As SIS.SPMT.spmtBusinessPartner = SIS.SPMT.spmtBusinessPartner.spmtBusinessPartnerGetByID(BPID)
     If oVar Is Nothing Then
-      SIS.SPMT.spmtSupplierBill.GetBPFromERP(BPID)
-      oVar = SIS.SPMT.spmtBusinessPartner.spmtBusinessPartnerGetByID(BPID)
-      If oVar Is Nothing Then
-        mRet = "1|" & aVal(0) & "|Record not found."
-      Else
-        mRet = "0|" & aVal(0) & "|" & oVar.DisplayField
-      End If
+      mRet = "1|" & aVal(0) & "|Record not found."
     Else
-      SIS.SPMT.spmtSupplierBill.GetBPGSTINFromERP(BPID, 0)
       mRet = "0|" & aVal(0) & "|" & oVar.DisplayField
     End If
     Return mRet
   End Function
-
-  '<System.Web.Services.WebMethod()>
-  'Public Shared Function validate_FK_SPMT_SupplierBill_HSNSACCode(ByVal value As String) As String
-  '  Dim aVal() As String = value.Split(",".ToCharArray)
-  '  Dim mRet As String = "0|" & aVal(0)
-  '  Dim BillType As Int32 = CType(aVal(1), Int32)
-  '  Dim HSNSACCode As String = CType(aVal(2), String)
-  '  Dim oVar As SIS.SPMT.spmtHSNSACCodes = SIS.SPMT.spmtHSNSACCodes.spmtHSNSACCodesGetByID(BillType, HSNSACCode)
-  '  If oVar Is Nothing Then
-  '    mRet = "1|" & aVal(0) & "|Record not found."
-  '  Else
-  '    mRet = "0|" & aVal(0) & "|" & oVar.DisplayField
-  '  End If
-  '  Return mRet
-  'End Function
-  '<System.Web.Services.WebMethod()>
-  'Public Shared Function validate_FK_SPMT_SupplierBill_SupplierGSTIN(ByVal value As String) As String
-  '  Dim aVal() As String = value.Split(",".ToCharArray)
-  '  Dim mRet As String = "0|" & aVal(0)
-  '  Dim BPID As String = CType(aVal(1), String)
-  '  Dim SupplierGSTIN As Int32 = CType(aVal(2), Int32)
-  '  Dim oVar As SIS.SPMT.spmtBPGSTIN = SIS.SPMT.spmtBPGSTIN.spmtBPGSTINGetByID(BPID, SupplierGSTIN)
-  '  If oVar Is Nothing Then
-  '    mRet = "1|" & aVal(0) & "|Record not found."
-  '  Else
-  '    mRet = "0|" & aVal(0) & "|" & oVar.DisplayField
-  '  End If
-  '  Return mRet
-  'End Function
-  '<System.Web.Services.WebMethod()>
-  'Public Shared Function validate_FK_SPMT_SupplierBill_BPID(ByVal value As String) As String
-  '  Dim aVal() As String = value.Split(",".ToCharArray)
-  '  Dim mRet As String = "0|" & aVal(0)
-  '  Dim BPID As String = CType(aVal(1), String)
-  '  Dim oVar As SIS.SPMT.spmtBusinessPartner = SIS.SPMT.spmtBusinessPartner.spmtBusinessPartnerGetByID(BPID)
-  '  If oVar Is Nothing Then
-  '    mRet = "1|" & aVal(0) & "|Record not found."
-  '  Else
-  '    mRet = "0|" & aVal(0) & "|" & oVar.DisplayField
-  '  End If
-  '  Return mRet
-  'End Function
 
 End Class

@@ -7,6 +7,17 @@ Imports System.Net
 
 Namespace SIS.SPMT
   Partial Public Class spmtPaymentAdvice
+    Public Shared ReadOnly Property AthHandle As String
+      Get
+        Dim mRet As String = "J_SPMTPAYMENTADVICE"
+        Dim Comp As String = HttpContext.Current.Session("FinanceCompany")
+        If Comp <> "200" Then
+          mRet = mRet & "_" & Comp
+        End If
+        Return mRet
+      End Get
+    End Property
+
     Public ReadOnly Property GetAttachLink() As String
       Get
         Dim UrlAuthority As String = HttpContext.Current.Request.Url.Authority
@@ -14,7 +25,7 @@ Namespace SIS.SPMT
           UrlAuthority = "192.9.200.146"
         End If
         Dim mRet As String = HttpContext.Current.Request.Url.Scheme & Uri.SchemeDelimiter & UrlAuthority
-        mRet &= "/Attachment/Attachment.aspx?AthHandle=J_SPMTPAYMENTADVICE"
+        mRet &= "/Attachment/Attachment.aspx?AthHandle=" & SIS.SPMT.spmtPaymentAdvice.AthHandle
         Dim Index As String = AdviceNo
         Dim User As String = HttpContext.Current.Session("LoginID")
         'User = 1
@@ -145,7 +156,8 @@ Namespace SIS.SPMT
         Dim IndexT As String = Results.AdviceNo
         '======Copy Attachment===========
         'CopyAttachment(IndexS, IndexT)
-        DirectCopyAttachment(IndexS, IndexT)
+        'DirectCopyAttachment(IndexS, IndexT)
+        ejiVault.EJI.ediAFile.FileCopy(SIS.SPMT.spmtSupplierBill.AthHandle, IndexS, SIS.SPMT.spmtPaymentAdvice.AthHandle, IndexT, tmpBill.BillStatusUser)
         '======End Copy Attachment=======
       Next
       With Results
@@ -154,51 +166,51 @@ Namespace SIS.SPMT
       SIS.SPMT.spmtPaymentAdvice.UpdateData(Results)
       Return Results
     End Function
-    Private Shared Sub CopyAttachment(ByVal IndexS As String, ByVal IndexT As String)
-      Dim xUrl As String = GetCopyLink()
-      xUrl = xUrl & "/" & IndexS & "/" & IndexT
-      Dim rq As HttpWebRequest = WebRequest.Create(New Uri(xUrl))
-      rq.Method = "GET"
-      rq.ContentType = "application/json"
-      Try
-        Dim rs As WebResponse = rq.GetResponse()
-        Dim st As IO.Stream = rs.GetResponseStream
-        Dim sr As IO.StreamReader = New IO.StreamReader(st)
-        Dim strResponse As String = sr.ReadToEnd
-        sr.Close()
-      Catch ex As Exception
-        Dim err As String = ex.Message
-      End Try
-    End Sub
-    Public Shared Function GetCopyLink() As String
-      Dim UrlAuthority As String = HttpContext.Current.Request.Url.Authority
-      If UrlAuthority.ToLower <> "cloud.isgec.co.in" Then
-        UrlAuthority = "192.9.200.146"
-      End If
-      Dim mRet As String = HttpContext.Current.Request.Url.Scheme & Uri.SchemeDelimiter & UrlAuthority & "/ProjectApi/AttachmentApi.svc/Attachments"
-      Dim AthHandleS As String = "J_SPMTSUPPLIERBILL"
-      Dim AthHandleT As String = "J_SPMTPAYMENTADVICE"
-      Return mRet & "/" & AthHandleS & "/" & AthHandleT
-    End Function
-    Public Shared Sub DirectCopyAttachment(ByVal IRNo As String, ByVal AdviceNo As String)
-      Dim Sql As String = ""
-      Sql &= " insert into ttcisg132200 (t_drid,t_dcid,t_hndl,t_indx,t_prcd,t_fnam,t_lbcd,t_atby,t_aton,t_Refcntd,t_Refcntu)"
-      Sql &= " select 1000000 + (ABS(CHECKSUM(NEWID())) % 1000000)  as t_drid ,t_dcid, 'J_SPMTPAYMENTADVICE' AS t_hndl, "
-      Sql &= " '" & AdviceNo & "' as t_indx,"
-      Sql &= " t_prcd,t_fnam,t_lbcd,t_atby,t_aton,t_Refcntd,t_Refcntu "
-      Sql &= " from ttcisg132200"
-      Sql &= " where t_hndl='J_SPMTSUPPLIERBILL' "
-      Sql &= " and t_indx='" & IRNo & "'"
-      Sql &= ""
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
-        Using Cmd As SqlCommand = Con.CreateCommand()
-          Cmd.CommandType = CommandType.Text
-          Cmd.CommandText = Sql
-          Con.Open()
-          Cmd.ExecuteNonQuery()
-        End Using
-      End Using
-    End Sub
+    'Private Shared Sub CopyAttachment(ByVal IndexS As String, ByVal IndexT As String)
+    '  Dim xUrl As String = GetCopyLink()
+    '  xUrl = xUrl & "/" & IndexS & "/" & IndexT
+    '  Dim rq As HttpWebRequest = WebRequest.Create(New Uri(xUrl))
+    '  rq.Method = "GET"
+    '  rq.ContentType = "application/json"
+    '  Try
+    '    Dim rs As WebResponse = rq.GetResponse()
+    '    Dim st As IO.Stream = rs.GetResponseStream
+    '    Dim sr As IO.StreamReader = New IO.StreamReader(st)
+    '    Dim strResponse As String = sr.ReadToEnd
+    '    sr.Close()
+    '  Catch ex As Exception
+    '    Dim err As String = ex.Message
+    '  End Try
+    'End Sub
+    'Public Shared Function GetCopyLink() As String
+    '  Dim UrlAuthority As String = HttpContext.Current.Request.Url.Authority
+    '  If UrlAuthority.ToLower <> "cloud.isgec.co.in" Then
+    '    UrlAuthority = "192.9.200.146"
+    '  End If
+    '  Dim mRet As String = HttpContext.Current.Request.Url.Scheme & Uri.SchemeDelimiter & UrlAuthority & "/ProjectApi/AttachmentApi.svc/Attachments"
+    '  Dim AthHandleS As String = "J_SPMTSUPPLIERBILL"
+    '  Dim AthHandleT As String = "J_SPMTPAYMENTADVICE"
+    '  Return mRet & "/" & AthHandleS & "/" & AthHandleT
+    'End Function
+    'Public Shared Sub DirectCopyAttachment(ByVal IRNo As String, ByVal AdviceNo As String)
+    '  Dim Sql As String = ""
+    '  Sql &= " insert into ttcisg132200 (t_drid,t_dcid,t_hndl,t_indx,t_prcd,t_fnam,t_lbcd,t_atby,t_aton,t_Refcntd,t_Refcntu)"
+    '  Sql &= " select 1000000 + (ABS(CHECKSUM(NEWID())) % 1000000)  as t_drid ,t_dcid, 'J_SPMTPAYMENTADVICE' AS t_hndl, "
+    '  Sql &= " '" & AdviceNo & "' as t_indx,"
+    '  Sql &= " t_prcd,t_fnam,t_lbcd,t_atby,t_aton,t_Refcntd,t_Refcntu "
+    '  Sql &= " from ttcisg132200"
+    '  Sql &= " where t_hndl='J_SPMTSUPPLIERBILL' "
+    '  Sql &= " and t_indx='" & IRNo & "'"
+    '  Sql &= ""
+    '  Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
+    '    Using Cmd As SqlCommand = Con.CreateCommand()
+    '      Cmd.CommandType = CommandType.Text
+    '      Cmd.CommandText = Sql
+    '      Con.Open()
+    '      Cmd.ExecuteNonQuery()
+    '    End Using
+    '  End Using
+    'End Sub
     Public Shared Function UZ_spmtPaymentAdviceSelectList(ByVal StartRowIndex As Integer, ByVal MaximumRows As Integer, ByVal OrderBy As String, ByVal SearchState As Boolean, ByVal SearchText As String, ByVal AdviceNo As Int32, ByVal TranTypeID As String, ByVal BPID As String) As List(Of SIS.SPMT.spmtPaymentAdvice)
       Dim Results As List(Of SIS.SPMT.spmtPaymentAdvice) = Nothing
       Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())

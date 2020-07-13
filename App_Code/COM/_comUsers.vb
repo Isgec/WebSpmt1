@@ -313,59 +313,7 @@ Namespace SIS.COM
       Return Results.ToArray
 		End Function
     Public Sub New(ByVal Reader As SqlDataReader)
-      On Error Resume Next
-      If Convert.IsDBNull(Reader("LoginID")) Then
-        _LoginID = String.Empty
-      Else
-        _LoginID = Ctype(Reader("LoginID"), String)
-      End If
-      _UserFullName = Ctype(Reader("UserFullName"),String)
-      _UserName = Ctype(Reader("UserName"),String)
-      If Convert.IsDBNull(Reader("EMailID")) Then
-        _EMailID = String.Empty
-      Else
-        _EMailID = Ctype(Reader("EMailID"), String)
-      End If
-      If Convert.IsDBNull(Reader("C_DateOfJoining")) Then
-        _C_DateOfJoining = String.Empty
-      Else
-        _C_DateOfJoining = Ctype(Reader("C_DateOfJoining"), String)
-      End If
-      If Convert.IsDBNull(Reader("C_CompanyID")) Then
-        _C_CompanyID = String.Empty
-      Else
-        _C_CompanyID = Ctype(Reader("C_CompanyID"), String)
-      End If
-      If Convert.IsDBNull(Reader("C_DivisionID")) Then
-        _C_DivisionID = String.Empty
-      Else
-        _C_DivisionID = Ctype(Reader("C_DivisionID"), String)
-      End If
-      If Convert.IsDBNull(Reader("C_OfficeID")) Then
-        _C_OfficeID = String.Empty
-      Else
-        _C_OfficeID = Ctype(Reader("C_OfficeID"), String)
-      End If
-      If Convert.IsDBNull(Reader("C_DepartmentID")) Then
-        _C_DepartmentID = String.Empty
-      Else
-        _C_DepartmentID = Ctype(Reader("C_DepartmentID"), String)
-      End If
-      If Convert.IsDBNull(Reader("C_ProjectSiteID")) Then
-        _C_ProjectSiteID = String.Empty
-      Else
-        _C_ProjectSiteID = Ctype(Reader("C_ProjectSiteID"), String)
-      End If
-      If Convert.IsDBNull(Reader("C_DesignationID")) Then
-        _C_DesignationID = String.Empty
-      Else
-        _C_DesignationID = Ctype(Reader("C_DesignationID"), String)
-      End If
-      If Convert.IsDBNull(Reader("ActiveState")) Then
-        _ActiveState = String.Empty
-      Else
-        _ActiveState = Ctype(Reader("ActiveState"), String)
-      End If
+      SIS.SYS.SQLDatabase.DBCommon.NewObj(Me, Reader)
     End Sub
     Public Sub New()
     End Sub

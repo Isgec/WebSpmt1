@@ -149,13 +149,13 @@ Namespace SIS.COM
     <DataObjectMethod(DataObjectMethodType.Select)> _
     Public Shared Function comGroupUsersGetByID(ByVal GroupID As String, ByVal LoginID As String) As SIS.COM.comGroupUsers
       Dim Results As SIS.COM.comGroupUsers = Nothing
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomGroupUsersSelectByID"
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@GroupID",SqlDbType.NVarChar,GroupID.ToString.Length, GroupID)
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID",SqlDbType.NVarChar,LoginID.ToString.Length, LoginID)
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NvarChar, 9, HttpContext.Current.Session("LoginID"))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@GroupID", SqlDbType.NVarChar, GroupID.ToString.Length, GroupID)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NVarChar, LoginID.ToString.Length, LoginID)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NVarChar, 9, HttpContext.Current.Session("LoginID"))
           Con.Open()
           Dim Reader As SqlDataReader = Cmd.ExecuteReader()
           If Reader.Read() Then
@@ -169,7 +169,7 @@ Namespace SIS.COM
     <DataObjectMethod(DataObjectMethodType.Select)> _
     Public Shared Function comGroupUsersSelectList(ByVal StartRowIndex As Integer, ByVal MaximumRows As Integer, ByVal OrderBy As String, ByVal SearchState As Boolean, ByVal SearchText As String, ByVal GroupID As String, ByVal LoginID As String) As List(Of SIS.COM.comGroupUsers)
       Dim Results As List(Of SIS.COM.comGroupUsers) = Nothing
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           If SearchState Then
@@ -177,12 +177,12 @@ Namespace SIS.COM
             SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@KeyWord", SqlDbType.NVarChar, 250, SearchText)
           Else
             Cmd.CommandText = "spcomGroupUsersSelectListFilteres"
-            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_GroupID",SqlDbType.NVarChar,6, IIf(GroupID Is Nothing, String.Empty,GroupID))
-            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_LoginID",SqlDbType.NVarChar,8, IIf(LoginID Is Nothing, String.Empty,LoginID))
+            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_GroupID", SqlDbType.NVarChar, 6, IIf(GroupID Is Nothing, String.Empty, GroupID))
+            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_LoginID", SqlDbType.NVarChar, 8, IIf(LoginID Is Nothing, String.Empty, LoginID))
           End If
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@StartRowIndex", SqlDbType.Int, -1, StartRowIndex)
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@MaximumRows", SqlDbType.Int, -1, MaximumRows)
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NvarChar, 9, HttpContext.Current.Session("LoginID"))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NVarChar, 9, HttpContext.Current.Session("LoginID"))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@OrderBy", SqlDbType.NVarChar, 50, OrderBy)
           Cmd.Parameters.Add("@RecordCount", SqlDbType.Int)
           Cmd.Parameters("@RecordCount").Direction = ParameterDirection.Output
@@ -218,13 +218,13 @@ Namespace SIS.COM
       Return SIS.COM.comGroupUsers.InsertData(_Rec)
     End Function
     Public Shared Function InsertData(ByVal Record As SIS.COM.comGroupUsers) As SIS.COM.comGroupUsers
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomGroupUsersInsert"
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@GroupID",SqlDbType.NVarChar,7, Record.GroupID)
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID",SqlDbType.NVarChar,9, Record.LoginID)
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Active",SqlDbType.Bit,3, Record.Active)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@GroupID", SqlDbType.NVarChar, 7, Record.GroupID)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NVarChar, 9, Record.LoginID)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Active", SqlDbType.Bit, 3, Record.Active)
           Cmd.Parameters.Add("@Return_GroupID", SqlDbType.NVarChar, 7)
           Cmd.Parameters("@Return_GroupID").Direction = ParameterDirection.Output
           Cmd.Parameters.Add("@Return_LoginID", SqlDbType.NVarChar, 9)
@@ -246,15 +246,15 @@ Namespace SIS.COM
       Return SIS.COM.comGroupUsers.UpdateData(_Rec)
     End Function
     Public Shared Function UpdateData(ByVal Record As SIS.COM.comGroupUsers) As SIS.COM.comGroupUsers
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomGroupUsersUpdate"
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Original_GroupID",SqlDbType.NVarChar,7, Record.GroupID)
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Original_LoginID",SqlDbType.NVarChar,9, Record.LoginID)
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@GroupID",SqlDbType.NVarChar,7, Record.GroupID)
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID",SqlDbType.NVarChar,9, Record.LoginID)
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Active",SqlDbType.Bit,3, Record.Active)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Original_GroupID", SqlDbType.NVarChar, 7, Record.GroupID)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Original_LoginID", SqlDbType.NVarChar, 9, Record.LoginID)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@GroupID", SqlDbType.NVarChar, 7, Record.GroupID)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NVarChar, 9, Record.LoginID)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Active", SqlDbType.Bit, 3, Record.Active)
           Cmd.Parameters.Add("@RowCount", SqlDbType.Int)
           Cmd.Parameters("@RowCount").Direction = ParameterDirection.Output
           _RecordCount = -1
@@ -268,12 +268,12 @@ Namespace SIS.COM
     <DataObjectMethod(DataObjectMethodType.Delete, True)> _
     Public Shared Function comGroupUsersDelete(ByVal Record As SIS.COM.comGroupUsers) As Int32
       Dim _Result as Integer = 0
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomGroupUsersDelete"
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Original_GroupID",SqlDbType.NVarChar,Record.GroupID.ToString.Length, Record.GroupID)
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Original_LoginID",SqlDbType.NVarChar,Record.LoginID.ToString.Length, Record.LoginID)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Original_GroupID", SqlDbType.NVarChar, Record.GroupID.ToString.Length, Record.GroupID)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Original_LoginID", SqlDbType.NVarChar, Record.LoginID.ToString.Length, Record.LoginID)
           Cmd.Parameters.Add("@RowCount", SqlDbType.Int)
           Cmd.Parameters("@RowCount").Direction = ParameterDirection.Output
           _RecordCount = -1
@@ -285,21 +285,7 @@ Namespace SIS.COM
       Return _RecordCount
     End Function
     Public Sub New(ByVal Reader As SqlDataReader)
-      Try
-        For Each pi As System.Reflection.PropertyInfo In Me.GetType.GetProperties
-          If pi.MemberType = Reflection.MemberTypes.Property Then
-            Try
-              If Convert.IsDBNull(Reader(pi.Name)) Then
-                CallByName(Me, pi.Name, CallType.Let, String.Empty)
-              Else
-                CallByName(Me, pi.Name, CallType.Let, Reader(pi.Name))
-              End If
-            Catch ex As Exception
-            End Try
-          End If
-        Next
-      Catch ex As Exception
-      End Try
+      SIS.SYS.SQLDatabase.DBCommon.NewObj(Me, Reader)
     End Sub
     Public Sub New()
     End Sub

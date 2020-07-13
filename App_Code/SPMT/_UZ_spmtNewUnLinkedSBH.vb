@@ -59,7 +59,7 @@ Namespace SIS.SPMT
       Dim Results As SIS.SPMT.spmtNewUnLinkedSBH = spmtNewUnLinkedSBHGetByID(IRNo)
       Select Case Results.PurchaseType
         Case "Purchase from Registered Dealer", "Purchase from Composition Dealer"
-          If Not BillAttached(IRNo, "J_SPMTNEWSB") Then
+          If Not SIS.SYS.Utilities.ApplicationSpacific.IsAttached(IRNo, SIS.SPMT.spmtNewLinkedSBH.AthHandle) Then
             Throw New Exception("Bill is NOT attached, First attach Bill in Supplier Bill.")
           End If
       End Select
@@ -70,26 +70,26 @@ Namespace SIS.SPMT
       SIS.SPMT.spmtNewPA.ValidateAdvice(AdviceNo)
       Return Results
     End Function
-    Public Shared Function BillAttached(ByVal Index As String, ByVal Handle As String) As Boolean
-      Dim mRet As Boolean = False
-      Dim cnt As Integer = 0
-      Dim Sql As String = ""
-      Sql &= " select isnull(count(t_indx),0) "
-      Sql &= " from ttcisg132200"
-      Sql &= " where t_hndl='" & Handle & "' "
-      Sql &= " and t_indx='" & Index & "'"
-      Sql &= ""
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
-        Using Cmd As SqlCommand = Con.CreateCommand()
-          Cmd.CommandType = CommandType.Text
-          Cmd.CommandText = Sql
-          Con.Open()
-          cnt = Cmd.ExecuteScalar
-        End Using
-      End Using
-      If cnt > 0 Then mRet = True
-      Return mRet
-    End Function
+    'Public Shared Function BillAttached(ByVal Index As String, ByVal Handle As String) As Boolean
+    '  Dim mRet As Boolean = False
+    '  Dim cnt As Integer = 0
+    '  Dim Sql As String = ""
+    '  Sql &= " select isnull(count(t_indx),0) "
+    '  Sql &= " from ttcisg132200"
+    '  Sql &= " where t_hndl='" & Handle & "' "
+    '  Sql &= " and t_indx='" & Index & "'"
+    '  Sql &= ""
+    '  Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
+    '    Using Cmd As SqlCommand = Con.CreateCommand()
+    '      Cmd.CommandType = CommandType.Text
+    '      Cmd.CommandText = Sql
+    '      Con.Open()
+    '      cnt = Cmd.ExecuteScalar
+    '    End Using
+    '  End Using
+    '  If cnt > 0 Then mRet = True
+    '  Return mRet
+    'End Function
     Public Shared Function UZ_spmtNewUnLinkedSBHSelectList(ByVal StartRowIndex As Integer, ByVal MaximumRows As Integer, ByVal OrderBy As String, ByVal SearchState As Boolean, ByVal SearchText As String, ByVal TranTypeID As String, ByVal BPID As String, ByVal SupplierName As String) As List(Of SIS.SPMT.spmtNewUnLinkedSBH)
       Dim Results As List(Of SIS.SPMT.spmtNewUnLinkedSBH) = Nothing
       Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())

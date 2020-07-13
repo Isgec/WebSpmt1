@@ -312,7 +312,7 @@ Namespace SIS.COM
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomProjectsSelectByID"
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@ProjectID",SqlDbType.NVarChar,ProjectID.ToString.Length, ProjectID)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@ProjectID", SqlDbType.NVarChar, ProjectID.ToString.Length, ProjectID)
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@FinanceCompany", SqlDbType.NVarChar, 10, HttpContext.Current.Session("FinanceCompany"))
           Con.Open()
           Dim Reader As SqlDataReader = Cmd.ExecuteReader()
@@ -322,6 +322,9 @@ Namespace SIS.COM
           Reader.Close()
         End Using
       End Using
+      If Results Is Nothing Then
+        Results = GetProjectFromERP(ProjectID)
+      End If
       Return Results
     End Function
     <DataObjectMethod(DataObjectMethodType.Select)> _
@@ -386,8 +389,8 @@ Namespace SIS.COM
 			End Using
 			Return Results.ToArray
 		End Function
-    Public Shared Function GetProjectFromERP(ByVal ProjectID As String, ByVal Comp As String) As SIS.COM.comProjects
-      Comp = HttpContext.Current.Session("FinanceCompany")
+    Public Shared Function GetProjectFromERP(ByVal ProjectID As String) As SIS.COM.comProjects
+      Dim Comp As String = HttpContext.Current.Session("FinanceCompany")
       Dim Ret As SIS.COM.comProjects = Nothing
       Dim Sql As String = ""
       Sql &= "select top 1  "
@@ -411,9 +414,38 @@ Namespace SIS.COM
         End Using
       End Using
       If Ret IsNot Nothing Then
-        InsertData(Ret)
+        InsertProject(Ret, Comp)
       End If
       Return Ret
+    End Function
+    Public Shared Function InsertProject(ByVal Record As SIS.COM.comProjects, ByVal mComp As String) As String
+      Dim _Result As String = Record.ProjectID
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+        Dim Sql As String = ""
+        Sql &= " INSERT [IDM_Projects] "
+        Sql &= " ( "
+        Sql &= " [ProjectID] "
+        Sql &= " ,[Description] "
+        Sql &= " ,[ERPCompany] "
+        Sql &= " ,[LogisticCompany] "
+        Sql &= " ,[FinanceCompany] "
+        Sql &= " ) "
+        Sql &= " VALUES "
+        Sql &= " ( "
+        Sql &= "    UPPER('" & Record.ProjectID & "') "
+        Sql &= " ,'" & Record.Description & "' "
+        Sql &= " ,'" & mComp & "' "
+        Sql &= " ,'" & mComp & "' "
+        Sql &= " ,'" & mComp & "' "
+        Sql &= " ) "
+        Using Cmd As SqlCommand = Con.CreateCommand()
+          Cmd.CommandType = CommandType.Text
+          Cmd.CommandText = Sql
+          Con.Open()
+          Cmd.ExecuteNonQuery()
+        End Using
+      End Using
+      Return _Result
     End Function
     Public Shared Function InsertData(ByVal Record As SIS.COM.comProjects) As String
       Dim _Result As String = Record.ProjectID
@@ -434,37 +466,7 @@ Namespace SIS.COM
     End Function
 
     Public Sub New(ByVal Reader As SqlDataReader)
-      Try
-        For Each pi As System.Reflection.PropertyInfo In Me.GetType.GetProperties
-          If pi.MemberType = Reflection.MemberTypes.Property Then
-            Try
-              Dim Found As Boolean = False
-              For I As Integer = 0 To Reader.FieldCount - 1
-                If Reader.GetName(I).ToLower = pi.Name.ToLower Then
-                  Found = True
-                  Exit For
-                End If
-              Next
-              If Found Then
-                If Convert.IsDBNull(Reader(pi.Name)) Then
-                  Select Case Reader.GetDataTypeName(Reader.GetOrdinal(pi.Name))
-                    Case "decimal"
-                      CallByName(Me, pi.Name, CallType.Let, "0.00")
-                    Case "bit"
-                      CallByName(Me, pi.Name, CallType.Let, Boolean.FalseString)
-                    Case Else
-                      CallByName(Me, pi.Name, CallType.Let, String.Empty)
-                  End Select
-                Else
-                  CallByName(Me, pi.Name, CallType.Let, Reader(pi.Name))
-                End If
-              End If
-            Catch ex As Exception
-            End Try
-          End If
-        Next
-      Catch ex As Exception
-      End Try
+      SIS.SYS.SQLDatabase.DBCommon.NewObj(Me, Reader)
     End Sub
     Public Sub New()
     End Sub

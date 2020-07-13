@@ -145,7 +145,7 @@ Partial Class EF_spmtDCHeader
       oVar = SIS.SPMT.spmtBPGSTIN.spmtBPGSTINGetByID(BPID, SupplierGSTIN)
     End If
     If oVar Is Nothing Then
-      SIS.SPMT.spmtSupplierBill.GetBPGSTINFromERP(BPID)
+      SIS.SPMT.spmtBusinessPartner.GetBPGSTINFromERP(BPID)
       If sGst > 0 Then
         oVar = SIS.SPMT.spmtBPGSTIN.spmtBPGSTINGetByID(BPID, sGst)
       Else
@@ -178,7 +178,7 @@ Partial Class EF_spmtDCHeader
       oVar = SIS.SPMT.spmtBPGSTIN.spmtBPGSTINGetByID(BPID, SupplierGSTIN)
     End If
     If oVar Is Nothing Then
-      SIS.SPMT.spmtSupplierBill.GetBPGSTINFromERP(BPID)
+      SIS.SPMT.spmtBusinessPartner.GetBPGSTINFromERP(BPID)
       If sGst > 0 Then
         oVar = SIS.SPMT.spmtBPGSTIN.spmtBPGSTINGetByID(BPID, sGst)
       Else
@@ -201,15 +201,8 @@ Partial Class EF_spmtDCHeader
     Dim BPID As String = CType(aVal(1), String)
     Dim oVar As SIS.SPMT.spmtBusinessPartner = SIS.SPMT.spmtBusinessPartner.spmtBusinessPartnerGetByID(BPID)
     If oVar Is Nothing Then
-      SIS.SPMT.spmtSupplierBill.GetBPFromERP(BPID)
-      oVar = SIS.SPMT.spmtBusinessPartner.spmtBusinessPartnerGetByID(BPID)
-      If oVar Is Nothing Then
-        mRet = "1|" & aVal(0) & "|Record not found."
-      Else
-        mRet = "0|" & aVal(0) & "|" & oVar.DisplayField
-      End If
+      mRet = "1|" & aVal(0) & "|Record not found."
     Else
-      SIS.SPMT.spmtSupplierBill.GetBPGSTINFromERP(BPID, 0)
       mRet = "0|" & aVal(0) & "|" & oVar.DisplayField
     End If
     Return mRet
@@ -234,15 +227,8 @@ Partial Class EF_spmtDCHeader
     Dim BPID As String = CType(aVal(1), String)
     Dim oVar As SIS.SPMT.spmtBusinessPartner = SIS.SPMT.spmtBusinessPartner.spmtBusinessPartnerGetByID(BPID)
     If oVar Is Nothing Then
-      SIS.SPMT.spmtSupplierBill.GetBPFromERP(BPID)
-      oVar = SIS.SPMT.spmtBusinessPartner.spmtBusinessPartnerGetByID(BPID)
-      If oVar Is Nothing Then
-        mRet = "1|" & aVal(0) & "|Record not found."
-      Else
-        mRet = "0|" & aVal(0) & "|" & oVar.DisplayField
-      End If
+      mRet = "1|" & aVal(0) & "|Record not found."
     Else
-      SIS.SPMT.spmtSupplierBill.GetBPGSTINFromERP(BPID, 0)
       mRet = "0|" & aVal(0) & "|" & oVar.DisplayField
     End If
     Return mRet

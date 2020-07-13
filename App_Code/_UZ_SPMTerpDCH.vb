@@ -304,44 +304,25 @@ Namespace SIS.SPMT
         '1.
         If tmp.ConsigneeBPID <> "" Then
           oVar = SIS.SPMT.spmtBusinessPartner.spmtBusinessPartnerGetByID(tmp.ConsigneeBPID)
-          'If oVar Is Nothing Then
-          Try
-            SIS.SPMT.spmtSupplierBill.GetBPFromERP(tmp.ConsigneeBPID, Comp)
-          Catch ex As Exception
-          End Try
-          'End If
         End If
         '2.
         If tmp.ConsignerBPID <> "" Then
           oVar = SIS.SPMT.spmtBusinessPartner.spmtBusinessPartnerGetByID(tmp.ConsignerBPID)
-          'If oVar Is Nothing Then
-          Try
-            SIS.SPMT.spmtSupplierBill.GetBPFromERP(tmp.ConsignerBPID, Comp)
-          Catch ex As Exception
-          End Try
-          'End If
         End If
         '3.
         If tmp.ProjectID <> "" Then
           Try
-            SIS.COM.comProjects.GetProjectFromERP(tmp.ProjectID, Comp)
+            SIS.COM.comProjects.comProjectsGetByID(tmp.ProjectID)
           Catch ex As Exception
           End Try
         End If
         '4.
         If tmp.TransporterID <> "" Then
           oVar = SIS.SPMT.spmtBusinessPartner.spmtBusinessPartnerGetByID(tmp.TransporterID)
-          'If oVar Is Nothing Then
-          Try
-            SIS.SPMT.spmtSupplierBill.GetBPFromERP(tmp.TransporterID, Comp)
-          Catch ex As Exception
-          End Try
-          'End If
         End If
         '5. Misc
         tmp.ConsigneeStateID = SIS.SPMT.spmtERPStates.spmtERPStatesGetIDByCode(tmp.ConsigneeStateID)
         tmp.ConsignerStateID = SIS.SPMT.spmtERPStates.spmtERPStatesGetIDByCode(tmp.ConsignerStateID)
-        'tmp.DestinationStateID = SIS.SPMT.spmtERPStates.spmtERPStatesGetIDByCode(tmp.DestinationStateID)
         tmp.PlaceOfDelivery = SIS.SPMT.spmtERPStates.spmtERPStatesGetIDByCode(tmp.PlaceOfDelivery)
         tmp.PlaceOfSupply = SIS.SPMT.spmtERPStates.spmtERPStatesGetIDByCode(tmp.PlaceOfSupply)
         tmp.ConsigneeGSTIN = SIS.SPMT.spmtBPGSTIN.spmtGSTINByDescription(tmp.ConsigneeBPID, tmp.ConsigneeGSTIN)

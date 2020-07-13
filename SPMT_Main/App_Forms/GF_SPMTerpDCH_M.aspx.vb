@@ -70,7 +70,7 @@ Partial Class GF_SPMTerpDCH_M
     '  End Try
     'Next
     Try
-      SIS.SPMT.SPMTerpDCH.ImportDC(I_ChallanID.Text.ToUpper, "200")
+      SIS.SPMT.SPMTerpDCH.ImportDC(I_ChallanID.Text.ToUpper, HttpContext.Current.Session("FinanceCompany"))
       GVSPMTerpDCH.DataBind()
     Catch ex As Exception
       ScriptManager.RegisterClientScriptBlock(Page, Page.GetType(), "", "alert('" & New JavaScriptSerializer().Serialize(ex.Message) & "');", True)

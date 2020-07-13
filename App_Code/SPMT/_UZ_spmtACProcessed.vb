@@ -5,6 +5,12 @@ Imports System.Data.SqlClient
 Imports System.ComponentModel
 Namespace SIS.SPMT
   Partial Public Class spmtACProcessed
+    Public ReadOnly Property AttachVisible() As Boolean
+      Get
+        Return SIS.SYS.Utilities.ApplicationSpacific.IsAttached(AdviceNo, SIS.SPMT.spmtPaymentAdvice.AthHandle)
+      End Get
+    End Property
+
     Public ReadOnly Property SaveWFVisible() As Boolean
       Get
         Dim mRet As Boolean = True
@@ -35,8 +41,20 @@ Namespace SIS.SPMT
           .RemarksAC = value
         End With
         SIS.SPMT.spmtACProcessed.UpdateData(Results)
+        'Removes copied attachment to advice from bill
+        ejiVault.EJI.ediAFile.DeleteDataByHandleIndex(SIS.SPMT.spmtPaymentAdvice.AthHandle, Results.AdviceNo)
         '==============New PA====================='
         If Results.VoucherNo <> "" Then
+          'Payment advice is auto created from new session
+          Dim tmpBills As List(Of SIS.SPMT.spmtPaymentAdviceSupplierBill) = SIS.SPMT.spmtPaymentAdviceSupplierBill.UZ_spmtPaymentAdviceSupplierBillSelectList(0, 99999, "", False, "", Results.AdviceNo)
+          For Each tmpB As SIS.SPMT.spmtPaymentAdviceSupplierBill In tmpBills
+            'Delete only metadata
+            ejiVault.EJI.ediAFile.DeleteDataByHandleIndex(SIS.SPMT.spmtSupplierBill.AthHandle, tmpB.IRNo)
+            SIS.SPMT.spmtPaymentAdviceSupplierBill.UZ_spmtSupplierBillDelete(tmpB)
+          Next
+          'Deletes Auto created Payment advice
+          SIS.SPMT.spmtPaymentAdvice.UZ_spmtPaymentAdviceDelete(Results)
+          'then changes status of newPA
           Dim nPA As SIS.SPMT.spmtNewPA = SIS.SPMT.spmtNewPA.spmtNewPAGetByID(Results.VoucherNo)
           If Not nPA Is Nothing Then
             With nPA
@@ -46,14 +64,16 @@ Namespace SIS.SPMT
               .ReceivedInACOn = Now
             End With
             nPA = SIS.SPMT.spmtNewPA.UpdateData(nPA)
+            'Removes copied attachments to PA from Bill
+            ejiVault.EJI.ediAFile.DeleteDataByHandleIndex(SIS.SPMT.spmtNewPA.AthHandle, nPA.AdviceNo)
           End If
         End If
         '=================New PA Returned==============='
       End If
-      If Results.AdviceStatusID = 10 Then
+      If Results.AdviceStatusID = spmtPAStates.UpdatingVoucher Then
         Dim aVal() As String = value.Split("|".ToCharArray)
         With Results
-          .AdviceStatusID = 11
+          .AdviceStatusID = spmtPAStates.VoucherUpdated
           .RemarksHOD = oEmp.LoginID & "-" & oEmp.UserFullName & " " & Now.ToString("dd/MM/yyyy")
           .DocumentNo = aVal(0)
           .BaaNCompany = aVal(1)
@@ -101,15 +121,15 @@ Namespace SIS.SPMT
     End Property
     Public Shared Function CancelWF(ByVal AdviceNo As Int32) As SIS.SPMT.spmtACProcessed
       Dim Results As SIS.SPMT.spmtACProcessed = spmtACProcessedGetByID(AdviceNo)
-      If Results.AdviceStatusID = 9 Then
+      If Results.AdviceStatusID = spmtPAStates.Returning Then
         With Results
-          .AdviceStatusID = 8
+          .AdviceStatusID = spmtPAStates.ReceivedInAC
         End With
         SIS.SPMT.spmtACProcessed.UpdateData(Results)
       End If
-      If Results.AdviceStatusID = 10 Then
+      If Results.AdviceStatusID = spmtPAStates.UpdatingVoucher Then
         With Results
-          .AdviceStatusID = 8
+          .AdviceStatusID = spmtPAStates.ReceivedInAC
         End With
         SIS.SPMT.spmtACProcessed.UpdateData(Results)
       End If
@@ -228,7 +248,7 @@ Namespace SIS.SPMT
       Get
         Dim mRet As Boolean = True
         If AdviceStatusID = 7 Then
-          mret = False
+          mRet = False
         End If
         Return mRet
       End Get
@@ -306,7 +326,7 @@ Namespace SIS.SPMT
     Public Shared Shadows Function InitiateWF(ByVal AdviceNo As Int32) As SIS.SPMT.spmtACProcessed
       Dim Results As SIS.SPMT.spmtACProcessed = spmtACProcessedGetByID(AdviceNo)
       With Results
-        .AdviceStatusID = 10 'Updating
+        .AdviceStatusID = spmtPAStates.UpdatingVoucher
       End With
       SIS.SPMT.spmtACProcessed.UpdateData(Results)
       Return Results
@@ -338,7 +358,7 @@ Namespace SIS.SPMT
       Dim Results As SIS.SPMT.spmtACProcessed = spmtACProcessedGetByID(AdviceNo)
       DirectDeleteAttachment(AdviceNo)
       With Results
-        .AdviceStatusID = 9 'Returning
+        .AdviceStatusID = spmtPAStates.Returning
       End With
       SIS.SPMT.spmtACProcessed.UpdateData(Results)
       Return Results
@@ -347,7 +367,7 @@ Namespace SIS.SPMT
       Dim Sql As String = ""
       Sql &= " delete "
       Sql &= " ttcisg132200"
-      Sql &= " where t_hndl='J_SPMTPAYMENTADVICE' "
+      Sql &= " where t_hndl='" & SIS.SPMT.spmtPaymentAdvice.AthHandle & "' "
       Sql &= " and t_indx=" & AdviceNo
       Sql &= ""
       Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
@@ -364,7 +384,7 @@ Namespace SIS.SPMT
       Dim Results As SIS.SPMT.spmtACProcessed = spmtACProcessedGetByID(AdviceNo)
       Return Results
     End Function
-    Public Shared Function UZ_spmtACProcessedSelectList(ByVal StartRowIndex As Integer, ByVal MaximumRows As Integer, ByVal OrderBy As String, ByVal SearchState As Boolean, ByVal SearchText As String, ByVal AdviceNo As Int32, ByVal TranTypeID As String, ByVal BPID As String) As List(Of SIS.SPMT.spmtACProcessed)
+    Public Shared Function UZ_spmtACProcessedSelectList(ByVal StartRowIndex As Integer, ByVal MaximumRows As Integer, ByVal OrderBy As String, ByVal SearchState As Boolean, ByVal SearchText As String, ByVal AdviceNo As Int32, ByVal TranTypeID As String, ByVal BPID As String, ByVal AdviceStatusID As String) As List(Of SIS.SPMT.spmtACProcessed)
       Dim Results As List(Of SIS.SPMT.spmtACProcessed) = Nothing
       Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
@@ -379,11 +399,12 @@ Namespace SIS.SPMT
             Cmd.CommandText = "spspmtACProcessedSelectListFilteres"
             SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_AdviceNo", SqlDbType.Int, 10, IIf(AdviceNo = Nothing, 0, AdviceNo))
             SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_TranTypeID", SqlDbType.NVarChar, 3, IIf(TranTypeID Is Nothing, String.Empty, TranTypeID))
+            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_AdviceStatusID", SqlDbType.NVarChar, 3, IIf(AdviceStatusID Is Nothing, String.Empty, AdviceStatusID))
             SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_BPID", SqlDbType.NVarChar, 9, IIf(BPID Is Nothing, String.Empty, BPID))
           End If
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@StartRowIndex", SqlDbType.Int, -1, StartRowIndex)
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@MaximumRows", SqlDbType.Int, -1, MaximumRows)
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NvarChar, 9, HttpContext.Current.Session("LoginID"))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NVarChar, 9, HttpContext.Current.Session("LoginID"))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@OrderBy", SqlDbType.NVarChar, 50, OrderBy)
           Cmd.Parameters.Add("@RecordCount", SqlDbType.Int)
           Cmd.Parameters("@RecordCount").Direction = ParameterDirection.Output
@@ -399,6 +420,9 @@ Namespace SIS.SPMT
         End Using
       End Using
       Return Results
+    End Function
+    Public Shared Function spmtACProcessedSelectCount(ByVal SearchState As Boolean, ByVal SearchText As String, ByVal AdviceNo As Int32, ByVal TranTypeID As String, ByVal BPID As String, ByVal AdviceStatusID As String) As Integer
+      Return RecordCount
     End Function
 
   End Class

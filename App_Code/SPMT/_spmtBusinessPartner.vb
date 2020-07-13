@@ -167,7 +167,7 @@ Namespace SIS.SPMT
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spspmtBusinessPartnerSelectByID"
-          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@BPID",SqlDbType.NVarChar,BPID.ToString.Length, BPID)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@BPID", SqlDbType.NVarChar, BPID.ToString.Length, BPID)
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NvarChar, 9, HttpContext.Current.Session("LoginID"))
           Con.Open()
           Dim Reader As SqlDataReader = Cmd.ExecuteReader()
@@ -177,6 +177,9 @@ Namespace SIS.SPMT
           Reader.Close()
         End Using
       End Using
+      If Results Is Nothing Then
+        Results = GetBPFromERP(BPID)
+      End If
       Return Results
     End Function
     <DataObjectMethod(DataObjectMethodType.Select)> _

@@ -90,7 +90,7 @@ Namespace SIS.COM
     <DataObjectMethod(DataObjectMethodType.Select)> _
     Public Shared Function SelectList(ByVal orderBy As String) As List(Of SIS.COM.comDesignations)
       Dim Results As List(Of SIS.COM.comDesignations) = Nothing
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomDesignationsSelectList"
@@ -119,7 +119,7 @@ Namespace SIS.COM
     <DataObjectMethod(DataObjectMethodType.Select)>
     Public Shared Function GetByID(ByVal DesignationID As Int32) As SIS.COM.comDesignations
       Dim Results As SIS.COM.comDesignations = Nothing
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomDesignationsSelectByID"
@@ -137,7 +137,7 @@ Namespace SIS.COM
     <DataObjectMethod(DataObjectMethodType.Select)>
     Public Shared Function SelectList(ByVal startRowIndex As Integer, ByVal maximumRows As Integer, ByVal orderBy As String, ByVal SearchState As Boolean, ByVal SearchText As String) As List(Of SIS.COM.comDesignations)
       Dim Results As List(Of SIS.COM.comDesignations) = Nothing
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           If SearchState Then
@@ -172,7 +172,7 @@ Namespace SIS.COM
     Public Shared Function SelectcomDesignationsAutoCompleteList(ByVal Prefix As String, ByVal count As Integer, ByVal contextKey As String) As String()
       Dim Results As List(Of String) = Nothing
       Dim aVal() As String = contextKey.Split("|".ToCharArray)
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomDesignationsAutoCompleteList"
@@ -195,11 +195,7 @@ Namespace SIS.COM
       Return Results.ToArray
 		End Function
     Public Sub New(ByVal Reader As SqlDataReader)
-      On Error Resume Next
-      _DesignationID = Ctype(Reader("DesignationID"),Int32)
-      _Description = Ctype(Reader("Description"),String)
-      _ShortName = Ctype(Reader("ShortName"),String)
-      _Sequence = Ctype(Reader("Sequence"),Int32)
+      SIS.SYS.SQLDatabase.DBCommon.NewObj(Me, Reader)
     End Sub
     Public Sub New()
     End Sub

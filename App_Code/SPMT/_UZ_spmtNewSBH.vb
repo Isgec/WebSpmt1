@@ -5,6 +5,16 @@ Imports System.Data.SqlClient
 Imports System.ComponentModel
 Namespace SIS.SPMT
   Partial Public Class spmtNewSBH
+    Public Shared ReadOnly Property AthHandle As String
+      Get
+        Dim mRet As String = "J_SPMTNEWSB"
+        Dim Comp As String = HttpContext.Current.Session("FinanceCompany")
+        If Comp <> "200" Then
+          mRet = mRet & "_" & Comp
+        End If
+        Return mRet
+      End Get
+    End Property
     Public ReadOnly Property GetAttachLink() As String
       Get
         Dim UrlAuthority As String = HttpContext.Current.Request.Url.Authority
@@ -12,7 +22,7 @@ Namespace SIS.SPMT
           UrlAuthority = "192.9.200.146"
         End If
         Dim mRet As String = HttpContext.Current.Request.Url.Scheme & Uri.SchemeDelimiter & UrlAuthority
-        mRet &= "/Attachment/Attachment.aspx?AthHandle=J_SPMTNEWSB"
+        mRet &= "/Attachment/Attachment.aspx?AthHandle=" & SIS.SPMT.spmtNewSBH.AthHandle
         Dim Index As String = IRNo
         Dim User As String = HttpContext.Current.Session("LoginID")
         'User = 1
@@ -176,7 +186,7 @@ Namespace SIS.SPMT
       Return _Result
     End Function
     Public Shared Function UZ_spmtNewSBHDelete(ByVal Record As SIS.SPMT.spmtNewSBH) As Integer
-      Dim _Result as Integer = spmtNewSBHDelete(Record)
+      Dim _Result As Integer = spmtNewSBHDelete(Record)
       Return _Result
     End Function
     Public Shared Function SetDefaultValues(ByVal sender As System.Web.UI.WebControls.FormView, ByVal e As System.EventArgs) As System.Web.UI.WebControls.FormView

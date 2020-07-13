@@ -72,7 +72,7 @@ Namespace SIS.COM
     <DataObjectMethod(DataObjectMethodType.Select)>
     Public Shared Function SelectList(ByVal orderBy As String) As List(Of SIS.COM.comDepartments)
       Dim Results As List(Of SIS.COM.comDepartments) = Nothing
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomDepartmentsSelectList"
@@ -104,7 +104,7 @@ Namespace SIS.COM
     End Function
     Public Shared Function GetByID(ByVal DepartmentID As String) As SIS.COM.comDepartments
       Dim Results As SIS.COM.comDepartments = Nothing
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomDepartmentsSelectByID"
@@ -122,7 +122,7 @@ Namespace SIS.COM
     <DataObjectMethod(DataObjectMethodType.Select)>
     Public Shared Function SelectList(ByVal startRowIndex As Integer, ByVal maximumRows As Integer, ByVal orderBy As String, ByVal SearchState As Boolean, ByVal SearchText As String) As List(Of SIS.COM.comDepartments)
       Dim Results As List(Of SIS.COM.comDepartments) = Nothing
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           If SearchState Then
@@ -157,7 +157,7 @@ Namespace SIS.COM
     Public Shared Function SelectcomDepartmentsAutoCompleteList(ByVal Prefix As String, ByVal count As Integer, ByVal contextKey As String) As String()
       Dim Results As List(Of String) = Nothing
       Dim aVal() As String = contextKey.Split("|".ToCharArray)
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomDepartmentsAutoCompleteList"
@@ -180,9 +180,7 @@ Namespace SIS.COM
       Return Results.ToArray
 		End Function
     Public Sub New(ByVal Reader As SqlDataReader)
-      On Error Resume Next
-      _DepartmentID = Ctype(Reader("DepartmentID"),String)
-      _Description = Ctype(Reader("Description"),String)
+      SIS.SYS.SQLDatabase.DBCommon.NewObj(Me, Reader)
     End Sub
     Public Sub New()
     End Sub

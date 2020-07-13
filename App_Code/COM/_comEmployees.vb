@@ -190,7 +190,7 @@ Namespace SIS.COM
     <DataObjectMethod(DataObjectMethodType.Select)>
     Public Shared Function SelectList(ByVal orderBy As String) As List(Of SIS.COM.comEmployees)
       Dim Results As List(Of SIS.COM.comEmployees) = Nothing
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomEmployeesSelectList"
@@ -223,7 +223,7 @@ Namespace SIS.COM
     <DataObjectMethod(DataObjectMethodType.Select)>
     Public Shared Function GetByID(ByVal CardNo As String) As SIS.COM.comEmployees
       Dim Results As SIS.COM.comEmployees = Nothing
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomEmployeesSelectByID"
@@ -241,7 +241,7 @@ Namespace SIS.COM
     <DataObjectMethod(DataObjectMethodType.Select)>
     Public Shared Function GetByC_OfficeID(ByVal C_OfficeID As Int32, ByVal OrderBy As String) As List(Of SIS.COM.comEmployees)
       Dim Results As List(Of SIS.COM.comEmployees) = Nothing
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomEmployeesSelectByC_OfficeID"
@@ -265,7 +265,7 @@ Namespace SIS.COM
     <DataObjectMethod(DataObjectMethodType.Select)>
     Public Shared Function GetByC_DepartmentID(ByVal C_DepartmentID As String, ByVal OrderBy As String) As List(Of SIS.COM.comEmployees)
       Dim Results As List(Of SIS.COM.comEmployees) = Nothing
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomEmployeesSelectByC_DepartmentID"
@@ -289,7 +289,7 @@ Namespace SIS.COM
     <DataObjectMethod(DataObjectMethodType.Select)>
     Public Shared Function GetByC_DesignationID(ByVal C_DesignationID As Int32, ByVal OrderBy As String) As List(Of SIS.COM.comEmployees)
       Dim Results As List(Of SIS.COM.comEmployees) = Nothing
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomEmployeesSelectByC_DesignationID"
@@ -313,7 +313,7 @@ Namespace SIS.COM
     <DataObjectMethod(DataObjectMethodType.Select)>
     Public Shared Function SelectList(ByVal startRowIndex As Integer, ByVal maximumRows As Integer, ByVal orderBy As String, ByVal SearchState As Boolean, ByVal SearchText As String, ByVal CardNo As String) As List(Of SIS.COM.comEmployees)
       Dim Results As List(Of SIS.COM.comEmployees) = Nothing
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           If SearchState Then
@@ -364,7 +364,7 @@ Namespace SIS.COM
     End Function
     Public Shared Function UpdateData(ByVal Record As SIS.COM.comEmployees) As Int32
       Dim _Result As Integer = 0
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomEmployeesUpdate"
@@ -389,7 +389,7 @@ Namespace SIS.COM
     Public Shared Function SelectcomEmployeesAutoCompleteList(ByVal Prefix As String, ByVal count As Integer, ByVal contextKey As String) As String()
       Dim Results As List(Of String) = Nothing
       Dim aVal() As String = contextKey.Split("|".ToCharArray)
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetToolsConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.StoredProcedure
           Cmd.CommandText = "spcomEmployeesAutoCompleteList"
@@ -412,33 +412,7 @@ Namespace SIS.COM
       Return Results.ToArray
     End Function
     Public Sub New(ByVal Reader As SqlDataReader)
-      On Error Resume Next
-      _CardNo = CType(Reader("CardNo"), String)
-      _EmployeeName = CType(Reader("EmployeeName"), String)
-      If Convert.IsDBNull(Reader("C_DateOfJoining")) Then
-        _C_DateOfJoining = String.Empty
-      Else
-        _C_DateOfJoining = CType(Reader("C_DateOfJoining"), String)
-      End If
-      If Convert.IsDBNull(Reader("C_OfficeID")) Then
-        _C_OfficeID = String.Empty
-      Else
-        _C_OfficeID = CType(Reader("C_OfficeID"), String)
-      End If
-      If Convert.IsDBNull(Reader("C_DepartmentID")) Then
-        _C_DepartmentID = String.Empty
-      Else
-        _C_DepartmentID = CType(Reader("C_DepartmentID"), String)
-      End If
-      If Convert.IsDBNull(Reader("C_DesignationID")) Then
-        _C_DesignationID = String.Empty
-      Else
-        _C_DesignationID = CType(Reader("C_DesignationID"), String)
-      End If
-      _ActiveState = CType(Reader("ActiveState"), Boolean)
-      _HRM_Departments2_Description = CType(Reader("HRM_Departments2_Description"), String)
-      _HRM_Designations3_Description = CType(Reader("HRM_Designations3_Description"), String)
-      _HRM_Offices1_Description = CType(Reader("HRM_Offices1_Description"), String)
+      SIS.SYS.SQLDatabase.DBCommon.NewObj(Me, Reader)
     End Sub
     Public Sub New()
     End Sub

@@ -5,6 +5,16 @@ Imports System.Data.SqlClient
 Imports System.ComponentModel
 Namespace SIS.SPMT
   Partial Public Class spmtSupplierBill
+    Public Shared ReadOnly Property AthHandle As String
+      Get
+        Dim mRet As String = "J_SPMTSUPPLIERBILL"
+        Dim Comp As String = HttpContext.Current.Session("FinanceCompany")
+        If Comp <> "200" Then
+          mRet = mRet & "_" & Comp
+        End If
+        Return mRet
+      End Get
+    End Property
     Public ReadOnly Property GetAttachLink() As String
       Get
         Dim UrlAuthority As String = HttpContext.Current.Request.Url.Authority
@@ -12,7 +22,7 @@ Namespace SIS.SPMT
           UrlAuthority = "192.9.200.146"
         End If
         Dim mRet As String = HttpContext.Current.Request.Url.Scheme & Uri.SchemeDelimiter & UrlAuthority
-        mRet &= "/Attachment/Attachment.aspx?AthHandle=J_SPMTSUPPLIERBILL"
+        mRet &= "/Attachment/Attachment.aspx?AthHandle=" & SIS.SPMT.spmtSupplierBill.AthHandle
         Dim Index As String = IRNo
         Dim User As String = HttpContext.Current.Session("LoginID")
         'User = 1
@@ -145,7 +155,7 @@ Namespace SIS.SPMT
         Throw New Exception("<h3>Duplicate Bill Entry NOT Allowed</h3>")
       End If
       Dim _Rec As SIS.SPMT.spmtSupplierBill = SIS.SPMT.spmtSupplierBill.spmtSupplierBillGetNewRecord()
-        With _Rec
+      With _Rec
         .TranTypeID = Record.TranTypeID.Split("|".ToCharArray)(0)
         .BillStatusID = 4
         .BillStatusDate = Now
@@ -283,94 +293,95 @@ Namespace SIS.SPMT
       Dim _Result As Integer = spmtSupplierBillDelete(Record)
       Return _Result
     End Function
-    Public Shared Function GetBPFromERP(ByVal BPID As String, Optional ByVal Comp As String = "200") As SIS.SPMT.spmtBusinessPartner
-      Dim Results As SIS.SPMT.spmtBusinessPartner = Nothing
-      Dim Sql As String = ""
-      Sql &= "select                                                     "
-      Sql &= "  suh.t_bpid as BPID,                                      "
-      Sql &= "  suh.t_nama as BPName,                                    "
-      Sql &= "  adh.t_ln01 as Address1Line,                              "
-      Sql &= "  adh.t_ln02 as Address2Line,                                    "
-      Sql &= "  adh.t_ln03 as Address3,                                        "
-      Sql &= "  adh.t_ln04 as Address4,                                        "
-      Sql &= "  adh.t_ln05 as City,                                            "
-      Sql &= "  adh.t_ln06 as State,                                           "
-      Sql &= "  adh.t_pstc as Zip,                                             "
-      Sql &= "  adh.t_ccty as Country,                                         "
-      Sql &= "  cnh.t_fuln as ContactPerson,                                   "
-      Sql &= "  cnh.t_telp as ContactNo,                                       "
-      Sql &= "  cnh.t_info as EMailID                                          "
-      Sql &= "  from ttccom100" & Comp & " as suh                                       "
-      Sql &= "  left outer join ttccom130" & Comp & " as adh on suh.t_cadr = adh.t_cadr "
-      Sql &= "  left outer join ttccom140" & Comp & " as cnh on suh.t_ccnt = cnh.t_ccnt "
-      Sql &= "  where suh.t_bpid ='" & BPID & "'"
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
-        Using Cmd As SqlCommand = Con.CreateCommand()
-          Cmd.CommandType = CommandType.Text
-          Cmd.CommandText = Sql
-          Con.Open()
-          Dim Reader As SqlDataReader = Cmd.ExecuteReader()
-          If Reader.Read() Then
-            Results = New SIS.SPMT.spmtBusinessPartner(Reader)
-          End If
-          Reader.Close()
-        End Using
-      End Using
-      If Results IsNot Nothing Then
-        If Comp <> "200" Then Results.BPID = "S" & Comp & Right(Results.BPID, 5)
-        Try
-          Results = SIS.SPMT.spmtBusinessPartner.InsertData(Results)
-        Catch ex As Exception
-        End Try
-        If Comp <> "200" Then
-          GetBPGSTINFromERP(BPID, 0, Comp, Results.BPID)
-        Else
-          GetBPGSTINFromERP(Results.BPID, 0)
-        End If
-      End If
-      Return Results
-    End Function
-    Public Shared Function GetBPGSTINFromERP(ByVal BPID As String, Optional ByVal GSTIN As Int32 = 0, Optional ByVal Comp As String = "200", Optional ByVal NewBPID As String = "") As List(Of SIS.SPMT.spmtBPGSTIN)
-      Dim Results As New List(Of SIS.SPMT.spmtBPGSTIN)
-      Dim Sql As String = ""
-      Sql &= "select                                "
-      Sql &= "  t_bpid as BPID,                     "
-      Sql &= "  t_fovn as Description,              "
-      Sql &= "  t_seqn_l as GSTIN                   "
-      Sql &= "  from ttctax400" & Comp & "                   "
-      Sql &= "  where t_bpid ='" & BPID & "'"
-      Sql &= "  and t_catg_l = 9 "
-      If GSTIN > 0 Then
-        Sql &= "  and t_seqn_l ='" & GSTIN & "'"
-      End If
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
-        Using Cmd As SqlCommand = Con.CreateCommand()
-          Cmd.CommandType = CommandType.Text
-          Cmd.CommandText = Sql
-          Con.Open()
-          Dim Reader As SqlDataReader = Cmd.ExecuteReader()
-          While Reader.Read()
-            Results.Add(New SIS.SPMT.spmtBPGSTIN(Reader))
-          End While
-          Reader.Close()
-        End Using
-      End Using
-      If Results.Count > 0 Then
-        For Each tmp As SIS.SPMT.spmtBPGSTIN In Results
-          If Comp <> "200" Then tmp.BPID = NewBPID
-          Try
-            SIS.SPMT.spmtBPGSTIN.InsertData(tmp)
-          Catch ex As Exception
-            Try
-              SIS.SPMT.spmtBPGSTIN.UpdateData(tmp)
-            Catch exX As Exception
-            End Try
-          End Try
-        Next
-      End If
-      Return Results
-    End Function
+    'Public Shared Function GetBPFromERP(ByVal BPID As String, Optional ByVal Comp As String = "200") As SIS.SPMT.spmtBusinessPartner
+    '  Dim Results As SIS.SPMT.spmtBusinessPartner = Nothing
+    '  Dim Sql As String = ""
+    '  Sql &= "select                                                     "
+    '  Sql &= "  suh.t_bpid as BPID,                                      "
+    '  Sql &= "  suh.t_nama as BPName,                                    "
+    '  Sql &= "  adh.t_ln01 as Address1Line,                              "
+    '  Sql &= "  adh.t_ln02 as Address2Line,                                    "
+    '  Sql &= "  adh.t_ln03 as Address3,                                        "
+    '  Sql &= "  adh.t_ln04 as Address4,                                        "
+    '  Sql &= "  adh.t_ln05 as City,                                            "
+    '  Sql &= "  adh.t_ln06 as State,                                           "
+    '  Sql &= "  adh.t_pstc as Zip,                                             "
+    '  Sql &= "  adh.t_ccty as Country,                                         "
+    '  Sql &= "  cnh.t_fuln as ContactPerson,                                   "
+    '  Sql &= "  cnh.t_telp as ContactNo,                                       "
+    '  Sql &= "  cnh.t_info as EMailID                                          "
+    '  Sql &= "  from ttccom100" & Comp & " as suh                                       "
+    '  Sql &= "  left outer join ttccom130" & Comp & " as adh on suh.t_cadr = adh.t_cadr "
+    '  Sql &= "  left outer join ttccom140" & Comp & " as cnh on suh.t_ccnt = cnh.t_ccnt "
+    '  Sql &= "  where suh.t_bpid ='" & BPID & "'"
+    '  Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
+    '    Using Cmd As SqlCommand = Con.CreateCommand()
+    '      Cmd.CommandType = CommandType.Text
+    '      Cmd.CommandText = Sql
+    '      Con.Open()
+    '      Dim Reader As SqlDataReader = Cmd.ExecuteReader()
+    '      If Reader.Read() Then
+    '        Results = New SIS.SPMT.spmtBusinessPartner(Reader)
+    '      End If
+    '      Reader.Close()
+    '    End Using
+    '  End Using
+    '  If Results IsNot Nothing Then
+    '    If Comp <> "200" Then Results.BPID = "S" & Comp & Right(Results.BPID, 5)
+    '    Try
+    '      Results = SIS.SPMT.spmtBusinessPartner.InsertData(Results)
+    '    Catch ex As Exception
+    '    End Try
+    '    If Comp <> "200" Then
+    '      GetBPGSTINFromERP(BPID, 0, Comp, Results.BPID)
+    '    Else
+    '      GetBPGSTINFromERP(Results.BPID, 0)
+    '    End If
+    '  End If
+    '  Return Results
+    'End Function
+    'Public Shared Function GetBPGSTINFromERP(ByVal BPID As String, Optional ByVal GSTIN As Int32 = 0, Optional ByVal Comp As String = "200", Optional ByVal NewBPID As String = "") As List(Of SIS.SPMT.spmtBPGSTIN)
+    '  Dim Results As New List(Of SIS.SPMT.spmtBPGSTIN)
+    '  Dim Sql As String = ""
+    '  Sql &= "select                                "
+    '  Sql &= "  t_bpid as BPID,                     "
+    '  Sql &= "  t_fovn as Description,              "
+    '  Sql &= "  t_seqn_l as GSTIN                   "
+    '  Sql &= "  from ttctax400" & Comp & "                   "
+    '  Sql &= "  where t_bpid ='" & BPID & "'"
+    '  Sql &= "  and t_catg_l = 9 "
+    '  If GSTIN > 0 Then
+    '    Sql &= "  and t_seqn_l ='" & GSTIN & "'"
+    '  End If
+    '  Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
+    '    Using Cmd As SqlCommand = Con.CreateCommand()
+    '      Cmd.CommandType = CommandType.Text
+    '      Cmd.CommandText = Sql
+    '      Con.Open()
+    '      Dim Reader As SqlDataReader = Cmd.ExecuteReader()
+    '      While Reader.Read()
+    '        Results.Add(New SIS.SPMT.spmtBPGSTIN(Reader))
+    '      End While
+    '      Reader.Close()
+    '    End Using
+    '  End Using
+    '  If Results.Count > 0 Then
+    '    For Each tmp As SIS.SPMT.spmtBPGSTIN In Results
+    '      If Comp <> "200" Then tmp.BPID = NewBPID
+    '      Try
+    '        SIS.SPMT.spmtBPGSTIN.InsertData(tmp)
+    '      Catch ex As Exception
+    '        Try
+    '          SIS.SPMT.spmtBPGSTIN.UpdateData(tmp)
+    '        Catch exX As Exception
+    '        End Try
+    '      End Try
+    '    Next
+    '  End If
+    '  Return Results
+    'End Function
     Public Shared Function GetHSNSACCodeFromERP(ByVal BillType As Int32, ByVal HSNSACCode As String) As SIS.SPMT.spmtHSNSACCodes
+      Dim Comp As String = HttpContext.Current.Session("FinanceCompany")
       Dim Results As SIS.SPMT.spmtHSNSACCodes = Nothing
       Dim Sql As String = ""
       Sql &= "select                                "
@@ -378,7 +389,7 @@ Namespace SIS.SPMT
       Sql &= "  t_code as HSNSACCode,               "
       Sql &= "  t_pvat as TaxRate,                  "
       Sql &= "  t_desc as Description               "
-      Sql &= "  from ttcisg124200                   "
+      Sql &= "  from ttcisg124" & Comp
       Sql &= "  where t_ityp =" & BillType
       Sql &= "  and t_code = '" & HSNSACCode & "'"
       Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())

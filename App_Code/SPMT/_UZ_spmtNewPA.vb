@@ -3,8 +3,19 @@ Imports System.Collections.Generic
 Imports System.Data
 Imports System.Data.SqlClient
 Imports System.ComponentModel
+Imports ejiVault
 Namespace SIS.SPMT
   Partial Public Class spmtNewPA
+    Public Shared ReadOnly Property AthHandle As String
+      Get
+        Dim mRet As String = "J_SPMTNEWPA"
+        Dim Comp As String = HttpContext.Current.Session("FinanceCompany")
+        If Comp <> "200" Then
+          mRet = mRet & "_" & Comp
+        End If
+        Return mRet
+      End Get
+    End Property
     Public ReadOnly Property GetAttachLink() As String
       Get
         Dim UrlAuthority As String = HttpContext.Current.Request.Url.Authority
@@ -12,7 +23,7 @@ Namespace SIS.SPMT
           UrlAuthority = "192.9.200.146"
         End If
         Dim mRet As String = HttpContext.Current.Request.Url.Scheme & Uri.SchemeDelimiter & UrlAuthority
-        mRet &= "/Attachment/Attachment.aspx?AthHandle=J_SPMTNEWPA"
+        mRet &= "/Attachment/Attachment.aspx?AthHandle=" & SIS.SPMT.spmtNewPA.AthHandle
         Dim Index As String = AdviceNo
         Dim User As String = HttpContext.Current.Session("LoginID")
         'User = 1
@@ -133,32 +144,33 @@ Namespace SIS.SPMT
         Dim IndexT As String = Results.AdviceNo
         '======Copy Attachment===========
         'CopyAttachment(IndexS, IndexT)
-        DirectNewCopyAttachment(IndexS, IndexT, "J_SPMTNEWSB", "J_SPMTNEWPA")
+        'DirectNewCopyAttachment(IndexS, IndexT, "J_SPMTNEWSB", "J_SPMTNEWPA")
+        EJI.ediAFile.FileCopy(SIS.SPMT.spmtNewSBH.AthHandle, IndexS, SIS.SPMT.spmtNewPA.AthHandle, IndexT, tmpBill.CreatedBy)
         '======End Copy Attachment=======
       Next
       Results = CopyToOldPaymentAdvice(Results)
       SIS.SPMT.spmtNewPA.UpdateData(Results)
       Return Results
     End Function
-    Public Shared Sub DirectNewCopyAttachment(ByVal S_Index As String, ByVal T_Index As String, ByVal S_Handle As String, ByVal T_Handle As String)
-      Dim Sql As String = ""
-      Sql &= " insert into ttcisg132200 (t_drid,t_dcid,t_hndl,t_indx,t_prcd,t_fnam,t_lbcd,t_atby,t_aton,t_Refcntd,t_Refcntu)"
-      Sql &= " select 1000000 + (ABS(CHECKSUM(NEWID())) % 1000000)  as t_drid ,t_dcid, '" & T_Handle & "' AS t_hndl, "
-      Sql &= " '" & T_Index & "' as t_indx,"
-      Sql &= " t_prcd,t_fnam,t_lbcd,t_atby,t_aton,t_Refcntd,t_Refcntu "
-      Sql &= " from ttcisg132200"
-      Sql &= " where t_hndl='" & S_Handle & "' "
-      Sql &= " and t_indx='" & S_Index & "'"
-      Sql &= ""
-      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
-        Using Cmd As SqlCommand = Con.CreateCommand()
-          Cmd.CommandType = CommandType.Text
-          Cmd.CommandText = Sql
-          Con.Open()
-          Cmd.ExecuteNonQuery()
-        End Using
-      End Using
-    End Sub
+    'Public Shared Sub DirectNewCopyAttachment(ByVal S_Index As String, ByVal T_Index As String, ByVal S_Handle As String, ByVal T_Handle As String)
+    '  Dim Sql As String = ""
+    '  Sql &= " insert into ttcisg132200 (t_drid,t_dcid,t_hndl,t_indx,t_prcd,t_fnam,t_lbcd,t_atby,t_aton,t_Refcntd,t_Refcntu)"
+    '  Sql &= " select 1000000 + (ABS(CHECKSUM(NEWID())) % 1000000)  as t_drid ,t_dcid, '" & T_Handle & "' AS t_hndl, "
+    '  Sql &= " '" & T_Index & "' as t_indx,"
+    '  Sql &= " t_prcd,t_fnam,t_lbcd,t_atby,t_aton,t_Refcntd,t_Refcntu "
+    '  Sql &= " from ttcisg132200"
+    '  Sql &= " where t_hndl='" & S_Handle & "' "
+    '  Sql &= " and t_indx='" & S_Index & "'"
+    '  Sql &= ""
+    '  Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
+    '    Using Cmd As SqlCommand = Con.CreateCommand()
+    '      Cmd.CommandType = CommandType.Text
+    '      Cmd.CommandText = Sql
+    '      Con.Open()
+    '      Cmd.ExecuteNonQuery()
+    '    End Using
+    '  End Using
+    'End Sub
     Public Shared Function UZ_spmtNewPASelectList(ByVal StartRowIndex As Integer, ByVal MaximumRows As Integer, ByVal OrderBy As String, ByVal SearchState As Boolean, ByVal SearchText As String, ByVal TranTypeID As String, ByVal CreatedBy As String, ByVal BPID As String) As List(Of SIS.SPMT.spmtNewPA)
       Dim Results As List(Of SIS.SPMT.spmtNewPA) = Nothing
       Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
@@ -248,6 +260,7 @@ Namespace SIS.SPMT
         Return True
       End If
     End Function
+
     Public Shared Function CopyToOldPaymentAdvice(ByVal sPA As SIS.SPMT.spmtNewPA) As SIS.SPMT.spmtNewPA
       Dim sSBs As List(Of SIS.SPMT.spmtNewLinkedSBH) = SIS.SPMT.spmtNewLinkedSBH.spmtNewLinkedSBHSelectList(0, 9999, "", False, "", sPA.AdviceNo)
       Dim paFound As Boolean = False
@@ -291,6 +304,8 @@ Namespace SIS.SPMT
       End If
       'Dim sSBs As List(Of SIS.SPMT.spmtNewLinkedSBH) = SIS.SPMT.spmtNewLinkedSBH.spmtNewLinkedSBHSelectList(0, 9999, "", False, "", sPA.AdviceNo)
       For Each sbh As SIS.SPMT.spmtNewLinkedSBH In sSBs
+        'Creates a Separate Bill for each Line Item 
+        'Ans copies same Bill Attachment in each bill
         Dim sSBDs As List(Of SIS.SPMT.spmtNewSBD) = SIS.SPMT.spmtNewSBD.spmtNewSBDSelectList(0, 9999, "", False, "", sbh.IRNo)
         For Each sbd As SIS.SPMT.spmtNewSBD In sSBDs
           Dim tmpSB As New SIS.SPMT.spmtSupplierBill
@@ -337,11 +352,13 @@ Namespace SIS.SPMT
           End With
           tmpSB = SIS.SPMT.spmtSupplierBill.InsertData(tmpSB)
           '=========Copy Bill Attachment to OLD BILLs===========
-          DirectNewCopyAttachment(sbh.IRNo, tmpSB.IRNo, "J_SPMTNEWSB", "J_SPMTSUPPLIERBILL")
+          'DirectNewCopyAttachment(sbh.IRNo, tmpSB.IRNo, "J_SPMTNEWSB", "J_SPMTSUPPLIERBILL")
+          EJI.ediAFile.FileCopy(SIS.SPMT.spmtNewSBH.AthHandle, sbh.IRNo, SIS.SPMT.spmtSupplierBill.AthHandle, tmpSB.IRNo, sbh.CreatedBy)
           '=============================================
         Next
         '=========Copy Bill Attachment to OLD PA===========
-        DirectNewCopyAttachment(sbh.IRNo, tPA.AdviceNo, "J_SPMTNEWSB", "J_SPMTPAYMENTADVICE")
+        'DirectNewCopyAttachment(sbh.IRNo, tPA.AdviceNo, "J_SPMTNEWSB", "J_SPMTPAYMENTADVICE")
+        EJI.ediAFile.FileCopy(SIS.SPMT.spmtNewSBH.AthHandle, sbh.IRNo, SIS.SPMT.spmtPaymentAdvice.AthHandle, tPA.AdviceNo, sbh.CreatedBy)
         '=============================================
       Next
       Return sPA

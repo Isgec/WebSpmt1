@@ -22,10 +22,10 @@ Partial Class GF_spmtACProcessed
         Dim AdviceNo As Int32 = GVspmtACProcessed.DataKeys(e.CommandArgument).Values("AdviceNo")
         Dim tmpPA As SIS.SPMT.spmtPaymentAdvice = SIS.SPMT.spmtPaymentAdvice.spmtPaymentAdviceGetByID(AdviceNo)
         Dim tmpValue As String = ""
-        If tmpPA.AdviceStatusID = 9 Then
+        If tmpPA.AdviceStatusID = spmtPAStates.Returning Then
           tmpValue = CType(GVspmtACProcessed.Rows(e.CommandArgument).FindControl("F_RemarksAC"), TextBox).Text
         End If
-        If tmpPA.AdviceStatusID = 10 Then
+        If tmpPA.AdviceStatusID = spmtPAStates.UpdatingVoucher Then
           tmpValue = CType(GVspmtACProcessed.Rows(e.CommandArgument).FindControl("F_DocumentNo"), TextBox).Text
           tmpValue &= "|" & CType(GVspmtACProcessed.Rows(e.CommandArgument).FindControl("F_BaaNCompany"), TextBox).Text
           tmpValue &= "|" & CType(GVspmtACProcessed.Rows(e.CommandArgument).FindControl("F_BaaNLedger"), DropDownList).SelectedValue

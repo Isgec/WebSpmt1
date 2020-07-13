@@ -128,6 +128,26 @@
             Runat="Server" />
         </td>
       </tr>
+      <tr>
+        <td class="alignright">
+          <b><asp:Label ID="Label1" runat="server" Text="PA Status :" /></b>
+        </td>
+        <td>
+          <LGM:LC_spmtPAStatus
+            ID="F_AdviceStatusID"
+            SelectedValue=""
+            OrderBy="Accounts"
+            DataTextField="Description"
+            DataValueField="AdviceStatusID"
+            IncludeDefault="true"
+            DefaultText="-- Select --"
+            Width="200px"
+            AutoPostBack="true"
+            RequiredFieldErrorMessage="<div class='errorLG'>Required!</div>"
+            CssClass="myddl"
+            Runat="Server" />
+          </td>
+      </tr>
     </table>
     </asp:Panel>
     <AJX:CollapsiblePanelExtender ID="cpe1" runat="Server" TargetControlID="pnlD" ExpandControlID="pnlH" CollapseControlID="pnlH" Collapsed="True" TextLabelID="lblH" ImageControlID="imgH" ExpandedText="(Hide Filters...)" CollapsedText="(Show Filters...)" ExpandedImage="~/images/ua.png" CollapsedImage="~/images/da.png" SuppressPostBack="true" />
@@ -160,7 +180,7 @@
         </asp:TemplateField>
         <asp:TemplateField HeaderText="Atch">
           <ItemTemplate>
-            <asp:ImageButton ID="cmdAttach" runat="server" AlternateText='<%# Eval("PrimaryKey") %>' ToolTip="View Attached documents." SkinID="attach" OnClientClick='<%# Eval("GetAttachLink") %>' />
+            <asp:ImageButton ID="cmdAttach" runat="server" Visible='<%# Eval("AttachVisible") %>' AlternateText='<%# Eval("PrimaryKey") %>' ToolTip="View Attached documents." SkinID="attach" OnClientClick='<%# Eval("GetAttachLink") %>' />
           </ItemTemplate>
           <ItemStyle CssClass="alignCenter" />
           <HeaderStyle HorizontalAlign="Center" Width="30px" />
@@ -359,6 +379,7 @@
                       <asp:ListItem Value="290" Text="290"></asp:ListItem>
                       <asp:ListItem Value="400" Text="400"></asp:ListItem>
                       <asp:ListItem Value="651" Text="651"></asp:ListItem>
+                      <asp:ListItem Value="700" Text="700"></asp:ListItem>
                     </asp:DropDownList>
                     <asp:RequiredFieldValidator 
                       ID = "RFVBaaNLedger"
@@ -411,6 +432,7 @@
       <SelectParameters >
         <asp:ControlParameter ControlID="F_AdviceNo" PropertyName="Text" Name="AdviceNo" Type="Int32" Size="10" />
         <asp:ControlParameter ControlID="F_TranTypeID" PropertyName="SelectedValue" Name="TranTypeID" Type="String" Size="3" />
+        <asp:ControlParameter ControlID="F_AdviceStatusID" PropertyName="SelectedValue" Name="AdviceStatusID" Type="String" Size="3" />
         <asp:ControlParameter ControlID="F_BPID" PropertyName="Text" Name="BPID" Type="String" Size="9" />
         <asp:Parameter Name="SearchState" Type="Boolean" Direction="Input" DefaultValue="false" />
         <asp:Parameter Name="SearchText" Type="String" Direction="Input" DefaultValue="" />
@@ -423,6 +445,7 @@
     <asp:AsyncPostBackTrigger ControlID="GVspmtACProcessed" EventName="PageIndexChanged" />
     <asp:AsyncPostBackTrigger ControlID="F_AdviceNo" />
     <asp:AsyncPostBackTrigger ControlID="F_TranTypeID" />
+    <asp:AsyncPostBackTrigger ControlID="F_AdviceStatusID" />
     <asp:AsyncPostBackTrigger ControlID="F_BPID" />
   </Triggers>
 </asp:UpdatePanel>
