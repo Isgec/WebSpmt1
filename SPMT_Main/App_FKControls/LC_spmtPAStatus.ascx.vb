@@ -147,8 +147,12 @@ Partial Class LC_spmtPAStatus
   End Sub
   Protected Sub DDLspmtPAStatus_DataBinding(ByVal sender As Object, ByVal e As System.EventArgs) Handles DDLspmtPAStatus.DataBinding
     If _IncludeDefault Then
-      DDLspmtPAStatus.Items.Add(new ListItem(_DefaultText, _DefaultValue))
+      DDLspmtPAStatus.Items.Add(New ListItem(_DefaultText, _DefaultValue))
     End If
+    If _OrderBy = "Report" Then
+
+    End If
+
   End Sub
   Protected Sub DDLspmtPAStatus_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles DDLspmtPAStatus.SelectedIndexChanged
     RaiseEvent SelectedIndexChanged(sender, e)
