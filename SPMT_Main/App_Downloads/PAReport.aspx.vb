@@ -74,6 +74,8 @@ Partial Class PAReport
         c = c + 1
         .Cells(r, c).Value = x.ISGECGstin
         c = c + 1
+        .Cells(r, c).Value = x.BPID
+        c = c + 1
         If x.SupplierName <> "" Then
           .Cells(r, c).Value = x.SupplierName
         Else
@@ -122,6 +124,8 @@ Partial Class PAReport
         c = c + 1
         .Cells(r, c).Value = x.BillCreatedBy
         c = c + 1
+        .Cells(r, c).Value = x.HOD
+        c = c + 1
         .Cells(r, c).Value = x.AdviceStatus
         c = c + 1
         .Cells(r, c).Value = x.RemarksAC
@@ -158,6 +162,7 @@ Public Class PAReportClass
   Public Property TranType As String = ""
   Public Property ISGECGstin As String = ""
   Public Property SupplierName As String = ""
+  Public Property BPID As String = ""
   Public Property BPName As String = ""
   Public Property BPGstin As String = ""
   Public Property SupplierGSTINNumber As String = ""
@@ -187,6 +192,7 @@ Public Class PAReportClass
   Public Property AdviceStatusID As String = ""
   Public Property BillCreatedBy As String = ""
   Public Property AdviceUser As String = ""
+  Public Property HOD As String = ""
 
   Public Shared Function GetReport(fIrn As String, tIrn As String, fDt As String, tDt As String, fAdn As String, tAdn As String, sts As String) As List(Of PAReportClass)
     Dim Results As List(Of PAReportClass) = Nothing
