@@ -1629,6 +1629,7 @@ Public Class RPT_spmtPaymentAdvice
     Dim YTotalSgstAmt As Decimal = 0
     Dim YTotalCessAmt As Decimal = 0
 
+    Dim TotalTCSAmount As Decimal = 0
     Dim TotalAmountINR As Decimal = 0
 
     Dim TravelAdvice As Boolean = False
@@ -1683,6 +1684,7 @@ Public Class RPT_spmtPaymentAdvice
         Print("<td style=""font-size:12px;text-align:right"">" & (det.SGSTAmount * det.ConversionFactorINR).ToString("n") & "</td>")
         Print("<td style=""font-size:12px;text-align:right"">" & (det.CessAmount * det.ConversionFactorINR).ToString("n") & "</td>")
         Print("<td style=""font-size:12px;text-align:right"">" & (det.TaxAmount * det.ConversionFactorINR).ToString("n") & "</td>")
+        Print("<td style=""font-size:12px;text-align:right"">" & (det.TCSAmount * 1).ToString("n") & "</td>")
         Print("<td style=""font-size:12px;text-align:right"">" & (det.BillAmount).ToString("n") & "</td>")
         Print("</tr>")
         If FCM Then
@@ -1690,7 +1692,7 @@ Public Class RPT_spmtPaymentAdvice
           Print("<tr>")
           'Print("<td></td>")
           'Print("<td></td>")
-          Print("<td colspan=""14"" style=""font-size:11px"">")
+          Print("<td colspan=""15"" style=""font-size:11px"">")
           Print("<b>Ticket No.: </b>" & airY.BillNumber)
           Print("<b>, Travel Dt.: </b>" & airY.BillDate)
           Print("<b>, Agency : </b>" & airY.BillRemarks.Replace("Agency : ", ""))
@@ -1728,6 +1730,7 @@ Public Class RPT_spmtPaymentAdvice
             TotalIgstAmt += det.IGSTAmount * det.ConversionFactorINR
             TotalSgstAmt += det.SGSTAmount * det.ConversionFactorINR
             TotalTaxAmt += det.TaxAmount * det.ConversionFactorINR
+            TotalTCSAmount += det.TCSAmount
         End Select
 
       Next
@@ -1750,9 +1753,8 @@ Public Class RPT_spmtPaymentAdvice
         Print("<td style=""font-size:9px;text-align:right"">&nbsp;</td>")
         Print("<td style=""font-size:9px;text-align:right"">&nbsp;</td>")
         Print("<td style=""font-size:9px;text-align:right"">&nbsp;</td>")
-        'If FCM Then
         Print("<td style=""font-size:9px;text-align:right"">&nbsp;</td>")
-        'End If
+        Print("<td style=""font-size:9px;text-align:right"">&nbsp;</td>")
         Print("</tr>")
       Next
     End If
@@ -1771,6 +1773,7 @@ Public Class RPT_spmtPaymentAdvice
       Print("<td style=""font-size:12px;text-align:right;font-weight:bold"">" & TotalSgstAmt.ToString("n") & "</td>")
       Print("<td style=""font-size:12px;text-align:right;font-weight:bold"">" & TotalCessAmt.ToString("n") & "</td>")
       Print("<td style=""font-size:12px;text-align:right;font-weight:bold"">" & TotalTaxAmt.ToString("n") & "</td>")
+      Print("<td style=""font-size:12px;text-align:right;font-weight:bold"">" & TotalTCSAmount.ToString("n") & "</td>")
       Print("<td style=""font-size:12px;text-align:right;font-weight:bold"">" & TotalBillAmt.ToString("n") & "</td>")
       Print("</tr>")
     Else
@@ -1788,6 +1791,7 @@ Public Class RPT_spmtPaymentAdvice
         Print("<td style=""font-size:12px;text-align:right;font-weight:bold"">" & TotalSgstAmt.ToString("n") & "</td>")
         Print("<td style=""font-size:12px;text-align:right;font-weight:bold"">" & TotalCessAmt.ToString("n") & "</td>")
         Print("<td style=""font-size:12px;text-align:right;font-weight:bold"">" & TotalTaxAmt.ToString("n") & "</td>")
+        Print("<td style=""font-size:12px;text-align:right;font-weight:bold"">" & TotalTCSAmount.ToString("n") & "</td>")
         Print("<td style=""font-size:12px;text-align:right;font-weight:bold"">" & TotalBillAmt.ToString("n") & "</td>")
         Print("</tr>")
 
@@ -1836,6 +1840,7 @@ Public Class RPT_spmtPaymentAdvice
         Print("<td style=""font-size:12px;text-align:right;font-weight:bold"">" & TotalSgstAmt.ToString("n") & "</td>")
         Print("<td style=""font-size:12px;text-align:right;font-weight:bold"">" & TotalCessAmt.ToString("n") & "</td>")
         Print("<td style=""font-size:12px;text-align:right;font-weight:bold"">" & TotalTaxAmt.ToString("n") & "</td>")
+        Print("<td style=""font-size:12px;text-align:right;font-weight:bold"">" & TotalTCSAmount.ToString("n") & "</td>")
         Print("<td style=""font-size:12px;text-align:right;font-weight:bold"">" & TotalBillAmt.ToString("n") & "</td>")
         Print("</tr>")
       End If
@@ -1946,9 +1951,9 @@ Public Class RPT_spmtPaymentAdvice
     Print("<tr>")
     Print("<td colspan=""7""></td>")
     If FCM Then
-      Print("<td colspan=""8"" style=""font-size:12px;font-weight:bold;width:60px;text-align:center;vertical-align:top"">AMOUNTS IN INR</td>")
+      Print("<td colspan=""9"" style=""font-size:12px;font-weight:bold;width:60px;text-align:center;vertical-align:top"">AMOUNTS IN INR</td>")
     Else
-      Print("<td colspan=""8"" style=""font-size:12px;font-weight:bold;width:60px;text-align:center;vertical-align:top"">AMOUNTS IN INR</td>")
+      Print("<td colspan=""9"" style=""font-size:12px;font-weight:bold;width:60px;text-align:center;vertical-align:top"">AMOUNTS IN INR</td>")
     End If
     Print("</tr>")
 
@@ -1973,6 +1978,7 @@ Public Class RPT_spmtPaymentAdvice
     Print("<td style=""font-size:12px;font-weight:bold;width:70px;text-align:right;vertical-align:top"">SGST</td>")
     Print("<td style=""font-size:12px;font-weight:bold;width:70px;text-align:right;vertical-align:top"">CESS</td>")
     Print("<td style=""font-size:12px;font-weight:bold;width:70px;text-align:right;vertical-align:top"">TOT.GST</td>")
+    Print("<td style=""font-size:12px;font-weight:bold;width:70px;text-align:right;vertical-align:top"">TCS AMT</td>")
     Print("<td style=""font-size:12px;font-weight:bold;width:70px;text-align:right;vertical-align:top"">GROSS AMT</td>")
     Print("</tr>")
 

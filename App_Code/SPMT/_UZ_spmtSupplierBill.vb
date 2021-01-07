@@ -204,6 +204,8 @@ Namespace SIS.SPMT
         .PurchaseType = Record.PurchaseType
         .DepartmentID = Record.DepartmentID
         .UploadBatchNo = Record.UploadBatchNo
+        .TCSAmount = Record.TCSAmount
+        .TCSRate = Record.TCSRate
       End With
       Return SIS.SPMT.spmtSupplierBill.InsertData(_Rec)
     End Function
@@ -286,6 +288,8 @@ Namespace SIS.SPMT
         .PurchaseType = Record.PurchaseType
         .DepartmentID = Record.DepartmentID
         .UploadBatchNo = Record.UploadBatchNo
+        .TCSRate = Record.TCSRate
+        .TCSAmount = Record.TCSAmount
       End With
       Return SIS.SPMT.spmtSupplierBill.UpdateData(_Rec)
     End Function

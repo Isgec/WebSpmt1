@@ -19,7 +19,9 @@
 		var SGSTAmount = $get(Prefix + 'SGSTAmount');
 		var CGSTRate = $get(Prefix + 'CGSTRate');
 		var CGSTAmount = $get(Prefix + 'CGSTAmount');
-	  try {
+		var TCSRate = $get(Prefix + 'TCSRate');
+		var TCSAmount = $get(Prefix + 'TCSAmount');
+    try {
 	    if (parseFloat(CessRate.value)>0)
 	      CessAmount.value = (parseFloat(CessRate.value) * parseFloat(AssessableValue.value) * 0.01).toFixed(2);
 	    if (parseFloat(IGSTRate.value)>0)
@@ -29,8 +31,12 @@
 	    if (parseFloat(CGSTRate.value)>0)
 	      CGSTAmount.value = (parseFloat(CGSTRate.value) * parseFloat(AssessableValue.value) * 0.01).toFixed(2);
 	    TotalGST.value = (parseFloat(CessAmount.value) + parseFloat(IGSTAmount.value) + parseFloat(SGSTAmount.value) + parseFloat(CGSTAmount.value)).toFixed(2);
-			TotalGSTINR.value = (parseFloat(TotalGST.value) * parseFloat(ConversionFactorINR.value)).toFixed(2);
-			TotalAmount.value = (parseFloat(AssessableValue.value) + parseFloat(TotalGST.value)).toFixed(2);
+	    TotalGSTINR.value = (parseFloat(TotalGST.value) * parseFloat(ConversionFactorINR.value)).toFixed(2);
+
+	    if (parseFloat(TCSRate.value) != NaN)
+	      TCSAmount.value = (parseFloat(TCSRate.value) * (parseFloat(AssessableValue.value) + parseFloat(TotalGST.value)) * 0.01).toFixed(2);
+
+	    TotalAmount.value = (parseFloat(AssessableValue.value) + parseFloat(TotalGST.value) + parseFloat(TCSAmount.value)).toFixed(2);
 			TotalAmountINR.value = (parseFloat(TotalAmount.value) * parseFloat(ConversionFactorINR.value)).toFixed(2);
 		} catch (e) { }
 	}
@@ -655,13 +661,13 @@
             runat="server" />
         </td>
         <td class="alignright">
-          <asp:Label ID="L_TotalAmount" runat="server" Text="Total Amount :" />&nbsp;
+          <asp:Label ID="L_TotalGSTINR" runat="server" Text="Total GST [INR] :" />&nbsp;
         </td>
         <td>
-          <asp:TextBox ID="F_TotalAmount"
-            Text='<%# Bind("TotalAmount") %>'
+          <asp:TextBox ID="F_TotalGSTINR"
+            Text='<%# Bind("TotalGSTINR") %>'
             Enabled = "False"
-            ToolTip="Value of Total Amount."
+            ToolTip="Value of Total GST [INR]."
             Width="168px"
             CssClass = "dmytxt"
             style="text-align: Right"
@@ -670,13 +676,42 @@
       </tr>
       <tr>
         <td class="alignright">
-          <asp:Label ID="L_TotalGSTINR" runat="server" Text="Total GST [INR] :" />&nbsp;
+          <asp:Label ID="L_TCSRate" runat="server" Font-Bold="true" ForeColor="#cc0000" Text="TCS Rate :" />&nbsp;
         </td>
         <td>
-          <asp:TextBox ID="F_TotalGSTINR"
-            Text='<%# Bind("TotalGSTINR") %>'
+          <asp:TextBox ID="F_TCSRate"
+            Text='<%# Bind("TCSRate") %>'
+            ToolTip="Enter TCS Rate. (if applicable)"
+            Width="168px"
+            CssClass = "mytxt"
+            style="text-align: right"
+            onfocus = "return this.select();"
+		        onblur="dc(this,4);validate_tots(this);"
+            runat="server" />
+        </td>
+        <td class="alignright">
+          <asp:Label ID="L_TCSAmount" runat="server" Text="TCS Amount :" />&nbsp;
+        </td>
+        <td>
+          <asp:TextBox ID="F_TCSAmount"
+            Text='<%# Bind("TCSAmount") %>'
             Enabled = "False"
-            ToolTip="Value of Total GST [INR]."
+            ToolTip="TCS Amount."
+            Width="168px"
+            CssClass = "dmytxt"
+            style="text-align: right"
+            runat="server" />
+        </td>
+      </tr>
+      <tr>
+        <td class="alignright">
+          <asp:Label ID="L_TotalAmount" runat="server" Text="Total Amount :" />&nbsp;
+        </td>
+        <td>
+          <asp:TextBox ID="F_TotalAmount"
+            Text='<%# Bind("TotalAmount") %>'
+            Enabled = "False"
+            ToolTip="Value of Total Amount."
             Width="168px"
             CssClass = "dmytxt"
             style="text-align: Right"

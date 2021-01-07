@@ -56,6 +56,8 @@ Namespace SIS.SPMT
     Private _FK_SPMT_newSBD_UOM As SIS.SPMT.spmtERPUnits = Nothing
     Private _FK_SPMT_newSBD_HSNSACCode As SIS.SPMT.spmtHSNSACCodes = Nothing
     Private _FK_SPMT_newSBD_IRNo As SIS.SPMT.spmtNewSBH = Nothing
+    Public Property TCSRate As String = "0.0000"
+    Public Property TCSAmount As String = "0.00"
     Public ReadOnly Property ForeColor() As System.Drawing.Color
       Get
         Dim mRet As System.Drawing.Color = Drawing.Color.Blue
@@ -765,6 +767,8 @@ Namespace SIS.SPMT
         .Discount = Record.Discount
         .ProjectID = Record.ProjectID
         .CostCenterID = Record.CostCenterID
+        .TCSAmount = Record.TCSAmount
+        .TCSRate = Record.TCSRate
       End With
       Return SIS.SPMT.spmtNewSBD.InsertData(_Rec)
     End Function
@@ -803,6 +807,8 @@ Namespace SIS.SPMT
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@ServiceCharge",SqlDbType.Decimal,21, Iif(Record.ServiceCharge= "" ,Convert.DBNull, Record.ServiceCharge))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@UploadBatchNo",SqlDbType.NVarChar,51, Iif(Record.UploadBatchNo= "" ,Convert.DBNull, Record.UploadBatchNo))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@CostCenterID",SqlDbType.NVarChar,7, Iif(Record.CostCenterID= "" ,Convert.DBNull, Record.CostCenterID))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@TCSRate", SqlDbType.Decimal, 21, IIf(Record.TCSRate = "", Convert.DBNull, Record.TCSRate))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@TCSAmount", SqlDbType.Decimal, 21, IIf(Record.TCSAmount = "", Convert.DBNull, Record.TCSAmount))
           Cmd.Parameters.Add("@Return_IRNo", SqlDbType.Int, 11)
           Cmd.Parameters("@Return_IRNo").Direction = ParameterDirection.Output
           Cmd.Parameters.Add("@Return_SerialNo", SqlDbType.Int, 11)
@@ -845,6 +851,8 @@ Namespace SIS.SPMT
         .Discount = Record.Discount
         .ProjectID = Record.ProjectID
         .CostCenterID = Record.CostCenterID
+        .TCSRate = Record.TCSRate
+        .TCSAmount = Record.TCSAmount
       End With
       Return SIS.SPMT.spmtNewSBD.UpdateData(_Rec)
     End Function
@@ -885,6 +893,8 @@ Namespace SIS.SPMT
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@ServiceCharge",SqlDbType.Decimal,21, Iif(Record.ServiceCharge= "" ,Convert.DBNull, Record.ServiceCharge))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@UploadBatchNo",SqlDbType.NVarChar,51, Iif(Record.UploadBatchNo= "" ,Convert.DBNull, Record.UploadBatchNo))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@CostCenterID",SqlDbType.NVarChar,7, Iif(Record.CostCenterID= "" ,Convert.DBNull, Record.CostCenterID))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@TCSRate", SqlDbType.Decimal, 21, IIf(Record.TCSRate = "", Convert.DBNull, Record.TCSRate))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@TCSAmount", SqlDbType.Decimal, 21, IIf(Record.TCSAmount = "", Convert.DBNull, Record.TCSAmount))
           Cmd.Parameters.Add("@RowCount", SqlDbType.Int)
           Cmd.Parameters("@RowCount").Direction = ParameterDirection.Output
           _RecordCount = -1
@@ -942,21 +952,7 @@ Namespace SIS.SPMT
       Return Results.ToArray
     End Function
     Public Sub New(ByVal Reader As SqlDataReader)
-      Try
-        For Each pi As System.Reflection.PropertyInfo In Me.GetType.GetProperties
-          If pi.MemberType = Reflection.MemberTypes.Property Then
-            Try
-              If Convert.IsDBNull(Reader(pi.Name)) Then
-                CallByName(Me, pi.Name, CallType.Let, String.Empty)
-              Else
-                CallByName(Me, pi.Name, CallType.Let, Reader(pi.Name))
-              End If
-            Catch ex As Exception
-            End Try
-          End If
-        Next
-      Catch ex As Exception
-      End Try
+      SIS.SYS.SQLDatabase.DBCommon.NewObj(Me, Reader)
     End Sub
     Public Sub New()
     End Sub

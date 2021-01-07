@@ -349,6 +349,8 @@ Namespace SIS.SPMT
             .SupplierName = sbh.SupplierName
             .SupplierGSTINNumber = sbh.SupplierGSTINNumber
             .DepartmentID = sbd.DepartmentID
+            .TCSRate = sbd.TCSRate
+            .TCSAmount = sbd.TCSAmount
           End With
           tmpSB = SIS.SPMT.spmtSupplierBill.InsertData(tmpSB)
           '=========Copy Bill Attachment to OLD BILLs===========

@@ -526,6 +526,12 @@ Partial Class RP_spmtNewPA
           rowSBD.Cells.Add(colSBD)
 
           colSBD = New TableCell
+          colSBD.Text = "TCS Amount"
+          colSBD.Font.Bold = True
+          colSBD.Style.Add("text-align", "right")
+          rowSBD.Cells.Add(colSBD)
+
+          colSBD = New TableCell
           colSBD.Text = "Total Amount"
           colSBD.Font.Bold = True
           colSBD.Style.Add("text-align", "right")
@@ -558,6 +564,7 @@ Partial Class RP_spmtNewPA
           Dim totE As Decimal = 0
           Dim totG As Decimal = 0
           Dim totM As Decimal = 0
+          Dim totT As Decimal = 0
 
 
           For Each ospmtNewSBD As SIS.SPMT.spmtNewSBD In oSBDs
@@ -654,6 +661,11 @@ Partial Class RP_spmtNewPA
             rowSBD.Cells.Add(colSBD)
             colSBD = New TableCell
             colSBD.CssClass = "rowHD"
+            colSBD.Text = ospmtNewSBD.TCSAmount
+            colSBD.Style.Add("text-align", "right")
+            rowSBD.Cells.Add(colSBD)
+            colSBD = New TableCell
+            colSBD.CssClass = "rowHD"
             colSBD.Text = ospmtNewSBD.TotalAmount
             colSBD.Style.Add("text-align", "right")
             rowSBD.Cells.Add(colSBD)
@@ -680,6 +692,7 @@ Partial Class RP_spmtNewPA
             totS += ospmtNewSBD.SGSTAmount
             totE += ospmtNewSBD.CessAmount
             totG += ospmtNewSBD.TotalGST
+            totT += ospmtNewSBD.TCSAmount
             totM += ospmtNewSBD.TotalAmount
           Next
           'Total Amount Row
@@ -725,6 +738,12 @@ Partial Class RP_spmtNewPA
           colSBD = New TableCell
           colSBD.CssClass = "rowHD"
           colSBD.Text = totG.ToString("n")
+          colSBD.Font.Bold = True
+          colSBD.Style.Add("text-align", "right")
+          rowSBD.Cells.Add(colSBD)
+          colSBD = New TableCell
+          colSBD.CssClass = "rowHD"
+          colSBD.Text = totT.ToString("n")
           colSBD.Font.Bold = True
           colSBD.Style.Add("text-align", "right")
           rowSBD.Cells.Add(colSBD)

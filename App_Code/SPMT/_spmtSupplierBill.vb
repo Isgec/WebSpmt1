@@ -106,6 +106,8 @@ Namespace SIS.SPMT
     Private _FK_SPMT_SupplierBill_TranTypeID As SIS.SPMT.spmtTranTypes = Nothing
     Private _FK_SPMT_SupplierBill_SupplierGSTIN As SIS.SPMT.spmtBPGSTIN = Nothing
     Private _FK_SPMT_SupplierBill_BPID As SIS.SPMT.spmtBusinessPartner = Nothing
+    Public Property TCSRate As String = "0.0000"
+    Public Property TCSAmount As String = "0.00"
     Public Property SupplierName As String = ""
     Public Property SupplierGSTINNumber As String = ""
     Public Property UploadBatchNo As String = ""
@@ -1386,6 +1388,8 @@ Namespace SIS.SPMT
         .SupplierGSTINNumber = Record.SupplierGSTINNumber
         .DepartmentID = Record.DepartmentID
         .UploadBatchNo = Record.UploadBatchNo
+        .TCSAmount = Record.TCSAmount
+        .TCSRate = Record.TCSRate
       End With
       Return SIS.SPMT.spmtSupplierBill.InsertData(_Rec)
     End Function
@@ -1459,6 +1463,8 @@ Namespace SIS.SPMT
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@SupplierName", SqlDbType.NVarChar, 101, IIf(Record.SupplierName = "", Convert.DBNull, Record.SupplierName))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@SupplierGSTINNumber", SqlDbType.NVarChar, 51, IIf(Record.SupplierGSTINNumber = "", Convert.DBNull, Record.SupplierGSTINNumber))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@UploadBatchNo", SqlDbType.NVarChar, 50, IIf(Record.UploadBatchNo = "", Convert.DBNull, Record.UploadBatchNo))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@TCSRate", SqlDbType.Decimal, 21, IIf(Record.TCSRate = "", Convert.DBNull, Record.TCSRate))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@TCSAmount", SqlDbType.Decimal, 21, IIf(Record.TCSAmount = "", Convert.DBNull, Record.TCSAmount))
           Cmd.Parameters.Add("@Return_IRNo", SqlDbType.Int, 11)
           Cmd.Parameters("@Return_IRNo").Direction = ParameterDirection.Output
           Con.Open()
@@ -1510,6 +1516,8 @@ Namespace SIS.SPMT
         .SupplierGSTINNumber = Record.SupplierGSTINNumber
         .DepartmentID = Record.DepartmentID
         .UploadBatchNo = Record.UploadBatchNo
+        .TCSRate = Record.TCSRate
+        .TCSAmount = Record.TCSAmount
       End With
       Return SIS.SPMT.spmtSupplierBill.UpdateData(_Rec)
     End Function
@@ -1584,6 +1592,8 @@ Namespace SIS.SPMT
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@SupplierName", SqlDbType.NVarChar, 101, IIf(Record.SupplierName = "", Convert.DBNull, Record.SupplierName))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@SupplierGSTINNumber", SqlDbType.NVarChar, 51, IIf(Record.SupplierGSTINNumber = "", Convert.DBNull, Record.SupplierGSTINNumber))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@UploadBatchNo", SqlDbType.NVarChar, 50, IIf(Record.UploadBatchNo = "", Convert.DBNull, Record.UploadBatchNo))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@TCSRate", SqlDbType.Decimal, 21, IIf(Record.TCSRate = "", Convert.DBNull, Record.TCSRate))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@TCSAmount", SqlDbType.Decimal, 21, IIf(Record.TCSAmount = "", Convert.DBNull, Record.TCSAmount))
           Cmd.Parameters.Add("@RowCount", SqlDbType.Int)
           Cmd.Parameters("@RowCount").Direction = ParameterDirection.Output
           _RecordCount = -1
@@ -1640,37 +1650,7 @@ Namespace SIS.SPMT
       Return Results.ToArray
     End Function
     Public Sub New(ByVal Reader As SqlDataReader)
-      Try
-        For Each pi As System.Reflection.PropertyInfo In Me.GetType.GetProperties
-          If pi.MemberType = Reflection.MemberTypes.Property Then
-            Try
-              Dim Found As Boolean = False
-              For I As Integer = 0 To Reader.FieldCount - 1
-                If Reader.GetName(I).ToLower = pi.Name.ToLower Then
-                  Found = True
-                  Exit For
-                End If
-              Next
-              If Found Then
-                If Convert.IsDBNull(Reader(pi.Name)) Then
-                  Select Case Reader.GetDataTypeName(Reader.GetOrdinal(pi.Name))
-                    Case "decimal"
-                      CallByName(Me, pi.Name, CallType.Let, "0.00")
-                    Case "bit"
-                      CallByName(Me, pi.Name, CallType.Let, Boolean.FalseString)
-                    Case Else
-                      CallByName(Me, pi.Name, CallType.Let, String.Empty)
-                  End Select
-                Else
-                  CallByName(Me, pi.Name, CallType.Let, Reader(pi.Name))
-                End If
-              End If
-            Catch ex As Exception
-            End Try
-          End If
-        Next
-      Catch ex As Exception
-      End Try
+      SIS.SYS.SQLDatabase.DBCommon.NewObj(Me, Reader)
     End Sub
     Public Sub New()
     End Sub
