@@ -218,6 +218,13 @@
           <ItemStyle CssClass="alignCenter" />
           <HeaderStyle HorizontalAlign="Center" Width="100px" />
         </asp:TemplateField>
+        <asp:TemplateField HeaderText="HOD" SortExpression="aspnet_users2_UserFullName">
+          <ItemTemplate>
+             <asp:Label ID="L_ConcernedHOD" runat="server" ForeColor='<%# EVal("ForeColor") %>' Title='<%# EVal("ConcernedHOD") %>' Text='<%# Eval("aspnet_users2_UserFullName") %>'></asp:Label>
+          </ItemTemplate>
+          <ItemStyle CssClass="alignCenter" />
+          <HeaderStyle HorizontalAlign="Center" Width="100px" />
+        </asp:TemplateField>
         <asp:TemplateField HeaderText="Advice Status" SortExpression="SPMT_PAStatus9_Description">
           <ItemTemplate>
              <asp:Label ID="L_AdviceStatusID" runat="server" ForeColor='<%# EVal("ForeColor") %>' Title='<%# EVal("AdviceStatusID") %>' Text='<%# Eval("SPMT_PAStatus9_Description") %>'></asp:Label>
@@ -403,6 +410,13 @@
               </table>
             </asp:Panel>
             <asp:ImageButton ID="cmdInitiateWF" ValidationGroup='<%# "Initiate" & Container.DataItemIndex %>' CausesValidation="true" runat="server" Visible='<%# EVal("InitiateWFVisible") %>' Enabled='<%# EVal("InitiateWFEnable") %>' AlternateText='<%# EVal("PrimaryKey") %>' ToolTip="Update Voucher Entry" SkinID="forward" OnClientClick='<%# "return Page_ClientValidate(""Initiate" & Container.DataItemIndex & """) && confirm(""Update record ?"");" %>' CommandName="InitiateWF" CommandArgument='<%# Container.DataItemIndex %>' />
+          </ItemTemplate>
+          <ItemStyle CssClass="alignCenter" />
+          <HeaderStyle HorizontalAlign="Center" Width="30px" />
+        </asp:TemplateField>
+        <asp:TemplateField HeaderText="POST">
+          <ItemTemplate>
+            <asp:ImageButton ID="cmdPostVch" runat="server" Visible='<%# Eval("PostVchVisible") %>' AlternateText='<%# EVal("PrimaryKey") %>' ToolTip="Post Voucher in ERP-LN" SkinID="forward" OnClientClick="return confirm('Post Voucher in ERP-LN ?');" CommandName="PostVch" CommandArgument='<%# Container.DataItemIndex %>' />
           </ItemTemplate>
           <ItemStyle CssClass="alignCenter" />
           <HeaderStyle HorizontalAlign="Center" Width="30px" />

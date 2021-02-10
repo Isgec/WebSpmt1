@@ -139,7 +139,7 @@ Namespace SIS.SPMT
       Get
         Dim mRet As Boolean = False
         Try
-          If AdviceStatusID = 11 Then
+          If AdviceStatusID = spmtPAStates.VoucherUpdated Or AdviceStatusID = spmtPAStates.VoucherPosted Then
             mRet = True
           End If
         Catch ex As Exception
@@ -323,6 +323,28 @@ Namespace SIS.SPMT
         Return mRet
       End Get
     End Property
+    Public Shadows ReadOnly Property PostVchVisible() As Boolean
+      Get
+        Dim mRet As Boolean = False
+        Try
+          If AdviceStatusID = 8 Then
+            mRet = True
+          End If
+        Catch ex As Exception
+        End Try
+        Return mRet
+      End Get
+    End Property
+    Public Shared Shadows Function PostVch(ByVal AdviceNo As Int32) As SIS.SPMT.spmtACProcessed
+      Dim Results As SIS.SPMT.spmtACProcessed = spmtACProcessedGetByID(AdviceNo)
+
+      With Results
+        .AdviceStatusID = spmtPAStates.VoucherPosted
+      End With
+      SIS.SPMT.spmtACProcessed.UpdateData(Results)
+      Return Results
+    End Function
+
     Public Shared Shadows Function InitiateWF(ByVal AdviceNo As Int32) As SIS.SPMT.spmtACProcessed
       Dim Results As SIS.SPMT.spmtACProcessed = spmtACProcessedGetByID(AdviceNo)
       With Results

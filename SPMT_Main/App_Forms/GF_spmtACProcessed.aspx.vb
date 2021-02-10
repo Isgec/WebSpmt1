@@ -41,6 +41,9 @@ Partial Class GF_spmtACProcessed
         SIS.SPMT.spmtACProcessed.CancelWF(AdviceNo)
         GVspmtACProcessed.DataBind()
       Catch ex As Exception
+        Dim message As String = New JavaScriptSerializer().Serialize(ex.Message)
+        Dim script As String = String.Format("alert({0});", message)
+        ScriptManager.RegisterClientScriptBlock(Page, Page.GetType(), "", script, True)
       End Try
     End If
     If e.CommandName.ToLower = "Lockwf".ToLower Then
@@ -55,6 +58,14 @@ Partial Class GF_spmtACProcessed
       End Try
     End If
     If e.CommandName.ToLower = "initiatewf".ToLower Then
+      Try
+        Dim AdviceNo As Int32 = GVspmtACProcessed.DataKeys(e.CommandArgument).Values("AdviceNo")
+        SIS.SPMT.spmtACProcessed.InitiateWF(AdviceNo)
+        GVspmtACProcessed.DataBind()
+      Catch ex As Exception
+      End Try
+    End If
+    If e.CommandName.ToLower = "PostVch".ToLower Then
       Try
         Dim AdviceNo As Int32 = GVspmtACProcessed.DataKeys(e.CommandArgument).Values("AdviceNo")
         SIS.SPMT.spmtACProcessed.InitiateWF(AdviceNo)

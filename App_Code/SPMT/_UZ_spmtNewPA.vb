@@ -6,6 +6,15 @@ Imports System.ComponentModel
 Imports ejiVault
 Namespace SIS.SPMT
   Partial Public Class spmtNewPA
+    Public ReadOnly Property dSupplierName() As String
+      Get
+        If _BPID <> "" Then
+          Return Me.VR_BusinessPartner8_BPName ' FK_SPMT_newPA_BPID.BPName
+        End If
+        Return _SupplierName
+      End Get
+    End Property
+
     Public Shared ReadOnly Property AthHandle As String
       Get
         Dim mRet As String = "J_SPMTNEWPA"
@@ -32,7 +41,7 @@ Namespace SIS.SPMT
         '  canEdit = "y"
         'End If
         mRet &= "&Index=" & Index & "&AttachedBy=" & User & "&ed=" & canEdit
-        mRet = "javascript:window.open('" & mRet & "', 'win" & AdviceNo & "', 'left=20,top=20,width=1100,height=600,toolbar=1,resizable=1,scrollbars=1'); return false;"
+        mRet = "javascript:window.open('" & mRet & "', 'win" & AdviceNo & "', 'left=20,top=20,width=500,height=300,toolbar=1,resizable=1,scrollbars=1'); return false;"
         Return mRet
       End Get
     End Property
@@ -51,6 +60,8 @@ Namespace SIS.SPMT
           mRet = Drawing.Color.DarkOrange
         Case spmtPAStates.Locked
           mRet = Drawing.Color.Navy
+        Case spmtPAStates.UnderApproval
+          mRet = Drawing.Color.Red
       End Select
       Return mRet
     End Function
@@ -134,24 +145,85 @@ Namespace SIS.SPMT
         Return mRet
       End Get
     End Property
+    Public ReadOnly Property ApproveWFVisible() As Boolean
+      Get
+        Dim mRet As Boolean = False
+        Try
+          Select Case StatusID
+            Case spmtPAStates.UnderApproval
+              mRet = True
+          End Select
+        Catch ex As Exception
+        End Try
+        Return mRet
+      End Get
+    End Property
+    Public ReadOnly Property ReturnWFVisible() As Boolean
+      Get
+        Dim mRet As Boolean = False
+        Try
+          Select Case StatusID
+            Case spmtPAStates.UnderApproval
+              mRet = True
+          End Select
+        Catch ex As Exception
+        End Try
+        Return mRet
+      End Get
+    End Property
     Public Shared Function InitiateWF(ByVal AdviceNo As Int32) As SIS.SPMT.spmtNewPA
       Dim Results As SIS.SPMT.spmtNewPA = spmtNewPAGetByID(AdviceNo)
-      Results.StatusID = spmtPAStates.ForwardedToAC
-      'Copy Bill Attachments to Advice Attachments
-      Dim tmpBills As List(Of SIS.SPMT.spmtNewLinkedSBH) = SIS.SPMT.spmtNewLinkedSBH.UZ_spmtNewLinkedSBHSelectList(0, 99999, "", False, "", Results.AdviceNo)
-      For Each tmpBill As SIS.SPMT.spmtNewLinkedSBH In tmpBills
-        Dim IndexS As String = tmpBill.IRNo
-        Dim IndexT As String = Results.AdviceNo
-        '======Copy Attachment===========
-        'CopyAttachment(IndexS, IndexT)
-        'DirectNewCopyAttachment(IndexS, IndexT, "J_SPMTNEWSB", "J_SPMTNEWPA")
-        EJI.ediAFile.FileCopy(SIS.SPMT.spmtNewSBH.AthHandle, IndexS, SIS.SPMT.spmtNewPA.AthHandle, IndexT, tmpBill.CreatedBy)
-        '======End Copy Attachment=======
-      Next
+      If Not Convert.ToBoolean(ConfigurationManager.AppSettings("PAApproval")) Then
+        Results.StatusID = spmtPAStates.ForwardedToAC
+        'Copy Bill Attachments to Advice Attachments
+        Dim tmpBills As List(Of SIS.SPMT.spmtNewLinkedSBH) = SIS.SPMT.spmtNewLinkedSBH.UZ_spmtNewLinkedSBHSelectList(0, 99999, "", False, "", Results.AdviceNo)
+        For Each tmpBill As SIS.SPMT.spmtNewLinkedSBH In tmpBills
+          Dim IndexS As String = tmpBill.IRNo
+          Dim IndexT As String = Results.AdviceNo
+          '======Copy Attachment===========
+          'CopyAttachment(IndexS, IndexT)
+          'DirectNewCopyAttachment(IndexS, IndexT, "J_SPMTNEWSB", "J_SPMTNEWPA")
+          EJI.ediAFile.FileCopy(SIS.SPMT.spmtNewSBH.AthHandle, IndexS, SIS.SPMT.spmtNewPA.AthHandle, IndexT, tmpBill.CreatedBy)
+          '======End Copy Attachment=======
+        Next
+        Results = CopyToOldPaymentAdvice(Results)
+        SIS.SPMT.spmtNewPA.UpdateData(Results)
+      Else
+        Results.StatusID = spmtPAStates.UnderApproval
+        Dim tmpBills As List(Of SIS.SPMT.spmtNewLinkedSBH) = SIS.SPMT.spmtNewLinkedSBH.UZ_spmtNewLinkedSBHSelectList(0, 99999, "", False, "", Results.AdviceNo)
+        For Each tmpBill As SIS.SPMT.spmtNewLinkedSBH In tmpBills
+          Dim IndexS As String = tmpBill.IRNo
+          Dim IndexT As String = Results.AdviceNo
+          EJI.ediAFile.FileCopy(SIS.SPMT.spmtNewSBH.AthHandle, IndexS, SIS.SPMT.spmtNewPA.AthHandle, IndexT, tmpBill.CreatedBy)
+        Next
+        SIS.SPMT.spmtNewPA.UpdateData(Results)
+      End If
+      Return Results
+    End Function
+
+    Public Shared Function ApproveWF(ByVal AdviceNo As Int32, Remarks As String) As SIS.SPMT.spmtNewPA
+      Dim Results As SIS.SPMT.spmtNewPA = spmtNewPAGetByID(AdviceNo)
+      With Results
+        .StatusID = spmtPAStates.ForwardedToAC
+        .ApprovalRemarks = Remarks
+        .ApprovedOn = Now
+      End With
       Results = CopyToOldPaymentAdvice(Results)
       SIS.SPMT.spmtNewPA.UpdateData(Results)
       Return Results
     End Function
+    Public Shared Function ReturnWF(ByVal AdviceNo As Int32, Remarks As String) As SIS.SPMT.spmtNewPA
+      Dim Results As SIS.SPMT.spmtNewPA = spmtNewPAGetByID(AdviceNo)
+      With Results
+        .StatusID = spmtPAStates.Returned
+        .ApprovalRemarks = Remarks
+        .ApprovedOn = Now
+      End With
+      ejiVault.EJI.ediAFile.DeleteDataByHandleIndex(SIS.SPMT.spmtNewPA.AthHandle, AdviceNo)
+      SIS.SPMT.spmtNewPA.UpdateData(Results)
+      Return Results
+    End Function
+
     'Public Shared Sub DirectNewCopyAttachment(ByVal S_Index As String, ByVal T_Index As String, ByVal S_Handle As String, ByVal T_Handle As String)
     '  Dim Sql As String = ""
     '  Sql &= " insert into ttcisg132200 (t_drid,t_dcid,t_hndl,t_indx,t_prcd,t_fnam,t_lbcd,t_atby,t_aton,t_Refcntd,t_Refcntu)"
@@ -218,7 +290,7 @@ Namespace SIS.SPMT
       Return _Result
     End Function
     Public Shared Function UZ_spmtNewPADelete(ByVal Record As SIS.SPMT.spmtNewPA) As Integer
-      Dim _Result as Integer = spmtNewPADelete(Record)
+      Dim _Result As Integer = spmtNewPADelete(Record)
       Return _Result
     End Function
     Public Shared Function SetDefaultValues(ByVal sender As System.Web.UI.WebControls.FormView, ByVal e As System.EventArgs) As System.Web.UI.WebControls.FormView
@@ -371,5 +443,47 @@ Namespace SIS.SPMT
         SIS.SPMT.spmtPaymentAdviceSupplierBill.spmtSupplierBillDelete(tmp)
       Next
     End Sub
+
+    <DataObjectMethod(DataObjectMethodType.Select)>
+    Public Shared Function UnderApprovalSelectList(ByVal StartRowIndex As Integer, ByVal MaximumRows As Integer, ByVal OrderBy As String, ByVal SearchState As Boolean, ByVal SearchText As String, ByVal TranTypeID As String, ByVal BPID As String, ByVal CreatedBy As String, Pending As Boolean, AdviceNo As Integer) As List(Of SIS.SPMT.spmtNewPA)
+      Dim Results As List(Of SIS.SPMT.spmtNewPA) = Nothing
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+        Using Cmd As SqlCommand = Con.CreateCommand()
+          If OrderBy = String.Empty Then OrderBy = "AdviceNo DESC"
+          Cmd.CommandType = CommandType.StoredProcedure
+          If SearchState Then
+            Cmd.CommandText = "spspmt_LG_UnderApprovalSelectListSearch"
+            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@KeyWord", SqlDbType.NVarChar, 250, SearchText)
+          Else
+            Cmd.CommandText = "spspmt_LG_UnderApprovalSelectListFilteres"
+            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_AdviceNo", SqlDbType.Int, 10, IIf(AdviceNo = Nothing, 0, AdviceNo))
+            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_TranTypeID", SqlDbType.NVarChar, 3, IIf(TranTypeID Is Nothing, String.Empty, TranTypeID))
+            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_BPID", SqlDbType.NVarChar, 9, IIf(BPID Is Nothing, String.Empty, BPID))
+            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_CreatedBy", SqlDbType.NVarChar, 8, IIf(CreatedBy Is Nothing, String.Empty, CreatedBy))
+          End If
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@StartRowIndex", SqlDbType.Int, -1, StartRowIndex)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@MaximumRows", SqlDbType.Int, -1, MaximumRows)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Pending", SqlDbType.Bit, 3, Pending)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NVarChar, 9, HttpContext.Current.Session("LoginID"))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@OrderBy", SqlDbType.NVarChar, 50, OrderBy)
+          Cmd.Parameters.Add("@RecordCount", SqlDbType.Int)
+          Cmd.Parameters("@RecordCount").Direction = ParameterDirection.Output
+          _RecordCount = -1
+          Results = New List(Of SIS.SPMT.spmtNewPA)()
+          Con.Open()
+          Dim Reader As SqlDataReader = Cmd.ExecuteReader()
+          While (Reader.Read())
+            Results.Add(New SIS.SPMT.spmtNewPA(Reader))
+          End While
+          Reader.Close()
+          _RecordCount = Cmd.Parameters("@RecordCount").Value
+        End Using
+      End Using
+      Return Results
+    End Function
+    Public Shared Function spmtNewPASelectCount(ByVal SearchState As Boolean, ByVal SearchText As String, ByVal TranTypeID As String, ByVal BPID As String, ByVal CreatedBy As String, Pending As Boolean, AdviceNo As Integer) As Integer
+      Return _RecordCount
+    End Function
+
   End Class
 End Namespace

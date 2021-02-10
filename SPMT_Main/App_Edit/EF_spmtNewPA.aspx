@@ -157,7 +157,17 @@
             onfocus = "return this.select();"
             ToolTip="Enter value for Concerned HOD."
             onblur= "script_spmtNewPA.validate_ConcernedHOD(this);"
+            ValidationGroup = "spmtNewPA"
             Runat="Server" />
+          <asp:RequiredFieldValidator 
+            ID = "RFVConcernedHOD"
+            runat = "server"
+            ControlToValidate = "F_ConcernedHOD"
+            ErrorMessage = "<div class='errorLG'>Required!</div>"
+            Display = "Dynamic"
+            EnableClientScript = "true"
+            ValidationGroup = "spmtNewPA"
+            SetFocusOnError="true" />
           <asp:Label
             ID = "F_ConcernedHOD_Display"
             Text='<%# Eval("HRM_Employees5_EmployeeName") %>'

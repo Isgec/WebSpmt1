@@ -57,6 +57,23 @@ Namespace SIS.SPMT
     Public Property RetensionRate As String = "0.00"
     Public Property RetensionAmount As String = "0.00"
     Public Property UploadBatchNo As String = ""
+    Public Property ApprovalRemarks As String = ""
+    Private Property _ApprovedOn As String = ""
+    Public Property ApprovedOn() As String
+      Get
+        If Not _ApprovedOn = String.Empty Then
+          Return Convert.ToDateTime(_ApprovedOn).ToString("dd/MM/yyyy")
+        End If
+        Return _ApprovedOn
+      End Get
+      Set(ByVal value As String)
+        If Convert.IsDBNull(value) Then
+          _ApprovedOn = ""
+        Else
+          _ApprovedOn = value
+        End If
+      End Set
+    End Property
 
     Public ReadOnly Property ForeColor() As System.Drawing.Color
       Get
@@ -702,6 +719,8 @@ Namespace SIS.SPMT
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@AdvanceRate", SqlDbType.Decimal, 21, IIf(Record.AdvanceRate = "", Convert.DBNull, Record.AdvanceRate))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@RetensionAmount", SqlDbType.Decimal, 21, IIf(Record.RetensionAmount = "", Convert.DBNull, Record.RetensionAmount))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@UploadBatchNo", SqlDbType.NVarChar, 50, IIf(Record.UploadBatchNo = "", Convert.DBNull, Record.UploadBatchNo))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@ApprovedOn", SqlDbType.DateTime, 21, IIf(Record.ApprovedOn = "", Convert.DBNull, Record.ApprovedOn))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@ApprovalRemarks", SqlDbType.NVarChar, 251, IIf(Record.ApprovalRemarks = "", Convert.DBNull, Record.ApprovalRemarks))
           Cmd.Parameters.Add("@Return_AdviceNo", SqlDbType.Int, 11)
           Cmd.Parameters("@Return_AdviceNo").Direction = ParameterDirection.Output
           Con.Open()
@@ -772,6 +791,8 @@ Namespace SIS.SPMT
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@AdvanceRate", SqlDbType.Decimal, 21, IIf(Record.AdvanceRate = "", Convert.DBNull, Record.AdvanceRate))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@RetensionAmount", SqlDbType.Decimal, 21, IIf(Record.RetensionAmount = "", Convert.DBNull, Record.RetensionAmount))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@UploadBatchNo", SqlDbType.NVarChar, 50, IIf(Record.UploadBatchNo = "", Convert.DBNull, Record.UploadBatchNo))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@ApprovedOn", SqlDbType.DateTime, 21, IIf(Record.ApprovedOn = "", Convert.DBNull, Record.ApprovedOn))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@ApprovalRemarks", SqlDbType.NVarChar, 251, IIf(Record.ApprovalRemarks = "", Convert.DBNull, Record.ApprovalRemarks))
           Cmd.Parameters.Add("@RowCount", SqlDbType.Int)
           Cmd.Parameters("@RowCount").Direction = ParameterDirection.Output
           _RecordCount = -1

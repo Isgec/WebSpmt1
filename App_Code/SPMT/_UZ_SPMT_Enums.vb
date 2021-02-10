@@ -6,13 +6,14 @@ Public Enum spmtPAStates
   Free = 3
   IRLinked = 4
   UnderHODFeedback = 5
-  UnderApprovalHR = 6
+  UnderApproval = 6
   ForwardedToAC = 7
   ReceivedInAC = 8
   Returning = 9
   UpdatingVoucher = 10
   VoucherUpdated = 11
   Locked = 12
+  VoucherPosted = 13
 End Enum
 Public Enum spmtDHStates
   Created = 1
