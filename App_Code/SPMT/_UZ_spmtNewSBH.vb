@@ -49,6 +49,7 @@ Namespace SIS.SPMT
     End Function
     Public Function GetEditable() As Boolean
       Dim mRet As Boolean = False
+      If orderno <> "" Then Return False
       If AdviceNo = "" Then
         mRet = True
       End If
@@ -56,6 +57,7 @@ Namespace SIS.SPMT
     End Function
     Public Function GetDeleteable() As Boolean
       Dim mRet As Boolean = False
+      If orderno <> "" Then Return False
       If AdviceNo = "" Then
         If Convert.ToDecimal(TotalBillAmount) <= 0 Then
           mRet = True

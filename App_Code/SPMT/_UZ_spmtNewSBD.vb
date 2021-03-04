@@ -19,6 +19,7 @@ Namespace SIS.SPMT
     End Function
     Public Function GetEditable() As Boolean
       Dim mRet As Boolean = False
+      If orderno <> "" Then Return False
       If FK_SPMT_newSBD_IRNo.AdviceNo = "" Then
         mRet = True
       End If
@@ -26,6 +27,7 @@ Namespace SIS.SPMT
     End Function
     Public Function GetDeleteable() As Boolean
       Dim mRet As Boolean = False
+      If orderno <> "" Then Return False
       If FK_SPMT_newSBD_IRNo.AdviceNo = "" Then
         mRet = True
       End If

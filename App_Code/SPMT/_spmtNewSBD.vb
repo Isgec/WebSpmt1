@@ -58,6 +58,10 @@ Namespace SIS.SPMT
     Private _FK_SPMT_newSBD_IRNo As SIS.SPMT.spmtNewSBH = Nothing
     Public Property TCSRate As String = "0.0000"
     Public Property TCSAmount As String = "0.00"
+
+    Public Property orderno As String = ""
+    Public Property POLine As String = ""
+
     Public ReadOnly Property ForeColor() As System.Drawing.Color
       Get
         Dim mRet As System.Drawing.Color = Drawing.Color.Blue

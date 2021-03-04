@@ -54,6 +54,8 @@ Namespace SIS.SPMT
     Private _FK_SPMT_newSBH_TranTypeID As SIS.SPMT.spmtTranTypes = Nothing
     Private _FK_SPMT_newSBH_SupplierGSTIN As SIS.SPMT.spmtBPGSTIN = Nothing
     Private _FK_SPMT_newSBH_BPID As SIS.SPMT.spmtBusinessPartner = Nothing
+    Public Property orderno As String = ""
+
     Public ReadOnly Property ForeColor() As System.Drawing.Color
       Get
         Dim mRet As System.Drawing.Color = Drawing.Color.Blue
