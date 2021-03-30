@@ -187,7 +187,14 @@
         </asp:TemplateField>
         <asp:TemplateField HeaderText="Advice No" SortExpression="AdviceNo">
           <ItemTemplate>
-            <asp:Label ID="LabelAdviceNo" runat="server" ForeColor='<%# EVal("ForeColor") %>' Text='<%# Bind("AdviceNo") %>'></asp:Label>
+            <asp:Label ID="LabelAdviceNo" runat="server" ForeColor='<%# Eval("ForeColor") %>' Text='<%# Bind("AdviceNo") %>'></asp:Label>
+          </ItemTemplate>
+          <ItemStyle CssClass="alignCenter" />
+          <HeaderStyle HorizontalAlign="Center" Width="50px" />
+        </asp:TemplateField>
+        <asp:TemplateField HeaderText="IR No">
+          <ItemTemplate>
+            <asp:Label ID="LabelIRs" runat="server" ForeColor='<%# Eval("ForeColor") %>' Text='<%# EVal("IRNumbers") %>'></asp:Label>
           </ItemTemplate>
           <ItemStyle CssClass="alignCenter" />
           <HeaderStyle HorizontalAlign="Center" Width="50px" />

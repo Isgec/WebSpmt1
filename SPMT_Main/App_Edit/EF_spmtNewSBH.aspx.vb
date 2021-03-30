@@ -221,6 +221,14 @@ Partial Class EF_spmtNewSBH
           msg = "Either Supplier ID or Supplier Name is Mandatory."
         End If
     End Select
+    Dim ProjectID As String = e.NewValues("ProjectID")
+    Dim ElementID As String = e.NewValues("ElementID")
+    If ProjectID <> "" Then
+      If ElementID = "" Then
+        Err = True
+        msg = "Element ID is required when Project ID is Entered."
+      End If
+    End If
     If Err Then
       Dim message As String = New JavaScriptSerializer().Serialize(msg)
       Dim script As String = String.Format("alert({0});", message)

@@ -5,6 +5,20 @@ Imports System.Data.SqlClient
 Imports System.ComponentModel
 Namespace SIS.SPMT
   Partial Public Class spmtACProcessed
+    Public ReadOnly Property IRNumbers As String
+      Get
+        Dim mStr As String = ""
+        Dim Irs As List(Of SIS.SPMT.spmtPaymentAdviceSupplierBill) = SIS.SPMT.spmtPaymentAdviceSupplierBill.UZ_spmtPaymentAdviceSupplierBillSelectList(0, 9999, "", False, "", AdviceNo)
+        If Irs.Count > 0 Then
+          If Irs.Count = 1 Then
+            mStr = Irs(0).IRNo
+          Else
+            mStr = Irs.Count & " IR(s)"
+          End If
+        End If
+        Return mStr
+      End Get
+    End Property
     Public ReadOnly Property AttachVisible() As Boolean
       Get
         Return SIS.SYS.Utilities.ApplicationSpacific.IsAttached(AdviceNo, SIS.SPMT.spmtPaymentAdvice.AthHandle)
