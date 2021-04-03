@@ -42,6 +42,7 @@ Namespace SIS.SPMT
     Private _FK_SPMT_erpDCD_ChallanID As SIS.SPMT.SPMTerpDCH = Nothing
     Private _FK_SPMT_erpDCD_UOM As SIS.SPMT.spmtERPUnits = Nothing
     Private _FK_SPMT_erpDCD_HSNSACCode As SIS.SPMT.spmtHSNSACCodes = Nothing
+    Public Property ErpPOLine As String = "0"
     Public ReadOnly Property ForeColor() As System.Drawing.Color
       Get
         Dim mRet As System.Drawing.Color = Drawing.Color.Blue
@@ -646,6 +647,7 @@ Namespace SIS.SPMT
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@CGSTAmount", SqlDbType.Decimal, 23, IIf(Record.CGSTAmount = "", Convert.DBNull, Record.CGSTAmount))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@t_rcno", SqlDbType.NVarChar, 10, IIf(Record.t_rcno = "", Convert.DBNull, Record.t_rcno))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@FinalAmount", SqlDbType.Decimal, 23, IIf(Record.FinalAmount = "", Convert.DBNull, Record.FinalAmount))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@ErpPOLine", SqlDbType.Int, 11, IIf(Record.ErpPOLine = "", Convert.DBNull, Record.ErpPOLine))
           Cmd.Parameters.Add("@Return_ChallanID", SqlDbType.NVarChar, 21)
           Cmd.Parameters("@Return_ChallanID").Direction = ParameterDirection.Output
           Cmd.Parameters.Add("@Return_SerialNo", SqlDbType.Int, 11)
@@ -723,6 +725,7 @@ Namespace SIS.SPMT
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@CGSTAmount", SqlDbType.Decimal, 23, IIf(Record.CGSTAmount = "", Convert.DBNull, Record.CGSTAmount))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@t_rcno", SqlDbType.NVarChar, 10, IIf(Record.t_rcno = "", Convert.DBNull, Record.t_rcno))
           SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@FinalAmount", SqlDbType.Decimal, 23, IIf(Record.FinalAmount = "", Convert.DBNull, Record.FinalAmount))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@ErpPOLine", SqlDbType.Int, 11, IIf(Record.ErpPOLine = "", Convert.DBNull, Record.ErpPOLine))
           Cmd.Parameters.Add("@RowCount", SqlDbType.Int)
           Cmd.Parameters("@RowCount").Direction = ParameterDirection.Output
           _RecordCount = -1

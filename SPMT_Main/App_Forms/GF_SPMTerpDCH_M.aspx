@@ -20,6 +20,102 @@
         <span style="color: #ff0033">Loading...</span>
       </ProgressTemplate>
     </asp:UpdateProgress>
+    <asp:Panel ID="pnlH" runat="server" CssClass="cph_filter">
+      <div style="padding: 5px; cursor: pointer; vertical-align: middle;">
+        <div style="float: left;">Filter Records </div>
+        <div style="float: left; margin-left: 20px;">
+          <asp:Label ID="lblH" runat="server">(Show Filters...)</asp:Label>
+        </div>
+        <div style="float: right; vertical-align: middle;">
+          <asp:ImageButton ID="imgH" runat="server" ImageUrl="~/images/ua.png" AlternateText="(Show Filters...)" />
+        </div>
+      </div>
+    </asp:Panel>
+    <asp:Panel ID="pnlD" runat="server" CssClass="cp_filter" Height="0">
+      <div style="display:flex; flex-direction:row; align-content:space-around;">
+        <div>
+          <asp:Label ID="i_label1" runat="server" Font-Bold="true" Text="Challan ID:"></asp:Label>
+          <asp:TextBox ID="I_ChallanID" runat="server" Width="80px" CssClass="mypktxt"></asp:TextBox>
+          <asp:Button ID="cmdImport" CssClass="nt-but-danger" runat="server" Text="Import Challan ID" />
+        </div>
+        <div style="padding-left:100px;">
+          <asp:Label ID="Label1" runat="server" Font-Bold="true" Text="Receipt Date Range:"></asp:Label>
+					  <asp:TextBox ID="F_FromDate"
+              Width="70px"
+						  CssClass = "mytxt"
+						  onfocus = "return this.select();"
+						  runat="server" />
+            <AJX:CalendarExtender 
+              ID = "CEFromDate"
+              TargetControlID="F_FromDate"
+              Format="dd/MM/yyyy"
+              runat = "server" CssClass="MyCalendar" PopupButtonID="ImageButtonFromDate" />
+					  <AJX:MaskedEditExtender 
+						  ID = "MEEFromDate"
+						  runat = "server"
+						  mask = "99/99/9999"
+						  MaskType="Date"
+              CultureName = "en-GB"
+						  MessageValidatorTip="true"
+						  InputDirection="LeftToRight"
+						  ErrorTooltipEnabled="true"
+						  TargetControlID="F_FromDate" />
+					  <asp:Image ID="ImageButtonFromDate" runat="server" ToolTip="Click to open calendar" style="cursor: pointer; vertical-align:bottom" ImageUrl="~/Images/cal.png" />
+					  <AJX:MaskedEditValidator 
+						  ID = "MEVFromDate"
+						  runat = "server"
+						  ControlToValidate = "F_FromDate"
+						  ControlExtender = "MEEFromDate"
+						  InvalidValueMessage = "Invalid From Date."
+						  EmptyValueMessage = "Required."
+						  EmptyValueBlurredText = "[Required!]"
+						  Display = "Dynamic"
+						  TooltipMessage = "Enter From Date."
+						  EnableClientScript = "true"
+						  IsValidEmpty = "true"
+						  SetFocusOnError="true" />
+					  <asp:TextBox ID="F_ToDate"
+              Width="70px"
+						  CssClass = "mytxt"
+						  onfocus = "return this.select();"
+						  runat="server" />
+            <AJX:CalendarExtender 
+              ID = "CEToDate"
+              TargetControlID="F_ToDate"
+              Format="dd/MM/yyyy"
+              runat = "server" CssClass="MyCalendar" PopupButtonID="ImageButtonToDate" />
+					  <AJX:MaskedEditExtender 
+						  ID = "MEEToDate"
+						  runat = "server"
+						  mask = "99/99/9999"
+						  MaskType="Date"
+              CultureName = "en-GB"
+						  MessageValidatorTip="true"
+						  InputDirection="LeftToRight"
+						  ErrorTooltipEnabled="true"
+						  TargetControlID="F_ToDate" />
+					  <asp:Image ID="ImageButtonToDate" runat="server" ToolTip="Click to open calendar" style="cursor: pointer; vertical-align:bottom" ImageUrl="~/Images/cal.png" />
+					  <AJX:MaskedEditValidator 
+						  ID = "MEVToDate"
+						  runat = "server"
+						  ControlToValidate = "F_ToDate"
+						  ControlExtender = "MEEToDate"
+						  InvalidValueMessage = "Invalid To Date."
+						  EmptyValueMessage = "Required."
+						  EmptyValueBlurredText = "[Required!]"
+						  Display = "Dynamic"
+						  TooltipMessage = "Enter To Date."
+						  EnableClientScript = "true"
+						  IsValidEmpty = "true"
+						  SetFocusOnError="true" />
+			
+          <asp:Button ID="cmdxImport" CssClass="nt-but-success" runat="server" Text="Import Challan for Date Range" />
+
+        </div>
+      </div>
+    </asp:Panel>
+    <AJX:CollapsiblePanelExtender ID="cpe1" runat="Server" TargetControlID="pnlD" ExpandControlID="pnlH" CollapseControlID="pnlH" Collapsed="True" TextLabelID="lblH" ImageControlID="imgH" ExpandedText="(Hide Filters...)" CollapsedText="(Show Filters...)" ExpandedImage="~/images/ua.png" CollapsedImage="~/images/da.png" SuppressPostBack="true" />
+
     <script type="text/javascript">
       var pcnt = 0;
       function print_report(o) {
@@ -31,7 +127,6 @@
         return false;
       }
     </script>
-    <asp:TextBox ID="I_ChallanID" runat="server" Width="80px" CssClass="mypktxt"></asp:TextBox><asp:Button ID="cmdImport" runat="server" Text="Import" />
     <asp:GridView ID="GVSPMTerpDCH" SkinID="gv_silver" runat="server" DataSourceID="ODSSPMTerpDCH" DataKeyNames="ChallanID">
       <Columns>
         <asp:TemplateField HeaderText="EDIT">

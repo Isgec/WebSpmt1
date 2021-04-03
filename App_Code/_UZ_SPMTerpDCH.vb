@@ -338,8 +338,76 @@ Namespace SIS.SPMT
         '  mRet = ex.Message
         'End Try
       End If
+      If tmp.StatusID = spmtDHStates.Created Then
+        'Insert / Update Line Item From ERP 
+        'Delete Item will be done manually in this transition phase
+        'Once transition phase is over, code will be modified to delete and insert from ERP
+        Dim erpDCD As List(Of SIS.SPMT.SPMTerpDCD) = SIS.SPMT.SPMTerpDCH.erpDCDGetFromERP(ChallanID, Comp)
+        For Each dcd As SIS.SPMT.SPMTerpDCD In erpDCD
+          Dim xDcD As SIS.SPMT.SPMTerpDCD = SIS.SPMT.SPMTerpDCD.SPMTerpDCDGetByID(dcd.ChallanID, dcd.ErpPOLine)
+          Dim Found As Boolean = True
+          If xDcD Is Nothing Then
+            Found = False
+            xDcD = New SIS.SPMT.SPMTerpDCD
+          End If
+          With xDcD
+            .ChallanID = dcd.ChallanID
+            .ErpPOLine = dcd.ErpPOLine
+            .ItemDescription = dcd.ItemDescription
+            .UOM = dcd.UOM
+            .BillTypeID = dcd.BillTypeID
+            .HSNSACCode = dcd.HSNSACCode
+            .Quantity = dcd.Quantity
+            .AssessableValue = dcd.AssessableValue
+            .Price = dcd.AssessableValue / dcd.Quantity
+            .IGSTRate = dcd.IGSTRate
+            .IGSTAmount = dcd.IGSTAmount
+            .SGSTRate = dcd.SGSTRate
+            .SGSTAmount = dcd.SGSTAmount
+            .CGSTRate = dcd.CGSTRate
+            .CGSTAmount = dcd.CGSTAmount
+            .CessRate = dcd.CessRate
+            .CessAmount = dcd.CessAmount
+            .TotalGST = dcd.TotalGST
+            .TotalAmount = dcd.TotalAmount
+            .FinalRate = dcd.TotalAmount / dcd.Quantity
+            .FinalAmount = dcd.TotalAmount
+            .LineType = spmtLineTypes.NewRecord
+          End With
+          'Check Masters
+          '1. Check HSNSAC Code because checking will automatically import from ERP if not found
+          Dim tmpHSN As SIS.SPMT.spmtHSNSACCodes = SIS.SPMT.spmtHSNSACCodes.spmtHSNSACCodesGetByID(dcd.BillTypeID, dcd.HSNSACCode)
+          If tmpHSN Is Nothing Then
+            Throw New Exception("HSNSAC Code Not Found")
+          End If
+          '=============
+          If Found Then
+            xDcD = SIS.SPMT.SPMTerpDCD.UpdateData(xDcD)
+          Else
+            xDcD = SIS.SPMT.SPMTerpDCD.InsertData(xDcD)
+          End If
+        Next
+      End If
       Return mRet
     End Function
+    Public Shared Function SPMTerpDCDGetByErpPOLine(ByVal ChallanID As String, ByVal ErpPOLine As String) As SIS.SPMT.SPMTerpDCD
+      If ErpPOLine = "" Then ErpPOLine = "0"
+      Dim Results As SIS.SPMT.SPMTerpDCD = Nothing
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+        Using Cmd As SqlCommand = Con.CreateCommand()
+          Cmd.CommandType = CommandType.Text
+          Cmd.CommandText = "Select top 1 * from SPMT_erpDCD where ChallanID='" & ChallanID & "' and ErpPOLine=" & ErpPOLine
+          Con.Open()
+          Dim Reader As SqlDataReader = Cmd.ExecuteReader()
+          If Reader.Read() Then
+            Results = New SIS.SPMT.SPMTerpDCD(Reader)
+          End If
+          Reader.Close()
+        End Using
+      End Using
+      Return Results
+    End Function
+
     Public Shared Function erpDCHGetFromERP(ByVal ChallanID As String, ByVal Comp As String) As SIS.SPMT.SPMTerpDCH
       If Comp = "" Then Comp = "200"
 
@@ -562,6 +630,76 @@ Namespace SIS.SPMT
     '  left outer join ttcmcs143200 as ps_tcmcs143 on cr_tfisg405.t_posu=ps_tcmcs143.t_cdf_scod
     '  left outer join ttfisg003200 as pd_tfisg003 on tfacp100.t_ninv=pd_tfisg003.t_irno 
     '  left outer join ttcmcs143200 as pd_tcmcs143 on pd_tfisg003.t_plct=pd_tcmcs143.t_cste
+    Public Shared Function erpDCDGetFromERP(ByVal ChallanID As String, ByVal Comp As String) As List(Of SIS.SPMT.SPMTerpDCD)
+      If Comp = "" Then Comp = "200"
+
+      Dim Results As New List(Of SIS.SPMT.SPMTerpDCD)
+      Dim Sql As String = ""
+      Sql &= " select distinct "
+      Sql &= "  isg027.t_dech as ChallanID,"
+      Sql &= "  isg407.t_pono as POLine, "
+      Sql &= "  isg407.t_idsc as ItemDescription, "
+      Sql &= "  isg407.t_unit as UOM, "
+      'HSN Codes must be unique, but we have 30 duplicate HSN code, user would need to correct
+      'Item Type Goods/Service, if imported wrong
+      Sql &= "  (select top 1 t_ityp from ttcisg124" & Comp & " where t_code=isg407.t_code) as BillTypeID, "
+      Sql &= "  isg407.t_code as HSNSACCode, "
+      Sql &= "  isg407.t_qnty as Quantity, "
+      Sql &= "  isg407.t_assv as AssessableValue, "
+      Sql &= "  isg407.t_irat as IGSTRate, "
+      Sql &= "  isg407.t_iamt as IGSTAmount, "
+      Sql &= "  isg407.t_srat as SGSTRate, "
+      Sql &= "  isg407.t_samt as SGSTAmount, "
+      Sql &= "  isg407.t_crat as CGSTRate, "
+      Sql &= "  isg407.t_camt as CGSTAmount, "
+      Sql &= "  isg407.t_cess as CessRate, "
+      Sql &= "  isg407.t_cmnt as CessAmount, "
+      Sql &= "  isg407.t_tgmt as TotalGST, "
+      Sql &= "  isg407.t_tval as TotalAmount "
+      Sql &= " from ttfisg407" & Comp & " as isg407 "
+      Sql &= " inner join twhinh310" & Comp & " as inh310 on isg407.t_ninv = inh310.t_dino "
+      Sql &= " inner join ttdisg027" & Comp & " isg027 on inh310.t_rcno=isg027.t_rcno "
+      Sql &= " where isg027.t_dech='" & ChallanID & "'"
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
+        Using Cmd As SqlCommand = Con.CreateCommand()
+          Cmd.CommandType = CommandType.Text
+          Cmd.CommandText = Sql
+          Con.Open()
+          Dim Reader As SqlDataReader = Cmd.ExecuteReader()
+          While (Reader.Read())
+            Dim x As SIS.SPMT.SPMTerpDCD = New SIS.SPMT.SPMTerpDCD(Reader)
+            With x
+            End With
+            Results.Add(x)
+          End While
+          Reader.Close()
+        End Using
+      End Using
+      Return Results
+    End Function
+    Public Shared Function ChallanListFromERP(ByVal fDt As String, tDt As String, ByVal Comp As String) As List(Of String)
+      If Comp = "" Then Comp = "200"
+
+      Dim Results As New List(Of String)
+      Dim Sql As String = ""
+      Sql &= " select distinct "
+      Sql &= " t_dech as ChallanID "
+      Sql &= " from ttdisg026" & Comp & " "
+      Sql &= " where t_date >= convert(datetime,'" & fDt & "',103) and t_date <= convert(datetime,'" & tDt & "',103) "
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
+        Using Cmd As SqlCommand = Con.CreateCommand()
+          Cmd.CommandType = CommandType.Text
+          Cmd.CommandText = Sql
+          Con.Open()
+          Dim Reader As SqlDataReader = Cmd.ExecuteReader()
+          While (Reader.Read())
+            Results.Add(Reader("ChallanID"))
+          End While
+          Reader.Close()
+        End Using
+      End Using
+      Return Results
+    End Function
 
     Public Shared Function UZ_SPMTerpDCHUpdate(ByVal Record As SIS.SPMT.SPMTerpDCH) As SIS.SPMT.SPMTerpDCH
       Dim _Result As SIS.SPMT.SPMTerpDCH = SPMTerpDCHUpdate(Record)

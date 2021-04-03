@@ -76,4 +76,17 @@ Partial Class GF_SPMTerpDCH_M
       ScriptManager.RegisterClientScriptBlock(Page, Page.GetType(), "", "alert('" & New JavaScriptSerializer().Serialize(ex.Message) & "');", True)
     End Try
   End Sub
+
+  Private Sub cmdxImport_Click(sender As Object, e As EventArgs) Handles cmdxImport.Click
+    If F_FromDate.Text = "" OrElse F_ToDate.Text = "" Then Exit Sub
+    Dim Challans As List(Of String) = SIS.SPMT.SPMTerpDCH.ChallanListFromERP(F_FromDate.Text, F_ToDate.Text, HttpContext.Current.Session("FinanceCompany"))
+    For Each str As String In Challans
+      Try
+        SIS.SPMT.SPMTerpDCH.ImportDC(str.ToUpper, HttpContext.Current.Session("FinanceCompany"))
+      Catch ex As Exception
+        ScriptManager.RegisterClientScriptBlock(Page, Page.GetType(), "", "alert('" & New JavaScriptSerializer().Serialize(ex.Message) & "');", True)
+      End Try
+    Next
+    GVSPMTerpDCH.DataBind()
+  End Sub
 End Class
