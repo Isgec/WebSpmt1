@@ -339,7 +339,11 @@ Namespace SIS.SPMT
       Dim tPA As SIS.SPMT.spmtPaymentAdvice = Nothing
       If sPA.OldAdviceNo <> "" Then
         tPA = SIS.SPMT.spmtPaymentAdvice.spmtPaymentAdviceGetByID(sPA.OldAdviceNo)
-        paFound = True
+        If tPA IsNot Nothing Then
+          paFound = True
+        Else
+          tPA = New SIS.SPMT.spmtPaymentAdvice
+        End If
       Else
         tPA = New SIS.SPMT.spmtPaymentAdvice
       End If
