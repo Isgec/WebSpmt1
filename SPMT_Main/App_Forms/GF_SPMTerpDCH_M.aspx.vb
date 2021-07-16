@@ -79,14 +79,27 @@ Partial Class GF_SPMTerpDCH_M
 
   Private Sub cmdxImport_Click(sender As Object, e As EventArgs) Handles cmdxImport.Click
     If F_FromDate.Text = "" OrElse F_ToDate.Text = "" Then Exit Sub
-    Dim Challans As List(Of String) = SIS.SPMT.SPMTerpDCH.ChallanListFromERP(F_FromDate.Text, F_ToDate.Text, HttpContext.Current.Session("FinanceCompany"))
-    For Each str As String In Challans
+    Dim Errs As New List(Of SIS.SPMT.erpDCHList)
+    Dim Challans As List(Of SIS.SPMT.erpDCHList) = SIS.SPMT.SPMTerpDCH.ChallanListFromERP(F_FromDate.Text, F_ToDate.Text, HttpContext.Current.Session("FinanceCompany"))
+    For Each str As SIS.SPMT.erpDCHList In Challans
       Try
-        SIS.SPMT.SPMTerpDCH.ImportDC(str.ToUpper, HttpContext.Current.Session("FinanceCompany"))
+        SIS.SPMT.SPMTerpDCH.ImportDC(str.ChallanID.ToUpper, HttpContext.Current.Session("FinanceCompany"))
       Catch ex As Exception
-        ScriptManager.RegisterClientScriptBlock(Page, Page.GetType(), "", "alert('" & New JavaScriptSerializer().Serialize(ex.Message) & "');", True)
+        str.ErrMsg = ex.Message
+        Errs.Add(str)
       End Try
     Next
     GVSPMTerpDCH.DataBind()
+    Dim eStr As String = ""
+    If Errs.Count > 0 Then
+      eStr = "Import Process Completed" & vbCrLf
+      For Each x As SIS.SPMT.erpDCHList In Errs
+        eStr &= "Project:" & x.ProjectID & " " & x.ErrMsg & vbCrLf
+      Next
+      eStr &= Challans.Count - Errs.Count & " Challans Imported Successfully."
+    Else
+      eStr = Challans.Count & " Challans Imported Successfully."
+    End If
+    ScriptManager.RegisterClientScriptBlock(Page, Page.GetType(), "", "alert('" & New JavaScriptSerializer().Serialize(eStr) & "');", True)
   End Sub
 End Class

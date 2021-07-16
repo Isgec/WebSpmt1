@@ -4,6 +4,11 @@ Imports System.Data
 Imports System.Data.SqlClient
 Imports System.ComponentModel
 Namespace SIS.SPMT
+  Public Class erpDCHList
+    Public Property ChallanID As String = ""
+    Public Property ProjectID As String = ""
+    Public Property ErrMsg As String = ""
+  End Class
   Partial Public Class SPMTerpDCH
     'Additional Properties
     Public Property Remarks As String = ""
@@ -19,8 +24,6 @@ Namespace SIS.SPMT
     Public Property SupplierBillDate As String = ""
     Public Property PlaceOfSupplyName As String = ""
     Public Property PlaceOfDeliveryName As String = ""
-
-
     Public Function GetColor() As System.Drawing.Color
       Dim mRet As System.Drawing.Color = Drawing.Color.Black
       Select Case StatusID
@@ -332,61 +335,75 @@ Namespace SIS.SPMT
           tmp.ConsignerGSTIN = ""
         End Try
         '6. Insert Challan
-        SIS.SPMT.SPMTerpDCH.InsertData(tmp)
+        If tmp.ChallanID = "" Then
+          Throw New Exception("Challan ID: " & ChallanID & " Can NOT import incomplete data")
+        End If
+        Try
+          SIS.SPMT.SPMTerpDCH.InsertData(tmp)
+        Catch ex As Exception
+          Throw New Exception("Challan ID: " & ChallanID & " Err: " & ex.Message)
+        End Try
         'Try
         'Catch ex As Exception
         '  mRet = ex.Message
         'End Try
       End If
       If tmp.StatusID = spmtDHStates.Created Then
+        Dim tmpDcDs As List(Of SIS.SPMT.SPMTerpDCD) = SIS.SPMT.SPMTerpDCD.UZ_SPMTerpDCDSelectList(0, 1, "", False, "", ChallanID)
+        Dim DoNotImportItem As Boolean = False
+        If tmpDcDs.Count > 0 Then
+          DoNotImportItem = True
+        End If
         'Insert / Update Line Item From ERP 
         'Delete Item will be done manually in this transition phase
         'Once transition phase is over, code will be modified to delete and insert from ERP
-        Dim erpDCD As List(Of SIS.SPMT.SPMTerpDCD) = SIS.SPMT.SPMTerpDCH.erpDCDGetFromERP(ChallanID, Comp)
-        For Each dcd As SIS.SPMT.SPMTerpDCD In erpDCD
-          Dim xDcD As SIS.SPMT.SPMTerpDCD = SIS.SPMT.SPMTerpDCD.SPMTerpDCDGetByID(dcd.ChallanID, dcd.ErpPOLine)
-          Dim Found As Boolean = True
-          If xDcD Is Nothing Then
-            Found = False
-            xDcD = New SIS.SPMT.SPMTerpDCD
-          End If
-          With xDcD
-            .ChallanID = dcd.ChallanID
-            .ErpPOLine = dcd.ErpPOLine
-            .ItemDescription = dcd.ItemDescription
-            .UOM = dcd.UOM
-            .BillTypeID = dcd.BillTypeID
-            .HSNSACCode = dcd.HSNSACCode
-            .Quantity = dcd.Quantity
-            .AssessableValue = dcd.AssessableValue
-            .Price = dcd.AssessableValue / dcd.Quantity
-            .IGSTRate = dcd.IGSTRate
-            .IGSTAmount = dcd.IGSTAmount
-            .SGSTRate = dcd.SGSTRate
-            .SGSTAmount = dcd.SGSTAmount
-            .CGSTRate = dcd.CGSTRate
-            .CGSTAmount = dcd.CGSTAmount
-            .CessRate = dcd.CessRate
-            .CessAmount = dcd.CessAmount
-            .TotalGST = dcd.TotalGST
-            .TotalAmount = dcd.TotalAmount
-            .FinalRate = dcd.TotalAmount / dcd.Quantity
-            .FinalAmount = dcd.TotalAmount
-            .LineType = spmtLineTypes.NewRecord
-          End With
-          'Check Masters
-          '1. Check HSNSAC Code because checking will automatically import from ERP if not found
-          Dim tmpHSN As SIS.SPMT.spmtHSNSACCodes = SIS.SPMT.spmtHSNSACCodes.spmtHSNSACCodesGetByID(dcd.BillTypeID, dcd.HSNSACCode)
-          If tmpHSN Is Nothing Then
-            Throw New Exception("HSNSAC Code Not Found")
-          End If
-          '=============
-          If Found Then
-            xDcD = SIS.SPMT.SPMTerpDCD.UpdateData(xDcD)
-          Else
-            xDcD = SIS.SPMT.SPMTerpDCD.InsertData(xDcD)
-          End If
-        Next
+        If Not DoNotImportItem Then
+          Dim erpDCD As List(Of SIS.SPMT.SPMTerpDCD) = SIS.SPMT.SPMTerpDCH.erpDCDGetFromERP(ChallanID, Comp)
+          For Each dcd As SIS.SPMT.SPMTerpDCD In erpDCD
+            Dim xDcD As SIS.SPMT.SPMTerpDCD = SIS.SPMT.SPMTerpDCD.SPMTerpDCDGetByID(dcd.ChallanID, dcd.ErpPOLine)
+            Dim Found As Boolean = True
+            If xDcD Is Nothing Then
+              Found = False
+              xDcD = New SIS.SPMT.SPMTerpDCD
+            End If
+            With xDcD
+              .ChallanID = dcd.ChallanID
+              .ErpPOLine = dcd.ErpPOLine
+              .ItemDescription = dcd.ItemDescription
+              .UOM = dcd.UOM
+              .BillTypeID = dcd.BillTypeID
+              .HSNSACCode = dcd.HSNSACCode
+              .Quantity = dcd.Quantity
+              .AssessableValue = dcd.AssessableValue
+              .Price = dcd.AssessableValue / dcd.Quantity
+              .IGSTRate = dcd.IGSTRate
+              .IGSTAmount = dcd.IGSTAmount
+              .SGSTRate = dcd.SGSTRate
+              .SGSTAmount = dcd.SGSTAmount
+              .CGSTRate = dcd.CGSTRate
+              .CGSTAmount = dcd.CGSTAmount
+              .CessRate = dcd.CessRate
+              .CessAmount = dcd.CessAmount
+              .TotalGST = dcd.TotalGST
+              .TotalAmount = dcd.TotalAmount
+              .FinalRate = dcd.TotalAmount / dcd.Quantity
+              .FinalAmount = dcd.TotalAmount
+              .LineType = spmtLineTypes.NewRecord
+            End With
+            'Check Masters
+            '1. Check HSNSAC Code because checking will automatically import from ERP if not found
+            Dim tmpHSN As SIS.SPMT.spmtHSNSACCodes = SIS.SPMT.spmtHSNSACCodes.spmtHSNSACCodesGetByID(dcd.BillTypeID, dcd.HSNSACCode)
+            If tmpHSN Is Nothing Then
+              Throw New Exception("Challan ID: " & ChallanID & "Item: " & dcd.ItemDescription & " Err: HSNSAC Code Not Found")
+            End If
+            '=============
+            If Found Then
+              xDcD = SIS.SPMT.SPMTerpDCD.UpdateData(xDcD)
+            Else
+              xDcD = SIS.SPMT.SPMTerpDCD.InsertData(xDcD)
+            End If
+          Next
+        End If
       End If
       Return mRet
     End Function
@@ -640,9 +657,7 @@ Namespace SIS.SPMT
       Sql &= "  isg407.t_pono as POLine, "
       Sql &= "  isg407.t_idsc as ItemDescription, "
       Sql &= "  isg407.t_unit as UOM, "
-      'HSN Codes must be unique, but we have 30 duplicate HSN code, user would need to correct
-      'Item Type Goods/Service, if imported wrong
-      Sql &= "  (select top 1 t_ityp from ttcisg124" & Comp & " where t_code=isg407.t_code) as BillTypeID, "
+      Sql &= "  isg407.t_ityp as BillTypeID, "
       Sql &= "  isg407.t_code as HSNSACCode, "
       Sql &= "  isg407.t_qnty as Quantity, "
       Sql &= "  isg407.t_assv as AssessableValue, "
@@ -677,13 +692,14 @@ Namespace SIS.SPMT
       End Using
       Return Results
     End Function
-    Public Shared Function ChallanListFromERP(ByVal fDt As String, tDt As String, ByVal Comp As String) As List(Of String)
+    Public Shared Function ChallanListFromERP(ByVal fDt As String, tDt As String, ByVal Comp As String) As List(Of SIS.SPMT.erpDCHList)
       If Comp = "" Then Comp = "200"
 
-      Dim Results As New List(Of String)
+      Dim Results As New List(Of SIS.SPMT.erpDCHList)
       Dim Sql As String = ""
       Sql &= " select distinct "
-      Sql &= " t_dech as ChallanID "
+      Sql &= " t_dech as ChallanID, "
+      Sql &= " t_proj as ProjectID "
       Sql &= " from ttdisg026" & Comp & " "
       Sql &= " where t_date >= convert(datetime,'" & fDt & "',103) and t_date <= convert(datetime,'" & tDt & "',103) "
       Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
@@ -693,7 +709,10 @@ Namespace SIS.SPMT
           Con.Open()
           Dim Reader As SqlDataReader = Cmd.ExecuteReader()
           While (Reader.Read())
-            Results.Add(Reader("ChallanID"))
+            Dim x As New SIS.SPMT.erpDCHList
+            x.ChallanID = Reader("ChallanID")
+            x.ProjectID = Reader("ProjectID")
+            Results.Add(x)
           End While
           Reader.Close()
         End Using

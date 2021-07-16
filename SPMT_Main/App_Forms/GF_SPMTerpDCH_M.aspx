@@ -39,7 +39,7 @@
           <asp:Button ID="cmdImport" CssClass="nt-but-danger" runat="server" Text="Import Challan ID" />
         </div>
         <div style="padding-left:100px;">
-          <asp:Label ID="Label1" runat="server" Font-Bold="true" Text="Receipt Date Range:"></asp:Label>
+          <asp:Label ID="Label1" runat="server" Font-Bold="true" Text="Delivery Challan Date Range:"></asp:Label>
 					  <asp:TextBox ID="F_FromDate"
               Width="70px"
 						  CssClass = "mytxt"

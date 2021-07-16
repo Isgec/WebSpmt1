@@ -22,7 +22,7 @@ Namespace SIS.SPMT
       Get
         Dim UrlAuthority As String = HttpContext.Current.Request.Url.Authority
         If UrlAuthority.ToLower <> "cloud.isgec.co.in" Then
-          UrlAuthority = "192.9.200.146"
+          UrlAuthority = "perk01"
         End If
         Dim mRet As String = HttpContext.Current.Request.Url.Scheme & Uri.SchemeDelimiter & UrlAuthority
         mRet &= "/Attachment/Attachment.aspx?AthHandle=" & SIS.SPMT.spmtPaymentAdvice.AthHandle
@@ -190,7 +190,7 @@ Namespace SIS.SPMT
     'Public Shared Function GetCopyLink() As String
     '  Dim UrlAuthority As String = HttpContext.Current.Request.Url.Authority
     '  If UrlAuthority.ToLower <> "cloud.isgec.co.in" Then
-    '    UrlAuthority = "192.9.200.146"
+    '    UrlAuthority = "perk01"
     '  End If
     '  Dim mRet As String = HttpContext.Current.Request.Url.Scheme & Uri.SchemeDelimiter & UrlAuthority & "/ProjectApi/AttachmentApi.svc/Attachments"
     '  Dim AthHandleS As String = "J_SPMTSUPPLIERBILL"
